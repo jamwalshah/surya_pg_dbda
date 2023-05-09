@@ -1,0 +1,38 @@
+1.  Create a Java program that demonstrates the use of constructor chaining to initialize objects of a class hierarchy. 
+The program should consist of the following classes:A superclass called "Vehicle" with the following fields:
+	a. make (string)
+	b. model (string)
+	c. year (integer)
+	d .color (string)
+
+2. The "Vehicle" class should have the following constructors:
+	a. A default constructor that initializes all fields to empty or zero values.
+	b. A parameterized constructor that takes values for all fields.
+	c. A constructor that takes only the make, model, and year fields and sets the color to "unknown".
+
+3. A subclass called "Car" that extends "Vehicle" and adds the following fields:
+	a. numDoors (integer)
+	b. automatic (boolean)
+
+4. The "Car" class should have the following constructors:
+	a. A default constructor that calls the default constructor of its superclass and sets 
+		the "numDoors" and "automatic" fields to default values.
+	b. A parameterized constructor that takes values for all fields and calls the parameterized 
+		constructor of its superclass.
+	c. A constructor that takes only the make, model, and year fields and sets the 
+		"numDoors" and "automatic" fields to default values, and calls the corresponding 
+		constructor of its superclass.
+
+5. A subclass called "Truck" that extends "Vehicle" and adds the following fields:
+	a. payloadCapacity (double)
+	b. towingCapacity (double)
+
+6. The "Truck" class should have the following constructors:
+	a. A default constructor that calls the default constructor of its superclass and sets 
+		the "payloadCapacity" and "towingCapacity" fields to default values.
+	b. A parameterized constructor that takes values for all fields and calls the 
+		parameterized constructor of its superclass.
+	c. A constructor that takes only the make, model, and year fields and sets 
+		the "payloadCapacity" and "towingCapacity" fields to default values, and 
+		calls the corresponding constructor of its superclass.
+

@@ -1,0 +1,89 @@
+1. Take three numbers from the user and print the greatest number. 
+    Test Data
+        Input the 1st number: 25
+        Input the 2nd number: 78
+        Input the 3rd number: 87
+    Expected Output :
+        The greatest: 87
+
+2. Write a program in Java to input 5 numbers from the keyboard and find their sum and average. 
+    Test Data
+        Input the 5 numbers : 1 2 3 4 5
+    Expected Output :
+        Input the 5 numbers :                                                            
+            1                                                                                
+            2                                                                                
+            3                                                                                
+            4                                                                                
+            5                                                                                
+        The sum of 5 no is : 15                                                          
+        
+3. The Average is : 3.0  Write a program in Java to display the cube of the number upto given an integer. 
+    Test Data
+        Input number of terms : 4
+    Expected Output :
+        Number is : 1 and cube of 1 is : 1                                               
+        Number is : 2 and cube of 2 is : 8                                               
+        Number is : 3 and cube of 3 is : 27                                              
+        Number is : 4 and cube of 4 is : 64 
+        
+4. Write a program in Java to display the pattern like right angle triangle with a number. 
+    Test Data
+        Input number of rows : 10
+    Expected Output :
+        1                                                                                
+        12                                                                               
+        123                                                                              
+        1234                                                                             
+        12345                                                                            
+        123456                                                                           
+        1234567                                                                          
+        12345678                                                                         
+        123456789                                                                        
+        12345678910
+        
+5. Write a program in Java to make such a pattern like right angle triangle with number increased by 1.
+    The pattern like : 
+        1
+        2 3
+        4 5 6
+        7 8 9 10 
+        
+6. Write a Java program to display Pascal's triangle. 
+    Test Data
+        Input number of rows: 5
+    Expected Output :
+        Input number of rows: 5                                                          
+          1                                                                          
+         1 1                                                                         
+        1 2 1                                                                        
+       1 3 3 1                                                                       
+      1 4 6 4 1                       
+      
+7. Write a Java program that reads an integer and check whether it is negative, zero, or positive. 
+    Test Data
+        Input a number: 7
+    Expected Output :
+        Number is positive
+        
+8. Write a Java program that accepts three numbers and prints "All numbers are equal" if all three numbers are equal, "All numbers are different" if all three numbers are different and "Neither all are equal or different" otherwise.
+    Test Data
+        Input first number: 2564
+        Input second number: 3526
+        Input third number: 2456
+    Expected Output :
+    All numbers are different
+
+9. Write a program that accepts three numbers from the user and prints "increasing" if the numbers are in increasing order, "decreasing" if the numbers are in decreasing order, and "Neither increasing or decreasing order" otherwise.
+    Test Data
+        Input first number: 1524
+        Input second number: 2345
+        Input third number: 3321
+    Expected Output :
+        Increasing order
+        
+10. Write a Java program to find the k smallest elements in a given array. Elements in the array can be in any order. 
+    Original Array:
+        [1, 4, 17, 7, 25, 3, 100]
+    3 largest elements of the said array are:
+        100 25 17
