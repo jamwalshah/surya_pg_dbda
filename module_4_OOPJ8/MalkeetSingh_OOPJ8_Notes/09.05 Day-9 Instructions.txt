@@ -1,0 +1,22 @@
+OOPJ Day-9 Date: 06-05-2023
+Content Discussed
+-----------------------------------------------------------------------
+- use of throws keyword and its implementation
+- Custom exception and its need and its implementation
+- Concept Exception chaining and exception propagation
+- Introduction to Generic and Generic Programming
+- Need of Generics
+- Generic programming using java.lang.Object class
+- Type argument & type parameter in generics
+- Wild card and its type 
+- Restrictions on generics
+- Abstraction using interface
+- Inheritance in Interfaces
+- ### Working with collection
+  - Collection Framework Introduction
+    - Collection Interface hierarchy
+    - List Interface with hierarchy
+    - ArrayList complete usage with non primitive instances
+    - Use of equals, Comparable, Comparator in ArrayList
+- Traversing collection using Iterable & Iterator interface
+- Sorting instances using Comparable & Comparator interface

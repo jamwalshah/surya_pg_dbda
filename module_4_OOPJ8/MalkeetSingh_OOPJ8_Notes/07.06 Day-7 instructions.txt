@@ -1,0 +1,9 @@
+OOPJ Day-7 Session-2 Date: 04-05-2023
+Content discussed
+---------------------------------------------------------------
+Object Slicing Revision
+Variable Shadowing
+Instraceof operator implentation
+Introduction to Interface
+Implementation of interfaces
+Achieved Multiple Inheritance using interface

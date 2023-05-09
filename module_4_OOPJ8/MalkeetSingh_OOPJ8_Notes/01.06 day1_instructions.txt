@@ -1,0 +1,18 @@
+1. Please ask students to do the installation
+2. Ask them to observe Home directory of Java, JDK and JRE
+3. Ask them to explore JDK installation directory structure
+4. Ask them to extract src.zip and rt.jar
+5. Ask them write simple Hello Application and observer bytecode using Javap
+6. Ask them to read Short History of Java from Core Java volume -I
+
+
+
+- Classification of Languages
+- Language versus Technology versus Platform
+- History of Java
+- Java Version History 
+- Getting familiar with SDK JDK JRE & JVM, 
+- Relation between src.zip, rt.jar and java docs
+- Simple Hello World Application
+- Exploring bytecode using javap
+- Exploring main method

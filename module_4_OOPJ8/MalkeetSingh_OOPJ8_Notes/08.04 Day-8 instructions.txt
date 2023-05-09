@@ -1,0 +1,19 @@
+OOPJ Day-8 Date: 05-05-2023
+Content discussed
+---------------------------------------------------------------
+Features and Types of Interfaces in java 8
+Briefly discuss the Wrapper Class Hierarchy in Java 8
+Briefly discuss the Collection Class Hierarchy in Java 8
+Briefly discuss the Exception Class Hierarchy in Java 8
+Use and understating of Object Upcasting 
+Implements of some methods of Object class in user defined class
+ArrayStoreException
+ClassCastException
+Difference between operator== and equals() method
+External system resources for java program
+Exception Concept
+Throwable class Hierarchy
+Error versus Exception
+Checked versus unchecked exception
+AutoCloseable & Closeable interface and resource type
+Exception handling using try, catch, throw, throws and finally

@@ -1,0 +1,24 @@
+OOPJ Day-10 Date: 08-05-2023
+Content Discussed
+-----------------------------------------------------------------------
+- Implementation of Shallow Copy and Deep Copy of instances
+- Implementation of Functional Interface
+- Exception Propagation (Implementation)
+- Upcasting in Collection (Classes instances to Interfaces references)
+- List (Vector) Traversing using Enumeration
+- Working with Collection: Set Family or Set Interface Hierarchy
+- Difference between Set<E> and List<E>
+- TreeSet non primitive elements
+- Points to remember in TreeSet
+- Introduction to HashSet and LinkedHasSet
+- Introduction to Map Interface
+- Implementation of TreeMap using SortedMap interface
+Reading Assignment on Set:
+  - Searching Concept and its type
+  - Linear search with pros and cons.
+  - Binary search with pros and cons.
+  - Searching problem with array and need of Hashing
+  - Hash function, HashCode, Slot
+  - Collision and Collision resolution techniques
+  - Separate Chaining
+  - What is the need to override equals and hashCode method?
