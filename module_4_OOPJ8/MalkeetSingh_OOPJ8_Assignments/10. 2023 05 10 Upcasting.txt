@@ -1,0 +1,8 @@
+You are working on a project for a company that manages employee records. 
+There are different types of employees, such as full-time employees, part-time employees, 
+and contractors. Each type of employee has different attributes and methods.
+
+Write a Java program that demonstrates the concept of upcasting in this scenario. 
+Create a base Employee class with common attributes such as name, id, and hourly rate. 
+Create derived classes for each type of employee and override the base class methods with their own implementations.
+In the main method, create objects of the different types of employees and upcast them to the Employee class
