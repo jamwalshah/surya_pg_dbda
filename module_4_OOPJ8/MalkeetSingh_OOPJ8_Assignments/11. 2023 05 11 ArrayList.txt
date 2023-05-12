@@ -1,0 +1,4 @@
+Q1. 
+
+Write a program that reads in a list of integers from users and 
+then displays the sum, average, minimum, and maximum values in the list. (Using ArrayList)
