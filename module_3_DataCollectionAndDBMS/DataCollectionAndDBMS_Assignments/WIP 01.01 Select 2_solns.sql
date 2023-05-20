@@ -283,4 +283,6 @@ SELECT *, date_format(HIRE_DATE, '%d') AS joining_date FROM employees WHERE date
 -- 35. From the following table, write a  query to identify those employees
 -- who have been working as a SALESMAN and month portion of the experience
 -- is more than 10. Return complete information about the employees. 
-
+SELECT * FROM employees;
+SELECT * FROM jobs;
+SELECT * FROM employee WHERE JOB_ID='SA_MAN';
