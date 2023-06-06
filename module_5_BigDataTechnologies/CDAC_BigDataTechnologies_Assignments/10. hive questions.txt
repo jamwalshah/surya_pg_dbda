@@ -1,0 +1,20 @@
+01. What is hive?
+02. Hive architecture?
+03. Use case of Hive in real life?
+04. What are partitions why do we create them? Advantages? Use case?
+05. What is bucketing ? Advantages? Use case?
+06. How is a hive query processed?
+07. Why do we use hive? advantages and disadvantages over SQL/rdbms?
+08. Are ddl dml dcl TCL commands all valid in hive if not. Why and which?
+09. Difference between external and internal table?
+10. Where and why should I create an external table?
+11. Where and why should I create an internal table?
+12. What are ORC and Parquet storing formats used for ?
+13. What is udf?
+14. Why use UDF ?
+15. UDF vs stored procedure?
+16. Can I create a stored procedure and triggers in hive?
+17. Is hive same as traditional rdbms?
+
+
+Prepare and study for all the above questions tonight.
