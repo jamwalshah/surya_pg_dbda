@@ -1,0 +1,10 @@
+# Laptop Project
+- Q1. How many laptops did I sell overall?
+How many of those where Dell Laptops(absolute and percentage)?
+- Q2. What was my total revenue?
+How much of that can be contributed to Dell(absolute and percentage)?
+- Q4. How is the revenue distributed over laptop categories?
+- Q5. What is the best selling continent, country and city?
+
+
+use data.xlsx file
