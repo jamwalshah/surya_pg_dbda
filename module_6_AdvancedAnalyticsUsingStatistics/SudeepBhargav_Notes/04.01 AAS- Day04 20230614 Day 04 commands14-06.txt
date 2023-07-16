@@ -1,0 +1,100 @@
+# central tendency - mean, median and mode
+
+# variation or dispersion - range, inter-quartile range, variance, std deviation
+
+# shape - skewness and kurtosis
+
+mylist = [3,6,5,4,7,6,8,9,1,10,13,4,7,11,4,7,9]
+
+sum(mylist)/len(mylist)
+Out[68]: 6.705882352941177
+
+np.mean(mylist)
+Out[69]: 6.705882352941177
+
+# 10 have value as 7, 15 have value as 8, 23 have value as 9, 8 have value as 10 
+
+freq = np.array([10,15,23,8])
+
+values = np.array([7,8,9,10])
+
+freq*values/sum(freq)
+Out[73]: array([1.25      , 2.14285714, 3.69642857, 1.42857143])
+
+sum(freq*values/sum(freq))
+Out[74]: 8.517857142857142
+
+
+
+len(mylist)
+Out[75]: 17
+
+sorted(mylist)[8]
+Out[76]: 7
+
+np.median(mylist)
+
+sal = [6,7,6,7,8,7,6,7,8,7,6,7,8,8,7,6,7,6,7,7,6,8]
+
+np.mean(sal)
+Out[80]: 6.909090909090909
+
+np.median(sal)
+Out[81]: 7.0
+
+new_sal = [6,7,6,7,8,7,6,7,8,7,6,7,8,8,7,6,7,6,7,7,6,8,54,50,52]
+
+np.mean(new_sal)
+Out[83]: 12.32
+
+np.median(new_sal)
+Out[84]: 7.0
+
+# range, inter quartile range, variance, std deviation
+
+# range = max -min
+
+max(mylist) - min(mylist)
+Out[91]: 12
+
+x = [1,4,4,7,5,8,9,3,10]
+
+y = [1,4,4,4,4,4,4,4,10]
+
+# IQR = third quartile - first quartile OR 75th percentile - 25th percentile
+
+
+
+np.percentile(mylist,75) - np.percentile(mylist,25)
+Out[95]: 5.0
+
+x
+Out[96]: [1, 4, 4, 7, 5, 8, 9, 3, 10]
+
+y
+Out[97]: [1, 4, 4, 4, 4, 4, 4, 4, 10]
+
+np.percentile(x,75) - np.percentile(x,25)
+Out[98]: 4.0
+
+np.percentile(y,75) - np.percentile(y,25)
+Out[99]: 0.0
+
+
+
+x = [4,6,7,9,10,3,5,8,3,7]
+
+np.var(x, ddof=0)   # pop variance
+Out[101]: 5.36
+
+np.var(x, ddof=1)   # sample variance
+Out[102]: 5.955555555555556
+
+np.var(x, ddof=0)**0.5   # pop std dev
+Out[103]: 2.3151673805580453
+
+np.std(x, ddof=0)   # pop std dev
+Out[104]: 2.3151673805580453
+
+np.std(x, ddof=1)   # sample std dev
+Out[105]: 2.440400695696417

@@ -1,0 +1,345 @@
+import numpy as np
+
+x = np.arange(7)
+
+x
+Out[3]: array([0, 1, 2, 3, 4, 5, 6])
+
+x = np.arange(3,7)
+
+x
+Out[5]: array([3, 4, 5, 6])
+
+x = np.arange(3,17,4)
+
+x
+Out[7]: array([ 3,  7, 11, 15])
+
+x = np.arange(40,6,-2)
+
+x
+Out[9]: array([40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10,  8])
+
+# Broadcasting
+
+y = [2,8,7,6]
+
+y = np.array(y)
+
+y = y+3
+
+y = list(y)
+
+y
+Out[25]: [5, 11, 10, 9]
+
+
+# two dimensional array
+
+arr2d = np.array([3,7,5,8])
+
+arr2d
+Out[28]: array([3, 7, 5, 8])
+
+arr2d = np.array([[3,7,5,8],[1,4,3,6]])
+
+arr2d
+Out[30]: 
+array([[3, 7, 5, 8],
+       [1, 4, 3, 6]])
+
+arr2d = np.array([[3,7,5,8],[1,4,3,6],[1,9,7,4]])
+
+arr2d
+Out[32]: 
+array([[3, 7, 5, 8],
+       [1, 4, 3, 6],
+       [1, 9, 7, 4]])
+
+# reshaping an array
+
+t = [2,4,3,6,5,7,8,9,1,2,3,5]
+
+t = np.array(t)
+
+arr2d = t.reshape(3,4)
+
+arr2d
+Out[39]: 
+array([[2, 4, 3, 6],
+       [5, 7, 8, 9],
+       [1, 2, 3, 5]])
+
+
+# array manupulations
+
+arr1d = np.array([3,7,6,4,8])
+
+len(arr1d)
+Out[43]: 5
+
+arr1d[3]
+Out[44]: 4
+
+arr1d[3] = 7
+
+arr1d
+Out[46]: array([3, 7, 6, 7, 8])
+
+arr1d = np.append(arr1d,10)
+
+arr1d
+Out[48]: array([ 3,  7,  6,  7,  8, 10])
+
+arr1d = np.insert(arr1d,3,5)
+
+arr1d
+Out[50]: array([ 3,  7,  6,  5,  7,  8, 10])
+
+arr1d = np.delete(arr1d,4)
+
+arr1d
+Out[52]: array([ 3,  7,  6,  5,  8, 10])
+
+list1 = [2,5,4,6]
+
+list2 = [3,9,8,1]
+
+arr2d = np.array([list1, list2])
+
+arr2d
+Out[57]: 
+array([[2, 5, 4, 6],
+       [3, 9, 8, 1]])
+
+list3 = [4,8,7,2]
+
+arr2d = np.array([list1, list2, list3])
+
+arr2d
+Out[60]: 
+array([[2, 5, 4, 6],
+       [3, 9, 8, 1],
+       [4, 8, 7, 2]])
+
+arr2d[1]
+Out[61]: array([3, 9, 8, 1])
+
+arr2d[0]
+Out[62]: array([2, 5, 4, 6])
+
+arr2d[:,2]
+Out[63]: array([4, 8, 7])
+
+arr2d[1][3]
+Out[64]: 1
+
+arr2d[1][3] = 5
+
+arr2d
+Out[66]: 
+array([[2, 5, 4, 6],
+       [3, 9, 8, 5],
+       [4, 8, 7, 2]])
+
+newrow = [3,7,1,4]
+
+arr2d = np.vstack([arr2d,newrow])
+
+arr2d
+Out[69]: 
+array([[2, 5, 4, 6],
+       [3, 9, 8, 5],
+       [4, 8, 7, 2],
+       [3, 7, 1, 4]])
+
+newcol = np.array([3,8,7,2])
+
+newcol = newcol.reshape(4,1)
+
+newcol
+Out[72]: 
+array([[3],
+       [8],
+       [7],
+       [2]])
+
+arr2d = np.hstack([arr2d,newcol])
+
+arr2d
+Out[74]: 
+array([[2, 5, 4, 6, 3],
+       [3, 9, 8, 5, 8],
+       [4, 8, 7, 2, 7],
+       [3, 7, 1, 4, 2]])
+
+np.delete(arr2d,2,axis=0)
+Out[75]: 
+array([[2, 5, 4, 6, 3],
+       [3, 9, 8, 5, 8],
+       [3, 7, 1, 4, 2]])
+
+arr2d
+Out[76]: 
+array([[2, 5, 4, 6, 3],
+       [3, 9, 8, 5, 8],
+       [4, 8, 7, 2, 7],
+       [3, 7, 1, 4, 2]])
+
+np.delete(arr2d,2,axis=1)
+Out[77]: 
+array([[2, 5, 6, 3],
+       [3, 9, 5, 8],
+       [4, 8, 2, 7],
+       [3, 7, 4, 2]])
+
+
+# extracting / slicing values from array
+
+arr1d = np.array([3,6,5,2,7,6,9,1])
+
+arr1d[:4]
+Out[84]: array([3, 6, 5, 2])
+
+arr1d[5:]
+Out[85]: array([6, 9, 1])
+
+arr1d[2:6]
+Out[86]: array([5, 2, 7, 6])
+
+arr1d[[2,5,3]]
+Out[87]: array([5, 6, 2])
+
+sorted_arr1d = sorted(arr1d)
+
+sorted_arr1d 
+Out[89]: [1, 2, 3, 5, 6, 6, 7, 9]
+
+sorted_arr1d = sorted(arr1d, reverse=True)
+
+sorted_arr1d
+Out[91]: [9, 7, 6, 6, 5, 3, 2, 1]
+
+arr1d
+Out[93]: array([3, 6, 5, 2, 7, 6, 9, 1])
+
+ind = np.where(arr1d>=4)
+
+ind
+Out[95]: (array([1, 2, 4, 5, 6], dtype=int64),)
+
+len(ind)
+Out[96]: 1
+
+len(ind[0])
+Out[97]: 5
+
+ind[0]
+Out[98]: array([1, 2, 4, 5, 6], dtype=int64)
+
+(arr1d>=4).sum()
+Out[99]: 5
+
+type(ind)
+Out[100]: tuple
+
+arr1d[ind]
+Out[101]: array([6, 5, 7, 6, 9])
+
+
+arr2d
+Out[103]: 
+array([[2, 5, 4, 6, 3],
+       [3, 9, 8, 5, 8],
+       [4, 8, 7, 2, 7],
+       [3, 7, 1, 4, 2]])
+
+ind2 = np.where(arr2d>=4)
+
+ind2
+Out[105]: 
+(array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3], dtype=int64),
+ array([1, 2, 3, 1, 2, 3, 4, 0, 1, 2, 4, 1, 3], dtype=int64))
+
+len(ind2)
+Out[106]: 2
+
+(arr2d>=4).sum()
+Out[107]: 13
+
+len(ind2[0])
+Out[108]: 13
+
+arr2d[ind2]
+Out[109]: array([5, 4, 6, 9, 8, 5, 8, 4, 8, 7, 7, 7, 4])
+
+arr1d
+Out[111]: array([3, 6, 5, 2, 7, 6, 9, 1])
+
+x = np.array([3,5,7,3,3,5,9,1,3])
+
+arr1d = np.concatenate((arr1d,x))
+
+arr1d
+Out[114]: array([3, 6, 5, 2, 7, 6, 9, 1, 3, 5, 7, 3, 3, 5, 9, 1, 3])
+
+np.unique(arr1d)
+Out[115]: array([1, 2, 3, 5, 6, 7, 9])
+
+4 in np.unique(arr1d)
+Out[116]: False
+
+np.in1d(arr1d,[2,7])
+Out[117]: 
+array([False, False, False,  True,  True, False, False, False, False,
+       False,  True, False, False, False, False, False, False])
+
+# 118 was error
+
+np.where(np.in1d(arr1d,[2,7]))
+Out[119]: (array([ 3,  4, 10], dtype=int64),)
+
+ind = np.where(np.in1d(arr1d,[2,7]))
+
+len(ind[0])
+Out[121]: 3
+
+x = np.array([4,7,6,3,9])
+
+y = np.array([1,4,5,7,8])
+
+np.union1d(x,y)
+Out[125]: array([1, 3, 4, 5, 6, 7, 8, 9])
+
+np.union1d(y,x)
+Out[126]: array([1, 3, 4, 5, 6, 7, 8, 9])
+
+np.intersect1d(y,x)
+Out[127]: array([4, 7])
+
+np.intersect1d(x,y)
+Out[128]: array([4, 7])
+
+np.in1d(x,y)
+Out[129]: array([ True,  True, False, False, False])
+
+np.in1d(y,x)
+Out[130]: array([False,  True, False,  True, False])
+
+np.setdiff1d(x,y)
+Out[131]: array([3, 6, 9])
+
+x
+Out[132]: array([4, 7, 6, 3, 9])
+
+y
+Out[133]: array([1, 4, 5, 7, 8])
+
+np.setdiff1d(y,x)
+Out[134]: array([1, 5, 8])
+
+np.setxor1d(y,x)
+Out[135]: array([1, 3, 5, 6, 8, 9])
+
+np.setxor1d(x,y)
+Out[136]: array([1, 3, 5, 6, 8, 9])

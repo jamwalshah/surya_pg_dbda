@@ -1,0 +1,531 @@
+df = pd.DataFrame([['Sudeep',3545,'MBA'],['Ruchika',1254,'MCA'],['Rahul',6547,'MS'],['Purnima',1389,'BE']], columns = ['Name','RollNo','Qualification'])
+
+mydf = df.iloc[[0,2]]
+
+df = pd.read_excel('ERPData.xlsx')
+
+x = np.array(df['Quantity'])
+
+ind = np.where(x>=75)
+
+len(ind[0])
+Out[28]: 13
+
+(x>=75).sum()
+Out[29]: 13
+
+ind
+Out[30]: (array([ 5,  9, 12, 15, 17, 21, 24, 25, 27, 33, 39, 46, 48], dtype=int64),)
+
+df.head()
+Out[31]: 
+  MaterialID Location  Quantity
+0    TMI-43T    MWH-4        34
+1    AXCP-78    MWH-1        67
+2    LXCV-21    MWH-2        27
+3    AXCP-78    MWH-5        65
+4    AXCP-78    MWH-4        36
+
+(df['Location']=='MWH-3').sum()
+Out[32]: 4
+
+ind
+Out[33]: (array([ 5,  9, 12, 15, 17, 21, 24, 25, 27, 33, 39, 46, 48], dtype=int64),)
+
+mydf = df.iloc[ind]
+
+mydf
+Out[35]: 
+   MaterialID Location  Quantity
+5     TMI-43T    MWH-4        78
+9     TMI-43T    MWH-1       120
+12    TMI-43T    MWH-4        76
+15    GCVB-79    MWH-2        87
+17    SDRT-67    MWH-5       102
+21    TMI-43T    MWH-4        75
+24    AXCP-78    MWH-1       152
+25    AXCP-78    MWH-1       109
+27    LXCV-21    MWH-5        83
+33    TMI-43T    MWH-5       112
+39    AXCP-78    MWH-1       145
+46    AXCP-78    MWH-2        85
+48    AXCP-78    MWH-1        75
+
+mydf.iloc[[0,1,2]]
+Out[36]: 
+   MaterialID Location  Quantity
+5     TMI-43T    MWH-4        78
+9     TMI-43T    MWH-1       120
+12    TMI-43T    MWH-4        76
+
+
+x = np.array(df['Quantity'])
+
+ind = np.where(x>=75)
+
+len(ind[0])
+Out[28]: 13
+
+(x>=75).sum()
+Out[29]: 13
+
+ind
+Out[30]: (array([ 5,  9, 12, 15, 17, 21, 24, 25, 27, 33, 39, 46, 48], dtype=int64),)
+
+df.head()
+Out[31]: 
+  MaterialID Location  Quantity
+0    TMI-43T    MWH-4        34
+1    AXCP-78    MWH-1        67
+2    LXCV-21    MWH-2        27
+3    AXCP-78    MWH-5        65
+4    AXCP-78    MWH-4        36
+
+(df['Location']=='MWH-3').sum()
+Out[32]: 4
+
+ind
+Out[33]: (array([ 5,  9, 12, 15, 17, 21, 24, 25, 27, 33, 39, 46, 48], dtype=int64),)
+
+mydf = df.iloc[ind]
+
+mydf
+Out[35]: 
+   MaterialID Location  Quantity
+5     TMI-43T    MWH-4        78
+9     TMI-43T    MWH-1       120
+12    TMI-43T    MWH-4        76
+15    GCVB-79    MWH-2        87
+17    SDRT-67    MWH-5       102
+21    TMI-43T    MWH-4        75
+24    AXCP-78    MWH-1       152
+25    AXCP-78    MWH-1       109
+27    LXCV-21    MWH-5        83
+33    TMI-43T    MWH-5       112
+39    AXCP-78    MWH-1       145
+46    AXCP-78    MWH-2        85
+48    AXCP-78    MWH-1        75
+
+mydf.iloc[[0,1,2]]
+Out[36]: 
+   MaterialID Location  Quantity
+5     TMI-43T    MWH-4        78
+9     TMI-43T    MWH-1       120
+12    TMI-43T    MWH-4        76
+
+ind = np.where((df['Quantity']>=100) & (df['Location']=='MWH-5'))
+
+ind
+Out[38]: (array([17, 33], dtype=int64),)
+
+mydf = df.iloc[ind]
+
+mydf
+Out[40]: 
+   MaterialID Location  Quantity
+17    SDRT-67    MWH-5       102
+33    TMI-43T    MWH-5       112
+
+ind = np.where((df['Quantity']>=100) | (df['MaterialID']=='TMI-43T'))
+
+ind
+Out[42]: 
+(array([ 0,  5,  6,  7,  9, 12, 13, 14, 17, 18, 19, 20, 21, 24, 25, 31, 32,
+        33, 39], dtype=int64),)
+
+len(ind[0])
+Out[43]: 19
+
+mydf = df.iloc[ind]
+
+
+
+df
+Out[45]: 
+   MaterialID Location  Quantity
+0     TMI-43T    MWH-4        34
+1     AXCP-78    MWH-1        67
+2     LXCV-21    MWH-2        27
+3     AXCP-78    MWH-5        65
+4     AXCP-78    MWH-4        36
+5     TMI-43T    MWH-4        78
+6     TMI-43T    MWH-4        31
+7     TMI-43T    MWH-2        29
+8     GCVB-79    MWH-2        10
+9     TMI-43T    MWH-1       120
+10    SDRT-67    MWH-1        34
+11    SDRT-67    MWH-4        58
+12    TMI-43T    MWH-4        76
+13    TMI-43T    MWH-4        32
+14    TMI-43T    MWH-3        65
+15    GCVB-79    MWH-2        87
+16    SDRT-67    MWH-5        12
+17    SDRT-67    MWH-5       102
+18    TMI-43T    MWH-4        34
+19    TMI-43T    MWH-4        52
+20    TMI-43T    MWH-4        39
+21    TMI-43T    MWH-4        75
+22    DDBN-89    MWH-4        48
+23    DDBN-89    MWH-5        71
+24    AXCP-78    MWH-1       152
+25    AXCP-78    MWH-1       109
+26    DDBN-89    MWH-1        57
+27    LXCV-21    MWH-5        83
+28    LXCV-21    MWH-5        34
+29    LXCV-21    MWH-5        57
+30    DDBN-89    MWH-4        27
+31    TMI-43T    MWH-4        65
+32    TMI-43T    MWH-4        43
+33    TMI-43T    MWH-5       112
+34    GCVB-79    MWH-5        26
+35    GCVB-79    MWH-2        31
+36    GCVB-79    MWH-2        28
+37    AXCP-78    MWH-5        65
+38    AXCP-78    MWH-5        70
+39    AXCP-78    MWH-1       145
+40    DDBN-89    MWH-1        34
+41    SDRT-67    MWH-1        57
+42    SDRT-67    MWH-2        31
+43    DDBN-89    MWH-3        38
+44    LXCV-21    MWH-3        42
+45    DDBN-89    MWH-2        69
+46    AXCP-78    MWH-2        85
+47    AXCP-78    MWH-3        29
+48    AXCP-78    MWH-1        75
+49    DDBN-89    MWH-1        39
+
+ind = np.where(df.Quantity<=25)
+
+len(ind[0])
+Out[47]: 2
+
+mydf = df.drop(ind[0])
+
+mydf.shape
+Out[49]: (48, 3)
+
+mydf.head()
+Out[74]: 
+  MaterialID  Quantity  Status
+0    TMI-43T        34   Scrap
+1    AXCP-78        67  Useful
+2    LXCV-21        27   Scrap
+3    AXCP-78        65  Useful
+4    AXCP-78        36   Scrap
+
+mydf.columns
+Out[75]: Index(['MaterialID', 'Quantity', 'Status'], dtype='object')
+
+x = list(mydf.columns)
+
+x
+Out[77]: ['MaterialID', 'Quantity', 'Status']
+
+x[0] ='Name'
+
+mydf.columns = x
+
+
+
+ind = np.where(df['Deptt'].isnull())
+df1 = df.drop(ind[0], axis=0)
+df2 = df.iloc[ind]
+
+df
+Out[92]: 
+      Name EmpID    Deptt  Passport
+0   Sudeep  A342  Quality  DF453278
+1  Ruchika  C578    Sales  CA567657
+2      NaN  J436    Admin  DF453278
+3    Arjun  A746      NaN  RF453432
+4    Rishi  R475    Prodn  DF453278
+5   Chetan   NaN      NaN  ER534867
+6   Deepak   NaN  Quality  RF453432
+
+ind = np.where((df['Deptt'].isnull()) | ((df['EmpID'].isnull())))
+
+ind
+Out[94]: (array([3, 5, 6], dtype=int64),)
+
+mydf = df.dropna()
+
+mydf
+Out[96]: 
+      Name EmpID    Deptt  Passport
+0   Sudeep  A342  Quality  DF453278
+1  Ruchika  C578    Sales  CA567657
+4    Rishi  R475    Prodn  DF453278
+
+df = pd.read_excel('ERPData.xlsx')
+
+df.head()
+Out[124]: 
+  MaterialID Location  Quantity
+0    TMI-43T    MWH-4        34
+1    AXCP-78    MWH-1        67
+2    LXCV-21    MWH-2        27
+3    AXCP-78    MWH-5        65
+4    AXCP-78    MWH-4        36
+
+grp1 = df.groupby('Location')
+
+grp1.groups
+Out[126]: {'MWH-1': [1, 9, 10, 24, 25, 26, 39, 40, 41, 48, 49], 'MWH-2': [2, 7, 8, 15, 35, 36, 42, 45, 46], 'MWH-3': [14, 43, 44, 47], 'MWH-4': [0, 4, 5, 6, 11, 12, 13, 18, 19, 20, 21, 22, 30, 31, 32], 'MWH-5': [3, 16, 17, 23, 27, 28, 29, 33, 34, 37, 38]}
+
+len(grp1.groups)
+Out[127]: 5
+
+grp1.get_group('MWH-2')
+Out[128]: 
+   MaterialID Location  Quantity
+2     LXCV-21    MWH-2        27
+7     TMI-43T    MWH-2        29
+8     GCVB-79    MWH-2        10
+15    GCVB-79    MWH-2        87
+35    GCVB-79    MWH-2        31
+36    GCVB-79    MWH-2        28
+42    SDRT-67    MWH-2        31
+45    DDBN-89    MWH-2        69
+46    AXCP-78    MWH-2        85
+
+grp1.agg(np.mean)
+Out[129]: 
+           Quantity
+Location           
+MWH-1     80.818182
+MWH-2     44.111111
+MWH-3     43.500000
+MWH-4     48.533333
+MWH-5     63.363636
+
+grp1.agg(np.size)
+Out[130]: 
+          MaterialID  Quantity
+Location                      
+MWH-1             11        11
+MWH-2              9         9
+MWH-3              4         4
+MWH-4             15        15
+MWH-5             11        11
+
+grp1.agg(np.sum)
+Out[131]: 
+          Quantity
+Location          
+MWH-1          889
+MWH-2          397
+MWH-3          174
+MWH-4          728
+MWH-5          697
+
+889/11
+Out[132]: 80.81818181818181
+
+grp1.agg([np.sum, np.mean])
+Out[134]: 
+         Quantity           
+              sum       mean
+Location                    
+MWH-1         889  80.818182
+MWH-2         397  44.111111
+MWH-3         174  43.500000
+MWH-4         728  48.533333
+MWH-5         697  63.363636
+
+r  = grp1.agg([np.sum, np.mean])
+
+ind = np.where(r.index=='MWH-3')
+
+r.iloc[ind]
+Out[137]: 
+         Quantity      
+              sum  mean
+Location               
+MWH-3         174  43.5
+
+
+
+grp2 = df.groupby(['MaterialID','Location'])
+
+grp2.groups
+Out[140]: {('AXCP-78', 'MWH-1'): [1, 24, 25, 39, 48], ('AXCP-78', 'MWH-2'): [46], ('AXCP-78', 'MWH-3'): [47], ('AXCP-78', 'MWH-4'): [4], ('AXCP-78', 'MWH-5'): [3, 37, 38], ('DDBN-89', 'MWH-1'): [26, 40, 49], ('DDBN-89', 'MWH-2'): [45], ('DDBN-89', 'MWH-3'): [43], ('DDBN-89', 'MWH-4'): [22, 30], ('DDBN-89', 'MWH-5'): [23], ('GCVB-79', 'MWH-2'): [8, 15, 35, 36], ('GCVB-79', 'MWH-5'): [34], ('LXCV-21', 'MWH-2'): [2], ('LXCV-21', 'MWH-3'): [44], ('LXCV-21', 'MWH-5'): [27, 28, 29], ('SDRT-67', 'MWH-1'): [10, 41], ('SDRT-67', 'MWH-2'): [42], ('SDRT-67', 'MWH-4'): [11], ('SDRT-67', 'MWH-5'): [16, 17], ('TMI-43T', 'MWH-1'): [9], ('TMI-43T', 'MWH-2'): [7], ('TMI-43T', 'MWH-3'): [14], ('TMI-43T', 'MWH-4'): [0, 5, 6, 12, 13, 18, 19, 20, 21, 31, 32], ('TMI-43T', 'MWH-5'): [33]}
+
+grp3 = df.groupby(['Location','MaterialID'])
+
+grp3.groups
+Out[142]: {('MWH-1', 'AXCP-78'): [1, 24, 25, 39, 48], ('MWH-1', 'DDBN-89'): [26, 40, 49], ('MWH-1', 'SDRT-67'): [10, 41], ('MWH-1', 'TMI-43T'): [9], ('MWH-2', 'AXCP-78'): [46], ('MWH-2', 'DDBN-89'): [45], ('MWH-2', 'GCVB-79'): [8, 15, 35, 36], ('MWH-2', 'LXCV-21'): [2], ('MWH-2', 'SDRT-67'): [42], ('MWH-2', 'TMI-43T'): [7], ('MWH-3', 'AXCP-78'): [47], ('MWH-3', 'DDBN-89'): [43], ('MWH-3', 'LXCV-21'): [44], ('MWH-3', 'TMI-43T'): [14], ('MWH-4', 'AXCP-78'): [4], ('MWH-4', 'DDBN-89'): [22, 30], ('MWH-4', 'SDRT-67'): [11], ('MWH-4', 'TMI-43T'): [0, 5, 6, 12, 13, 18, 19, 20, 21, 31, 32], ('MWH-5', 'AXCP-78'): [3, 37, 38], ('MWH-5', 'DDBN-89'): [23], ('MWH-5', 'GCVB-79'): [34], ('MWH-5', 'LXCV-21'): [27, 28, 29], ('MWH-5', 'SDRT-67'): [16, 17], ('MWH-5', 'TMI-43T'): [33]}
+
+grp2.agg([np.sum,np.size])
+Out[143]: 
+                    Quantity     
+                         sum size
+MaterialID Location              
+AXCP-78    MWH-1         548    5
+           MWH-2          85    1
+           MWH-3          29    1
+           MWH-4          36    1
+           MWH-5         200    3
+DDBN-89    MWH-1         130    3
+           MWH-2          69    1
+           MWH-3          38    1
+           MWH-4          75    2
+           MWH-5          71    1
+GCVB-79    MWH-2         156    4
+           MWH-5          26    1
+LXCV-21    MWH-2          27    1
+           MWH-3          42    1
+           MWH-5         174    3
+SDRT-67    MWH-1          91    2
+           MWH-2          31    1
+           MWH-4          58    1
+           MWH-5         114    2
+TMI-43T    MWH-1         120    1
+           MWH-2          29    1
+           MWH-3          65    1
+           MWH-4         559   11
+           MWH-5         112    1
+
+grp3.agg([np.sum,np.size])
+Out[144]: 
+                    Quantity     
+                         sum size
+Location MaterialID              
+MWH-1    AXCP-78         548    5
+         DDBN-89         130    3
+         SDRT-67          91    2
+         TMI-43T         120    1
+MWH-2    AXCP-78          85    1
+         DDBN-89          69    1
+         GCVB-79         156    4
+         LXCV-21          27    1
+         SDRT-67          31    1
+         TMI-43T          29    1
+MWH-3    AXCP-78          29    1
+         DDBN-89          38    1
+         LXCV-21          42    1
+         TMI-43T          65    1
+MWH-4    AXCP-78          36    1
+         DDBN-89          75    2
+         SDRT-67          58    1
+         TMI-43T         559   11
+MWH-5    AXCP-78         200    3
+         DDBN-89          71    1
+         GCVB-79          26    1
+         LXCV-21         174    3
+         SDRT-67         114    2
+         TMI-43T         112    1
+
+mydf = df.sort_values(['Location','MaterialID','Quantity'])
+
+mydf
+Out[152]: 
+   MaterialID Location  Quantity
+1     AXCP-78    MWH-1        67
+48    AXCP-78    MWH-1        75
+25    AXCP-78    MWH-1       109
+39    AXCP-78    MWH-1       145
+24    AXCP-78    MWH-1       152
+40    DDBN-89    MWH-1        34
+49    DDBN-89    MWH-1        39
+26    DDBN-89    MWH-1        57
+10    SDRT-67    MWH-1        34
+41    SDRT-67    MWH-1        57
+9     TMI-43T    MWH-1       120
+46    AXCP-78    MWH-2        85
+45    DDBN-89    MWH-2        69
+8     GCVB-79    MWH-2        10
+36    GCVB-79    MWH-2        28
+35    GCVB-79    MWH-2        31
+15    GCVB-79    MWH-2        87
+2     LXCV-21    MWH-2        27
+42    SDRT-67    MWH-2        31
+7     TMI-43T    MWH-2        29
+47    AXCP-78    MWH-3        29
+43    DDBN-89    MWH-3        38
+44    LXCV-21    MWH-3        42
+14    TMI-43T    MWH-3        65
+4     AXCP-78    MWH-4        36
+30    DDBN-89    MWH-4        27
+22    DDBN-89    MWH-4        48
+11    SDRT-67    MWH-4        58
+6     TMI-43T    MWH-4        31
+13    TMI-43T    MWH-4        32
+0     TMI-43T    MWH-4        34
+18    TMI-43T    MWH-4        34
+20    TMI-43T    MWH-4        39
+32    TMI-43T    MWH-4        43
+19    TMI-43T    MWH-4        52
+31    TMI-43T    MWH-4        65
+21    TMI-43T    MWH-4        75
+12    TMI-43T    MWH-4        76
+5     TMI-43T    MWH-4        78
+3     AXCP-78    MWH-5        65
+37    AXCP-78    MWH-5        65
+38    AXCP-78    MWH-5        70
+23    DDBN-89    MWH-5        71
+34    GCVB-79    MWH-5        26
+28    LXCV-21    MWH-5        34
+29    LXCV-21    MWH-5        57
+27    LXCV-21    MWH-5        83
+16    SDRT-67    MWH-5        12
+17    SDRT-67    MWH-5       102
+33    TMI-43T    MWH-5       112
+
+
+
+
+df1 = pd.read_excel('locations.xlsx', sheet_name = 'Pune')
+df2 = pd.read_excel('locations.xlsx', sheet_name = 'Mumbai')
+pd.merge(df1, df2, on='Subject', how='inner')
+Out[14]: 
+    Name_x     Subject Grade_x    Name_y Grade_y
+0   Rakesh      Python       A    Chetan       A
+1    Manoj    MLPython       C  Abhishek       B
+2  Vaibhav  Statistics       B   Deepika       B
+3   Hitesh  CommSkills       A     Arjun       A
+
+pd.merge(df1, df2, on='Subject', how='outer')
+Out[18]: 
+    Name_x      Subject Grade_x    Name_y Grade_y
+0   Rakesh       Python       A    Chetan       A
+1    Manoj     MLPython       C  Abhishek       B
+2  Vaibhav   Statistics       B   Deepika       B
+3   Hitesh   CommSkills       A     Arjun       A
+4   Suyash  ProjectMgmt       B       NaN     NaN
+5      NaN    Six Sigma     NaN   Vaibhav       A
+
+pd.merge(df1, df2, on='Subject', how='left')
+Out[22]: 
+    Name_x      Subject Grade_x    Name_y Grade_y
+0   Rakesh       Python       A    Chetan       A
+1    Manoj     MLPython       C  Abhishek       B
+2  Vaibhav   Statistics       B   Deepika       B
+3   Hitesh   CommSkills       A     Arjun       A
+4   Suyash  ProjectMgmt       B       NaN     NaN
+
+pd.merge(df1, df2, on='Subject', how='right')
+Out[23]: 
+    Name_x     Subject Grade_x    Name_y Grade_y
+0      NaN   Six Sigma     NaN   Vaibhav       A
+1  Vaibhav  Statistics       B   Deepika       B
+2   Hitesh  CommSkills       A     Arjun       A
+3   Rakesh      Python       A    Chetan       A
+4    Manoj    MLPython       C  Abhishek       B
+
+pd.merge(df1, df2, on=['Subject','Grade'], how='inner')
+Out[27]: 
+    Name_x     Subject Grade   Name_y
+0   Rakesh      Python     A   Chetan
+1  Vaibhav  Statistics     B  Deepika
+2   Hitesh  CommSkills     A    Arjun
+
+pd.merge(df1, df2, on=['Subject','Grade'], how='outer')
+Out[33]: 
+    Name_x      Subject Grade    Name_y
+0   Rakesh       Python     A    Chetan
+1    Manoj     MLPython     C       NaN
+2  Vaibhav   Statistics     B   Deepika
+3   Hitesh   CommSkills     A     Arjun
+4   Suyash  ProjectMgmt     B       NaN
+5      NaN    Six Sigma     A   Vaibhav
+6      NaN     MLPython     B  Abhishek

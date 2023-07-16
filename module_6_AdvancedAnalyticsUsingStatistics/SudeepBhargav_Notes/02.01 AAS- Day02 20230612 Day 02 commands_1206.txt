@@ -1,0 +1,437 @@
+import os
+
+import numpy
+
+os.getcwd()   # check current working directory
+os.chdir(r'<link>')    # r is a part of command.
+
+x = np.array([3,5,4,5,7,6,8,9,7,2,1,4])
+
+arr2d = x.reshape(4,3)
+
+np.save('myarray',arr2d)
+
+newarray = np.load('myarray.npy')
+
+
+x = np.array([[3,7,5],[1,2,3]])
+
+y = np.array([[1,7],[2,4],[8,1]])
+
+x.dot(y)
+np.matmul(x,y)
+
+# solving equations
+
+from numpy import linalg
+
+from numpy.linalg import inv
+
+# x + y +z =6
+
+# 2y + 5z = -4
+
+# 2x + 5y - z = 27
+
+A = np.array([[1,1,1],[0,2,5],[2,5,-1]])
+
+B = np.array([6,-4,27])
+
+Ainv = np.linalg.inv(A)
+
+Ainv
+Out[37]: 
+array([[ 1.28571429, -0.28571429, -0.14285714],
+       [-0.47619048,  0.14285714,  0.23809524],
+       [ 0.19047619,  0.14285714, -0.0952381 ]])
+
+B = B.reshape(3,1)
+
+B
+Out[39]: 
+array([[ 6],
+       [-4],
+       [27]])
+
+Ainv.dot(B)
+Out[40]: 
+array([[ 5.],
+       [ 3.],
+       [-2.]])
+
+
+from numpy import random
+
+np.random.rand(10)
+Out[42]: 
+array([0.54611834, 0.45721558, 0.91270597, 0.39234352, 0.75488485,
+       0.93343194, 0.62236726, 0.52461893, 0.60734533, 0.43830809])
+
+x = np.random.rand(10)
+
+y = np.round(x,3)
+
+y
+Out[45]: 
+array([0.903, 0.332, 0.245, 0.747, 0.36 , 0.179, 0.551, 0.289, 0.275,
+       0.727])
+
+# Command 46 geenrated error
+
+np.random.randint(20,50)
+Out[47]: 36
+
+np.random.randint(20,50,5)
+Out[48]: array([33, 34, 31, 27, 47])
+
+x = np.random.rand(5)
+
+y = np.round(x,3)
+
+z = np.random.randint(20,50,5)
+
+z + y
+Out[52]: array([26.852, 49.82 , 40.203, 42.532, 48.425])
+
+
+
+
+import openpyxl
+
+import openpyxl as op
+
+wb = op.load_workbook('Students.xlsx')
+
+sht1 = wb['Kharghar']
+
+
+
+sht1['A3'].value
+Out[58]: 'Rakesh'
+
+x = sht1['A3'].value
+
+x
+Out[60]: 'Rakesh'
+
+
+
+
+
+sht1.cell(3,1).value
+Out[61]: 'Rakesh'
+
+sht1.max_row
+Out[62]: 5
+
+sht1.max_column
+Out[63]: 3
+
+# reading of data should start from row#2 and finish at row#5
+
+students = []
+
+
+type(students)
+Out[67]: list
+
+len(students)
+Out[68]: 0
+
+for ctr in range(2,6):
+    x = sht1.cell(ctr,1).value
+    students.append(x)
+    
+
+students
+Out[70]: ['Sudeep', 'Rakesh', 'Dhruv', 'Ruchika']
+
+marks = []
+
+for ctr in range(2,6):
+    x = sht1.cell(ctr,3).value
+    marks.append(x)
+    
+
+marks
+Out[73]: [68, 84, 73, 82]
+
+pl_name = ['Virat','Sachin','Dhoni','Rohit']
+
+pl_score = [34534,868964,46464,87564]
+
+wkbook = op.Workbook()
+
+sht1 = wkbook.create_sheet('IPL')
+
+sht1['A1'] = 'Name'
+
+sht1['B1'] = 'Score'
+
+wkbook.save('cricket.xlsx')
+
+len(pl_name)
+Out[82]: 4
+
+a=len(pl_name)
+
+for ctr in range(2,a+2):
+    x = pl_name[ctr-2]
+    sht1.cell(ctr,1).value = x
+    
+
+for ctr in range(2,a+2):
+    x = pl_score[ctr-2]
+    sht1.cell(ctr,2).value = x
+    
+
+wkbook.save('cricket.xlsx')
+
+
+
+x = {'Sudeep':'Blore','Sachin':'Mumbai','Virat':'Delhi','Ashwin':'Chennai'}
+
+ser2 = pd.Series(x)
+
+ser
+Traceback (most recent call last):
+
+  File "C:\Users\Sudeep\AppData\Local\Temp/ipykernel_11472/3431379941.py", line 1, in <module>
+    ser
+
+NameError: name 'ser' is not defined
+
+
+ser2
+Out[104]: 
+Sudeep      Blore
+Sachin     Mumbai
+Virat       Delhi
+Ashwin    Chennai
+dtype: object
+
+ser2['Sudeep'] = 'Mumbai'
+
+ser2
+Out[106]: 
+Sudeep     Mumbai
+Sachin     Mumbai
+Virat       Delhi
+Ashwin    Chennai
+dtype: object
+
+ser2[0] = 'Blore'
+
+ser2
+Out[108]: 
+Sudeep      Blore
+Sachin     Mumbai
+Virat       Delhi
+Ashwin    Chennai
+dtype: object
+
+new_pl = pd.Series(['Blore','Kolkata'], index = ['ABD','Sehwag'])
+
+new_pl
+Out[110]: 
+ABD         Blore
+Sehwag    Kolkata
+dtype: object
+
+ser2 = ser2.append(new_pl)
+
+ser2
+Out[112]: 
+Sudeep      Blore
+Sachin     Mumbai
+Virat       Delhi
+Ashwin    Chennai
+ABD         Blore
+Sehwag    Kolkata
+dtype: object
+
+ser2 = ser2.drop['ABD']
+Traceback (most recent call last):
+
+  File "C:\Users\Sudeep\AppData\Local\Temp/ipykernel_11472/2919548977.py", line 1, in <module>
+    ser2 = ser2.drop['ABD']
+
+TypeError: 'method' object is not subscriptable
+
+
+ser2 = ser2.drop(['ABD'])
+
+
+
+# list of lists
+
+stu_info = [['Sudeep','Blore',78],['Rakesh','Chennai',57],['Mayur','Mumbai',85],['Charu','Kharghar',80]]
+
+len(stu_info)
+Out[119]: 4
+
+
+
+
+
+
+
+
+
+stu_df = pd.DataFrame(stu_info, columns=['Name','Location','Marks'])
+
+stu_df
+Out[121]: 
+     Name  Location  Marks
+0  Sudeep     Blore     78
+1  Rakesh   Chennai     57
+2   Mayur    Mumbai     85
+3   Charu  Kharghar     80
+
+
+
+
+pl_df
+Out[131]: 
+     Name  Score Grade
+0  Sachin   3463     A
+1   Virat  64563     B
+2   Rohit    342     B
+3  Ashwin   6467     B
+
+new_pl = pd.DataFrame([['Jadeja',34534,'B'],['Dhoni',5346,'A']], index = ['Player','Runs','Grade'])
+Traceback (most recent call last):
+
+  File "C:\Users\Sudeep\anaconda3\lib\site-packages\pandas\core\internals\managers.py", line 1774, in create_block_manager_from_arrays
+    mgr = BlockManager(blocks, axes)
+
+  File "C:\Users\Sudeep\anaconda3\lib\site-packages\pandas\core\internals\managers.py", line 914, in __init__
+    self._verify_integrity()
+
+  File "C:\Users\Sudeep\anaconda3\lib\site-packages\pandas\core\internals\managers.py", line 921, in _verify_integrity
+    raise construction_error(tot_items, block.shape[1:], self.axes)
+
+ValueError: Shape of passed values is (2, 3), indices imply (3, 3)
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+  File "C:\Users\Sudeep\AppData\Local\Temp/ipykernel_11472/2599417651.py", line 1, in <module>
+    new_pl = pd.DataFrame([['Jadeja',34534,'B'],['Dhoni',5346,'A']], index = ['Player','Runs','Grade'])
+
+  File "C:\Users\Sudeep\anaconda3\lib\site-packages\pandas\core\frame.py", line 702, in __init__
+    mgr = arrays_to_mgr(
+
+  File "C:\Users\Sudeep\anaconda3\lib\site-packages\pandas\core\internals\construction.py", line 135, in arrays_to_mgr
+    return create_block_manager_from_arrays(
+
+  File "C:\Users\Sudeep\anaconda3\lib\site-packages\pandas\core\internals\managers.py", line 1776, in create_block_manager_from_arrays
+    raise construction_error(len(arrays), arrays[0].shape, axes, e)
+
+ValueError: Shape of passed values is (2, 3), indices imply (3, 3)
+
+
+new_pl = pd.DataFrame([['Jadeja',34534,'B'],['Dhoni',5346,'A']], columns = ['Player','Runs','Grade'])
+
+new_pl
+Out[134]: 
+   Player   Runs Grade
+0  Jadeja  34534     B
+1   Dhoni   5346     A
+
+pl_df
+Out[135]: 
+     Name  Score Grade
+0  Sachin   3463     A
+1   Virat  64563     B
+2   Rohit    342     B
+3  Ashwin   6467     B
+
+pl_df = pl_df.append(new_pl)
+
+pl_df
+Out[137]: 
+     Name    Score Grade  Player     Runs
+0  Sachin   3463.0     A     NaN      NaN
+1   Virat  64563.0     B     NaN      NaN
+2   Rohit    342.0     B     NaN      NaN
+3  Ashwin   6467.0     B     NaN      NaN
+0     NaN      NaN     B  Jadeja  34534.0
+1     NaN      NaN     A   Dhoni   5346.0
+
+pl_df = pd.DataFrame([['Sachin',3463,'A'],['Virat',64563,'B'],['Rohit',342,'B'],['Ashwin',64676,'B']], columns = ['Name','Score','Grade'])
+
+pl_df
+Out[139]: 
+     Name  Score Grade
+0  Sachin   3463     A
+1   Virat  64563     B
+2   Rohit    342     B
+3  Ashwin  64676     B
+
+new_pl = pd.DataFrame([['Jadeja',34534,'B'],['Dhoni',5346,'A']], columns = ['Name','Score','Grade'])
+
+new_pl
+Out[141]: 
+     Name  Score Grade
+0  Jadeja  34534     B
+1   Dhoni   5346     A
+
+pl_df = pl_df.append(new_pl)
+
+pl_df
+Out[143]: 
+     Name  Score Grade
+0  Sachin   3463     A
+1   Virat  64563     B
+2   Rohit    342     B
+3  Ashwin  64676     B
+0  Jadeja  34534     B
+1   Dhoni   5346     A
+
+pl_df.shape
+Out[144]: (6, 3)
+
+pl_df.shape[0]
+Out[145]: 6
+
+pl_df.index = range(pl_df.shape[0])
+
+pl_df
+Out[147]: 
+     Name  Score Grade
+0  Sachin   3463     A
+1   Virat  64563     B
+2   Rohit    342     B
+3  Ashwin  64676     B
+4  Jadeja  34534     B
+5   Dhoni   5346     A
+
+pl_df
+Out[149]: 
+     Name  Score Grade
+0  Sachin   3463     A
+1   Virat  64563     B
+2   Rohit    342     B
+3  Ashwin  64676     B
+4  Jadeja  34534     B
+5   Dhoni   5346     A
+
+y = ['MI','RCB','MI','RR','CSK','CSK']
+
+len(y)
+Out[151]: 6
+
+pl_df['Team'] = y
+
+pl_df
+Out[153]: 
+     Name  Score Grade Team
+0  Sachin   3463     A   MI
+1   Virat  64563     B  RCB
+2   Rohit    342     B   MI
+3  Ashwin  64676     B   RR
+4  Jadeja  34534     B  CSK
+5   Dhoni   5346     A  CSK

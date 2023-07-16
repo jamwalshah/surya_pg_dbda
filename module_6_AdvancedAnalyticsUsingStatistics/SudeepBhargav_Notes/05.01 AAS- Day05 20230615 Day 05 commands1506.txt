@@ -1,0 +1,104 @@
+SKEWNESS
+x = [1,1,2,2,2,2,2,2,2,2,2,2,3,3,3,4,4,5,6]
+y = [1,2,2,3,3,4,4,4,5,5,5,5,5,5,5,5,5,5,6,6,7]
+z = [1,1,2,2,2,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,6,6,6,7,7]
+
+KURTOSIS
+x = [1,1,1,2,2,2,3,3,3,3,4,4,4,4,4,5,5,5,5,6,6,6,7,7]
+y = [1,1,2,2,2,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,6,6,6,7,7]
+
+
+
+# shape - skewness and kurtosis
+
+# skewness - symmetry of the distribution
+
+import scipy
+
+from scipy import stats
+
+x = [1,1,2,2,2,2,2,2,2,2,2,2,3,3,3,4,4,5,6]
+y = [1,2,2,3,3,4,4,4,5,5,5,5,5,5,5,5,5,5,6,6,7]
+z = [1,1,2,2,2,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,6,6,6,7,7]
+
+scipy.stats.skew(x)
+Out[12]: 1.1839325019418967
+
+scipy.stats.skew(y)
+Out[13]: -0.6877802002110032
+
+scipy.stats.skew(z)
+Out[14]: 0.0
+
+
+x = [1,1,1,2,2,2,3,3,3,3,4,4,4,4,4,5,5,5,5,6,6,6,7,7]
+y = [1,1,2,2,2,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,6,6,6,7,7]
+
+
+scipy.stats.kurtosis(y)
+0.70242214532872
+
+scipy.stats.kurtosis(x)
+Out[22]: -0.9451498127839182
+
+
+# BINOMIAL DISTRIBUTION
+
+from scipy.stats import binom
+binom.pmf(12,20,0.4)	#exactly 12 out of 20 days of rain 
+binom.cdf(12,20,0.4)	#upto 12 out of 20 days of rain 
+binom.sf(11,5,0.6)	#atleast 12 out of 20 days of rain 
+1-binom.cdf(11,5,0.6)	#atleast 12 out of 20 days of rain 
+
+
+POISSON DISTRIBUTION
+
+from scipy.stats import poisson
+poisson.pmf(30,27)	# prob of exactly 27 occurences
+poisson.cdf(30,27)	# prob of upto 27 occurences
+poisson.sf(29,77)	# prob of atleast 30 occurences
+
+
+
+HYPERGEOMETRIC
+
+from scipy.stats import hypergeom
+
+hypergeom.cdf(2,70,7,20)  # pop size = 70, event count = 7, sample of 20, what is the prob of event count as max 2 (can be 0,1,2)
+
+EXPONENTIAL
+
+# 200 server trips take place in one year
+
+# what is the probability that a clinet who is visiting office for 60 hours would see atleast one trip
+
+# MTBF - mean time between failures
+
+365*24
+Out[114]: 8760
+
+8760/200
+Out[115]: 43.8
+
+e = 2.7182
+
+1 - e**(-60/43.8)
+Out[117]: 0.7458477484730794
+
+NORMAL
+
+Characterized by mean and std deviation
+
+# normal distribution
+
+# mean travel time = 70 in and std dev = 2 min
+
+# what is the probability of reaching destination in less than 67 min
+
+norm.cdf(67,70,2)
+Out[123]: 0.06680720126885807
+
+# what is the probability of reaching destination in more than 67 min
+
+1 - norm.cdf(67,70,2)
+Out[125]: 0.9331927987311419
