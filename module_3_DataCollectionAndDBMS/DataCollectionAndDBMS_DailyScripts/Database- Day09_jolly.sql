@@ -1,0 +1,9 @@
+-- user2 -jolly
+-- 
+SET AUTOCOMMIT=OFF;
+USE week2;
+-- START TRANSACTION;
+BEGIN;
+SELECT * FROM student;
+
+COMMIT;

@@ -1,0 +1,603 @@
+
+$ hive
+
+SHOW DATABASES;
+create database pwh;
+use pwh;
+
+
+-- hive basics
+
+CREATE TABLE nyse
+(exchange_name STRING, stock_id STRING, stk_date DATE,
+open DOUBLE, high double, low DOUBLE, close DOUBLE,
+volume BIGINT, adj_close DOUBLE)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+SHOW TABLES;
+
+SELECT * FROM nyse ;
+
+DESC nyse;
+DESC FORMATTED nyse;
+
+SELECT * FROM nyse ;
+
+hadoop fs -cp NYSE.csv /user/hive/warehouse/pwh.db/nyse
+
+SELECT * FROM nyse LIMIT 10;
+
+SELECT stock_id, SUM(volume) FROM nyse GROUP BY stock_id ;
+SELECT stock_id, SUM(volume) FROM nyse GROUP BY stock_id  LIMIT 10;
+SELECT stock_id, SUM(volume) AS total FROM nyse GROUP BY stock_id  ORDER BY total LIMIT 10;
+
+SELECT stock_id, max(high) FROM nyse GROUP BY stock_id;
+
+
+INSERT OVERWRITE DIRECTORY "pwh/sum_vol" ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT stock_id , SUM(volume) FROM nyse GROUP BY stock_id;
+
+
+INSERT OVERWRITE DIRECTORY "pwh/all_time_high_low_avg" ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT stock_id, max(high), min(low), round(avg(close), 2) FROM nyse GROUP BY stock_id ;
+
+CREATE TABLE stkvol AS
+SELECT stock_id, SUM(volume) FROM nyse GROUP BY stock_id;
+
+create table nyse 
+(exchange_name string, stock_id string, stk_date date, 
+open double, high double, low double, 
+close double, volume bigint, adj_close double
+) row format delimited 
+fields terminated by ',' 
+stored as textfile;
+
+-- airport project using hive
+
+$ hive
+set hive.cli.print.current.db = true;
+USE pwh;
+
+CREATE TABLE airport (
+airport_id INT, airport_name STRING, city STRING, country STRING,
+iata STRING, icao STRING, latitude DOUBLE, longitude DOUBLE,
+altitude INT, timezone DOUBLE, dst STRING, tz STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE ;
+
+LOAD DATA LOCAL INPATH 'airports_mod.dat' OVERWRITE INTO TABLE airport;
+
+SELECT * FROM airport LIMIT 10 ;
+
+SELECT country, COUNT(airport_id) FROM airport GROUP BY country LIMIT 10; 
+
+-- 
+-- 
+CREATE TABLE airlines(
+airline_id INT, name STRING, alias STRING,
+iata STRING, icao STRING, callsign STRING,
+country STRING, active_status STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'Final_airlines' OVERWRITE INTO TABLE airlines;
+
+SELECT * FROM airlines LIMIT 10 ;
+
+SELECT count(airline_id) FROM airlines ;
+
+--
+
+CREATE TABLE routes (
+airline_iata STRING, airline_id INT, 
+src_airport_iata STRING, src_airport_id INT, 
+dst_airport_iata STRING, dst_airport_id INT,
+codeshare STRING,
+STOP INT, 
+equipment STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'routes.dat' OVERWRITE INTO TABLE routes;
+
+SELECT count(equipment) FROM routes ;
+-- a. 
+SELECT count(airport_id) FROM airport WHERE TRIM(UPPER(country)) = 'INDIA';
+-- b. Find the list of Airlines having zero stops
+SELECT DISTINCT(name) FROM airlines al 
+JOIN routes r 
+ON al.airline_id = r.airline_id
+WHERE STOP=0;
+-- find count of airlines that have zero stop routes -- 540
+SELECT COUNT(DISTINCT(name)) FROM airlines al 
+JOIN routes r 
+ON al.airline_id = r.airline_id
+WHERE STOP=0;
+-- c. List of Airlines operating with code share -- 146
+SELECT DISTINCT(name) FROM airlines al 
+JOIN routes r 
+ON al.airline_id = r.airline_id
+WHERE TRIM(UPPER(codeshare)) = 'Y';
+-- d. Which country (or) territory having highest Airports - United States   1697
+SELECT country, count(airport_id)  AS total_airports FROM airport GROUP BY country HAVING total_airports  IN 
+(SELECT max(total) FROM( SELECT count(airport_id) AS total FROM airport GROUP BY country) as tbl1);
+-- D.1. Which country (or) territory having lowest Airports - 34 count
+SELECT country, count(airport_id) AS airport_count FROM airport GROUP BY country HAVING airport_count IN
+(SELECT min(total_airports) FROM (SELECT count(airport_id) as total_airports FROM airport GROUP BY country) AS tbll1);
+-- e. Find the list of Active Airlines in United States - 136 records
+SELECT DISTINCT(name) FROM airlines  al 
+JOIN routes r ON al.airline_id = r.airline_id
+JOIN airport a ON a.airport_id = r.src_airport_id
+JOIN airport ar ON ar.airport_id = r.dst_airport_id
+WHERE TRIM(UPPER(a.country)) = 'UNITED STATES' OR TRIM(UPPER(ar.country)) = 'UNITED STATES';
+
+-- 
+-- day 12 customer table & txn table using ORC & PARQUET
+CREATE TABLE customer( custno INT, fname STRING, lname STRING, age INT, profession STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+SHOW TABLES ;
+LOAD DATA LOCAL INPATH  'custs.txt' OVERWRITE INTO TABLE customer;
+SELECT count(*) FROM customer ;
+LOAD DATA LOCAL INPATH 'custs_add'  INTO TABLE customer;
+SELECT count(*) FROM customer ;
+
+hadoop fs -mkdir dir1
+hadoop fs -put txns1.txt dir1
+hadoop fs -ls dir1
+
+CREATE TABLE txnrecords (
+txnno INT, txndate STRING, custno  INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE
+LOCATION '/user/bigdatalab456422/dir1' ;
+
+SELECT * FROM txnrecords LIMIT 10;
+
+-- 
+CREATE TABLE txn_orc (
+txnno INT, txndate STRING, custno  INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS ORC;
+
+INSERT OVERWRITE TABLE txn_orc SELECT * FROM txnrecords;
+-- 
+CREATE TABLE txn_parquet (
+txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS parquet;
+
+INSERT OVERWRITE TABLE txn_parquet SELECT * FROM txnrecords;
+
+SELECT * FROM txn_parquet LIMIT 10;
+
+-- day 12 customer table & txn table using ORC & PARQUET
+-- 
+-- 
+--
+CREATE TABLE txn_recsbycat (
+txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING)
+PARTITIONED BY (category STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS textfile;
+
+set hive.exec.dynamic.partition.mode = nonstrict;
+set hive.exec.dynamic.partition = true ;
+
+INSERT OVERWRITE TABLE txn_recsbycat
+PARTITION(category)
+SELECT tr.txnno , tr.txndate , tr.custno , tr.amount ,  tr.category,
+tr.product , tr.city , tr.state , tr.spendby 
+FROM  txnrecords tr 
+DISTRIBUTE BY category;
+
+-- 
+CREATE TABLE txn_recsbycat2(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING)
+PARTITIONED BY (category STRING,spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+FROM  txnrecords tr
+INSERT OVERWRITE TABLE txn_recsbycat2
+PARTITION(category,spendby)
+SELECT tr.txnno , tr.txndate , tr.custno , tr.amount ,
+tr.product , tr.city , tr.state , tr.category, tr.spendby 
+DISTRIBUTE BY category,spendby;
+
+--
+--
+CREATE TABLE txn_recsbycat3 (txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category String, product STRING, city STRING, state STRING, spendby STRING)
+PARTITIONED BY (month STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+FROM  txnrecords tr
+INSERT OVERWRITE TABLE txn_recsbycat3
+PARTITION(month)
+SELECT tr.txnno , tr.custno , tr.amount , tr.category, 
+tr.product , tr.city , tr.state , tr.spendby,substring(tr.txndate,1,2)
+DISTRIBUTE BY substring(tr.txndate,1,2) ;
+
+--
+CREATE TABLE txn_recsbycat4 (
+txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING)
+PARTITIONED BY (category STRING)
+CLUSTERED BY (state) INTO 10 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+set hive.enforce.bucketing=true;
+
+INSERT OVERWRITE TABLE txn_recsbycat4 
+PARTITION(category) 
+SELECT tr.txnno, tr.txndate, tr.custno, tr.amount, tr.product,
+tr.city, tr.state, tr.spendby, tr.category 
+FROM txnrecords tr
+DISTRIBUTE BY category;
+
+CREATE TABLE txn_recsbycat5(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+CLUSTERED BY (state) INTO 10 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+INSERT OVERWRITE TABLE txn_recsbycat5
+SELECT * FROM txnrecords;
+
+--
+CREATE EXTERNAL TABLE txnrecordsext(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS textfile
+LOCATION '/user/bigdatalab456422/dir1' ;
+
+SELECT * FROM txnrecordsext LIMIT 10;
+
+--
+CREATE TABLE testing(id string,unixtime string)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+
+DESC testing ;
+
+LOAD DATA LOCAL INPATH 'counter.txt' INTO TABLE testing;
+
+SELECT * FROM testing;
+
+$ jar tvf udfhive.jar
+
+add jar udfhive.jar;
+
+list jars ;
+
+CREATE TEMPORARY FUNCTION userdate AS 'hive.UnixtimeToDate';
+
+SELECT id, userdate(unixtime) FROM testing;
+
+--
+-- PySpark project
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/txns1.txt",1)
+txnRDD.count()
+txnKVRDD = txnRDD.map(lambda row : (row.split(',')[5], float(row.split(',')[3])))
+txnKVRDD.count()
+for line in txnKVRDD.take(5):
+    print(line)
+
+spendbyProd = txnKVRDD.reduceByKey(lambda a,b : a+b)
+for line in spendbyProd.collect():
+    print(line)
+spendbyProd.count()
+
+sortbyval = spendbyProd.sortBy(lambda a : -a[1])
+for line in sortbyval.collect():
+    print(line)
+sortbyval.saveAsTextFile("hdfs://nameservice1/user/bigdatalab456422/training/spark1")
+
+sortbyval2 = sortbyval.map(lambda a : a[0] + "," + str(round(a[1],2)))
+sortbyval2.saveAsTextFile("hdfs://nameservice1/user/bigdatalab456422/training/spark2")
+
+-- uber project
+dataset = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/uber_data")
+dataset.count()
+
+dataset.first()
+header = dataset.first()
+print(header)
+
+eliminate = dataset.filter(lambda line : line != header)
+eliminate.count()
+for a in eliminate.take(5):
+    print(a)
+
+format_data = "%m/%d/%Y"
+import datetime
+split = eliminate.map(lambda a : (a.split(",")[0], datetime.datetime.strptime(a.split(",")[1], format_data).strftime("%A"), a.split(",")[3]) )
+for a in split.take(5):
+    print(a)
+
+combine = split.map(lambda x : ( x[0] +" "+x[1], int(x[2]) ))
+for a in combine.take(5):
+    print(a)
+
+arrange = combine.reduceByKey(lambda a,b : a+b)
+for a in arrange.take(5):
+    print(a)
+
+sortbyval = arrange.sortBy(lambda a : -a[1])
+for a in sortbyval.collect():
+    print(a)
+
+-- NYSE project
+from pyspark.sql.types import StructType, StringType, IntegerType, DoubleType, LongType
+schema9 = StructType().add("exchange_name",StringType(),True).add("stock_id",StringType(),True).add("stock_dt",StringType(),True).add("open",DoubleType(),True).add("high",DoubleType(),True).add("low",DoubleType(),True).add("close",DoubleType(),True).add("volume",LongType(),True).add("adj_close",DoubleType(),True)
+print(schema9)
+
+df_with_schema = spark.read.format("csv").option("header","False").schema(schema9).load("hdfs://nameservice1/user/bigdatalab456422/training/NYSE.csv")
+df_with_schema.printSchema()
+df_with_schema.show()
+
+df_with_schema.registerTempTable("nyse")
+
+df_StockVol = spark.sql("SELECT stock_id, sum(volume) FROM nyse GROUP BY stock_id")
+df_StockVol.count()
+df_StockVol.show()
+
+df_StockVol = spark.sql("SELECT stock_id, sum(volume) AS total FROM nyse GROUP BY stock_id ORDER BY total DESC")
+df_StockVol.count()
+df_StockVol.show()
+
+df_StockVol.rdd.getNumPartitions()
+
+# use either repartition or coalesce command
+df_new = df_StockVol.repartition(1)
+df_new = df_StockVol.coalesce(1)
+
+df_new.rdd.getNumPartitions()
+
+df_new.write.csv("hdfs://nameservice1/user/bigdatalab456422/training/spark4")
+
+
+
+
+
+
+
+-- 
+-- 
+-- 
+H3. Create partitioned table (single bucket) on a derived column
+-----------------------------------------------------------------
+CREATE TABLE txnrecsByCat4(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category String, product STRING, city STRING, state STRING, spendby STRING)
+PARTITIONED BY (month STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+DESC txnrecsByCat4;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+I3. Load data into partition table (single bucket)
+---------------------------------------------------
+FROM txnrecords txn
+INSERT OVERWRITE TABLE txnrecsByCat4
+PARTITION(month)
+SELECT txn.txnno, txn.txndate,txn.custno, txn.amount,txn.category,
+txn.product,txn.city,txn.state, txn.spendby,substring(txn.txndate,1,2)
+DISTRIBUTE BY substring(txn.txndate,1,2);
+
+FROM  txnrecords tr
+INSERT OVERWRITE TABLE txn_recsbycat3
+PARTITION(month)
+SELECT tr.txnno , tr.custno , tr.amount , tr.category, 
+tr.product , tr.city , tr.state , tr.spendby,substring(tr.txndate,1,2)
+DISTRIBUTE BY substring(tr.txndate,1,2) ;
+
+-- 
+-- 
+-- day 13 partitioning & UDF
+
+
+
+
+-- 
+-- 
+-- day 14 spark theory
+
+
+
+-- 
+-- 
+-- day 15 PySpark (RDD based)
+
+--
+--
+-- day 16 PySpark uber project (RDD based)
+
+
+-- day 16 NYSE dataframe project
+
+
+-- 
+-- 
+-- 
+-- 
+-- day18  PySpark SQL
+mysql -u bigdatamind4385 -phadooplab234
+
+pyspark --jars mysql-connector-java-5.1.47-bin.jar
+
+mysql -u bigdatamind4385 -phadooplab234
+show tables;
+mysql -u bigdatamind4385 -phadooplab234
+
+
+pyspark
+# pyspark --jars mysql-connector-java-5.1.47-bin.jar
+>>> studentDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","student_master1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+>>> fyDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","fy1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+>>> studentDF.registerTempTable("student")
+>>> fyDF.registerTempTable("fy")
+
+>>> df1 = spark.sql("SELECT a.student_id, name, address, coalesce(result,0) AS result FROM student a LEFT OUTER JOIN fy b ON a.student_id=b.student_id ORDER BY student_id")
+>>> df1.show()
+
+>>> studentDF.printSchema()
+>>> fyDF.printSchema()
+
+>>> studentDF.rdd.getNumPartitions()
+>>> fyDF.rdd.getNumPartitions()
+
+>>> studentDF.write.csv("hdfs://nameservice1/user/bigdatalab456422/student_master")
+
+# check in hue
+>>> fyDF.write.csv("hdfs://nameservice1/user/bigdatalab456422/fy")
+
+# check in hue
+SELECT * FORM txnrecords LIMIT 10;
+SELECT * FORM customer LIMIT 10;
+
+>>> customerDF = spark.sql("SEELCT * FROM surya_training.customer")
+>>> customerDF.count()
+>>> customerDF.show()
+
+>>> txnDF = spark.sql("SELECT * FROM surya_training.txnrecords")
+>>> txnDF.count()
+>>> txnDF.show()
+
+>>> customerDF.registerTempTable("customer")
+>>> txnDF.registerTempTable("txn")
+
+
+SELECT * FORM txnrecords WHERE custno=4000001;
+DESC txnrecords;
+
+# find total amount spent by each cust id
+# ---------------------------------------
+SELECT custno, sum(amount) FROM txnrecords GROUP BY custno;
+SELECT custno, round(sum(amount), 2) FROM txnrecords 
+    GROUP BY custno;
+SELECT custno, round(sum(amount), 2) AS total FROM txnrecords 
+    GROUP BY custno ORDER BY total DESC LIMIT 10;
+SELECT * FORM customer WHERE custno = 4009485;
+# throws error as GROUP bY takes all cols except aggregation as key
+/*SELECT t.custno, firstname, lastname, age, profession, 
+    round(sum(amount), 2) AS total 
+    FROM txnrecords t LEFT OUTER JOIN customer c
+    ON t.custno = c.custno
+    GROUP BY t.custno ORDER BY total DESC LIMIT 10;*/
+# this query runs as 
+SELECT t.custno, firstname, lastnmae, age, profession, 
+    round(sum(amount), 2) AS total 
+    FROM txnrecords t LEFT OUTER JOIN customer c
+    ON t.custno = c.custno
+    GROUP BY t.custno, firstname, lastname, age, profession ORDER BY total DESC LIMIT 10;
+>>> toptenDF = spark.sql("SELECT t.custno, firstname, lastname, age, profession, round(sum(amount),2) AS total FROM txn t LEFT OUTER JOIN customer c ON t.custno = c.custno GROUP BY t.custno, firstname, lastname, age, profession ORDER BY total DESC LIMIT 10")
+>>> toptenDF.write.mode("overwrite").saveAsTable("surya_training.topten")
+# <possible missing query>
+SHOW TABLES;
+DESC FORMATTED topten;
+$ cd
+$ hadoop fs -cat "/user/hive/warehouse/surya_training.db/topten/*"
+
+
+
+
+In Mysql
+create database my_db;
+use my_db;
+
+CREATE TABLE topten(
+   customer_id INT NOT NULL ,
+   fname VARCHAR(40) NOT NULL,
+   lname VARCHAR(40) NOT NULL,
+   age int NOT NULL,
+   profession VARCHAR(40) NOT NULL,
+   amount double NOT NULL
+   );
+
+CREATE TABLE student_master(
+   student_id INT NOT NULL AUTO_INCREMENT,
+   name VARCHAR(40) NOT NULL,
+   address VARCHAR(40) NOT NULL,
+   PRIMARY KEY ( student_id ));
+
+CREATE TABLE fy(
+   fy_id INT NOT NULL AUTO_INCREMENT,
+   student_id INT NOT NULL,
+   result double NOT NULL,
+   PRIMARY KEY (fy_id ));
+
+
+show tables;
+
+describe student_master;
+
+INSERT INTO student_master (name, address)
+    VALUES ("Sanjay", "Bangalore");
+INSERT INTO student_master (name, address)
+    VALUES ("Rajiv", "Delhi");
+INSERT INTO student_master (name, address)
+    VALUES ("Rajesh", "Chennai");
+INSERT INTO student_master (name, address)
+    VALUES ("Sandeep", "Delhi");
+
+INSERT INTO fy (student_id, result)
+    VALUES (1, 81.90);
+INSERT INTO fy (student_id, result)
+    VALUES (2, 78.90);
+
+INSERT INTO topten (customer_id,fname,lname,age,profession, amount)
+    Values (4009485,'Stuart','House',58,'Teacher',1943.85);
+
+INSERT INTO topten (customer_id,fname,lname,age,profession, amount)
+    Values (4006425,'Joe','Burns',30,'Economist',1732.09);
+
+
+mysql -u bigdatamind4385 -phadooplab234
+
+pyspark --jars mysql-connector-java-5.1.47-bin.jar
+
+studentDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","student_master1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+fyDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","fy1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+df1 = spark.sql("select a.student_id, name, address, coalesce(result,0) from student a left outer join fy b on a.student_id=b.student_id order by student_id")
+
+df1.write.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","result").option("user","bigdatamind4385").option("password","hadooplab234").save()
+
+
+
+
+customerDF = spark.sql("select * from sandeep_training.customer")
+
+txnDF = spark.sql("select * from sandeep_training.txnrecords")
+
+customerDF.registerTempTable("customer")
+
+txnDF.registerTempTable("txn")
+
+toptenDF = spark.sql("select t.custno, firstname, lastname, age, profession, round(sum(amount),2) as total from txn t left outer join customer c on t.custno = c.custno group by t.custno, firstname, lastname, age, profession order by total desc limit 10") 
+
+toptenDF.write.mode("overwrite").saveAsTable("sandeep_training.topten")                                                                                              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
