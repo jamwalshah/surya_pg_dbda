@@ -1,0 +1,82 @@
+1)Tokenization
+Tokenization is essentially splitting a phrase, sentence, paragraph, or an entire text document into smaller units, such as individual words or tokens.
+
+"I am reading a book."
+"I","am","reading","a","book","."
+
+U.S.A and USA
+
+2)Stemming:The process of reducing words towards their root forms,It is a rule based approach, this occurs in such a way that depicting a group of relatable words under the same stem, even if the root has no appropriate meaning.
+eg:going:go,playing:play,history:histori,caring:car
+ 
+When accuracy is not goal then stemming is useful
+Faster.When the meaning of word is not important. 
+ 
+Use cases:
+Stemming:Spam classification(Gmail),Review classification
+
+3)Lemmatization:Dictionary based approach
+Accuracy is more
+When meaning of word is important for analysis
+Slow as compared to stemming
+
+Use cases:
+Lemmatization:Question Answer,language translation,chatbot,text summarisation
+
+
+
+Word Embedding:Representation of words used for text analysis in form of real valued vector such that the words having similar meaning are closer in vector space 
+
+a)Count or Frequency:OHE(One hot encoding),BoW(Bag of words) TF/IDF
+b)Deep learning trained models :Word2Vec:1)CBoW(Continuous bag of words) 2)Skipgram
+
+a)
+4)BAG OF WORDS:
+
+Bag of words technique is used to pre-process text and to extract all the features from a text document and convert it into vectors(understood by machine) to use in Machine Learning modeling.
+Here the order of the words is not important so we call it as "Bag".
+
+Disadvantage:
+Semantic meaning:The context how the word is used is ignored.
+"Can you open the can"
+
+Vector Size:for large documents the vector size increases(like 10000) which further leads to high computational time
+
+
+D1:He is a good boy	
+D2:She is a good girl
+D3:Boy and girl are good
+
+Vocab		Frequency		f1	f2	f3		f4
+good		   3			good	boy	girl		good boy
+boy		   2			 1 	 1	 0 D1
+girl 		   2			 1       0	 1
+					 1       1       1
+
+Trigram:I am not feeling well
+I am not ,am not feeling,not feeling well
+
+
+5)Word2Vec:It is a technique to represent each word in vectors using neural network model(ANN)having words with similar association to be represented together 
+
+F/R           Man	Woman	King	Queen	Apple	Mango(Vocabulary)
+Gender	      -1	 1	-0.92	0.93	0.01	0.02
+
+Royal	      0.01       0.02     0.95  0.96    0.02    0.01
+
+Age	      0.85	0.90	 0.96   0.95	0.95	0.96
+
+Food	
+.
+.
+.
+300 dimensions
+
+King[0.95,0.96]		Man[0.95,0.98]
+Queen[-.96,0.95]	Woman[-0.94,-0.96]
+
+King-Man+Woman=Queen
+
+6)GloVe (Global Vectors for Word Representation): GloVe is an unsupervised learning algorithm for obtaining vector representations of words. These vectors capture the semantic relationships between words by analyzing the co-occurrence statistics of words in a large corpus of text. The resulting word embeddings technique can be used to represent words in a continuous vector space, where words with similar meanings are closer to each other in the space.
+
+Sentiment Classification

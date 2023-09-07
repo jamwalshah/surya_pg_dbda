@@ -1,0 +1,251 @@
+Three types of variations
+1. trend- with the change in population
+2. seasonal- repeat itself after a certain number of time stamps eg every Nov, sales are more
+3. random variations - without any known reason - not considered in time series modelling
+
+4. cyclical - repeats a very long period of time - not considered in time series modelling
+
+Data cleaning and validation
+1. Find the location of missing values and replace them with a certain value
+a. Repalce the missing values with the average of all others - overall average remains unchanged
+b. Replace the missing value with the value for the previous time stamp or next time stamp, Aug 2017 is missing. put the value of July, 2017 or Sept 2017 in its place
+c. Replace the missing value with the average of pervious and next time stamp. Aug 2017 is missing. put the average of the value of July, 2017 and Sept 2017 in its place. Also called as linear interpolation. Good when there is no seasonal variation.
+d. Replace the missing value with the value of same month in the previous or next year. Aug 2017 is missing. We can use values from Aug 2016 and Aug 2018
+
+2. Check for extreme values or the outliers
+plot the box plot for all the available values
+
+# Commands to be run in Python
+
+import numpy as np
+
+import pandas as pd
+
+import matplotlib
+
+from matplotlib import pyplot as plt
+
+import statsmodels
+
+import statsmodels.api as sm
+
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+from sklearn.metrics import mean_squared_error
+
+from math import sqrt
+
+df = pd.read_excel('CDAC_DataBook.xlsx', sheet_name = 'birth')
+
+df.shape
+Out[11]: (168, 1)
+
+168/12
+Out[12]: 14.0
+
+df.head()
+Out[13]: 
+   BirthRate
+0     26.663
+1     23.598
+2     26.931
+3     24.740
+4     25.806
+
+df.BirthRate.plot()
+
+df_train = df.iloc[:144]   # split for creating the model
+
+df_train.shape
+Out[16]: (144, 1)
+
+df_test = df.iloc[144:]	   # for finding out the error
+
+df_test.shape
+Out[18]: (24, 1)
+
+decomp = statsmodels.tsa.seasonal.seasonal_decompose(df.BirthRate, period=12)
+
+decomp.plot()   # decompose to visualize different sources of variations
+
+# Techniques for making predictions
+
+# naive method - whatever happened on the last time stamp would continue into the future
+
+df_arr = np.asarray(df_train.BirthRate)   # convert the train data to an array
+y_hat = df_test.copy()   # create a copy for the test data
+y_hat['naive'] = df_arr[len(df_arr)-1] 	# create column for naive technique and fill it with last value
+rms_naive = sqrt(mean_squared_error(df_test.BirthRate,y_hat.naive))	# calculate rmse
+
+plt.figure(figsize=(12,8))
+plt.plot(df_train.index, df_train.BirthRate, label='Train')
+plt.plot(df_test.index, df_test.BirthRate, label='Test')
+plt.plot(y_hat.index,y_hat.naive, label='Forecast')
+plt.legend()
+
+
+# Simple Average technique
+
+y_hat_avg = df_test.copy()
+y_hat_avg['SimpleAvg'] = df_train['BirthRate'].mean()
+rms_SimpleAvg = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.SimpleAvg))
+
+# Moving Average technique
+y_hat_avg['MovingAvg'] = df_train['BirthRate'].rolling(12).mean().iloc[-1]
+rms_MovingAvg = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.MovingAvg))
+
+
+# WeightedMovingAverage
+
+# last month (latest value) gets the weightage of 12 and the earliest value or the first manth gets the weightage of 1
+
+values = df_train['BirthRate'].iloc[-12:]
+
+#### prog to calculated weighted moving average
+
+wt_sum = 0
+denom = 0
+for ctr in range(len(values)):
+    wt_sum = wt_sum+ values.iloc[ctr]*(ctr+1)
+    denom = denom + ctr+1
+wt_avg = wt_sum/denom
+
+#####
+
+y_hat_avg['WtMovAvg'] = wt_avg
+
+rms_MovingAvg = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.WtMovAvg))
+
+# Simple Exponential Smoothing
+
+from statsmodels.tsa.api import ExponentialSmoothing, SimpleExpSmoothing, Holt
+mod1 = SimpleExpSmoothing(np.asarray(df_train.BirthRate)).fit(smoothing_level=0.8)
+y_hat_avg['SES'] = mod1.forecast(len(df_test))
+rms_MovingAvg = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.SES))
+
+# Holt's linear trend method
+
+mod2 = Holt(np.asarray(df_train.BirthRate)).fit(smoothing_level=0.75)
+y_hat_avg['HoltLinear'] = mod2.forecast(len(df_test))
+rms_MovingAvg = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.HoltLinear))
+
+# Holt-Winter's method
+
+mod3 = ExponentialSmoothing(np.asarray(df_train.BirthRate), seasonal_periods=12).fit()
+y_hat_avg['HoltWinter'] = mod3.forecast(len(df_test))
+rms_MovingAvg = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.HoltWinter))
+
+
+#ARIMA model
+
+# AD Fuller test
+# Ho: the time series is NOT stationary
+# Ha: time series is stationary
+
+import statsmodels
+from statsmodels.tsa.stattools import adfuller
+
+adfuller(df_train)
+Out[17]: 
+(0.201716047916323,
+ 0.9723576777571015,   #  0.97 is the p-value which is more than 0.05 so Ho not rejected
+ 130,
+ {'1%': -3.4816817173418295,
+  '5%': -2.8840418343195267,
+  '10%': -2.578770059171598},
+ 322.55907506392055)
+
+adfuller(df_train.diff().dropna())    # applying test after first level of differencing
+Out[18]: (-4.253904918858701,
+ 0.000533337897888095,	# now the p-value is below 0.05 so we have stationary time series
+ 14,
+ 128,
+ {'1%': -3.4825006939887997,
+  '5%': -2.884397984161377,
+  '10%': -2.578960197753906},
+ 314.6470672927587)
+
+
+df_train.diff().BirthRate.plot()    # to have a visual confirmation that time series is stationary
+
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+plot_acf(df_train)    # gives the value of q
+plot_pacf(df_train)	# gives the value of p
+
+from statsmodels.tsa.arima.model import ARIMA
+mod1 = ARIMA(df_train, order=(1,1,2)).fit()   # sequence of the order is (p,d,q)
+pred = mod1.forecast(len(df_test))
+y_hat_avg['ARIMA'] = pred
+rms = sqrt(mean_squared_error(df_test.BirthRate,y_hat_avg.ARIMA))
+
+
+
+normalization scaler
+X' = (X-Xmin)/(Xmax-Xmin)
+X1 = (40-20)/(50-20) = 20/30 = 0.66
+all values beween 0 and 1
+non-normal data
+this method gets affected by the presence of outliers
+
+
+standardizaton
+X' = (X-Mu)/(SD)
+All X' values would have a mean of 0 and SD=1
+Less sensitive or gets less affected by the presence of outliers
+
+
+# Principal component analysis
+
+import pandas as pd
+df = pd.read_excel('CDAC_DataBook.xlsx', sheet_name='iris')
+df = df.sample(frac=1)   # to randomize the rows so that they are not a specific order
+x = df.drop('Species', axis=1)   # predictors
+y = df['Species']   # response
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.2)
+
+#from sklearn.preprocessing import StandardScaler
+
+sc=StandardScaler()
+
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+
+from sklearn.decomposition import PCA
+pca2 = PCA(n_components=2)
+x_train = pca2.fit_transform(x_train)
+x_test = pca2.transform(x_test)
+
+pca2.explained_variance_ratio_    # explained variation for the two PCs
+pca2.components_.T    # loading of each PC
+pca2.components_.T * np.sqrt(pca2.explained_variance_ratio_)    # correlation matrix
+
+from sklearn.ensemble import RandomForestClassifier
+clf1 = RandomForestClassifier()
+mod1 = clf1.fit(x_train,y_train)
+y_pred = mod1.predict(x_test)
+from sklearn.metrics import confusion_matrix
+confusion_matrix(y_test, y_pred)
+
+
+# Gradient boosting
+
+df = pd.read_excel('CDAC_DataBook.xlsx', sheet_name = 'diabetes')
+
+x = df.drop('Outcome', axis=1)
+y = df['Outcome']
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.2)
+
+from sklearn.ensemble import GradientBoostingClassifier
+gbc = GradientBoostingClassifier(learning_rate=0.1)
+mod1 = gbc.fit(x_train, y_train)
+
+y_pred = mod1.predict(x_test)
+
+from sklearn.metrics import confusion_matrix
+
+confusion_matrix(y_test,y_pred)
+
