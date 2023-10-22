@@ -1,0 +1,73 @@
+H2. Create partitioned table (with multiple buckets)
+--------------------------------------------------
+CREATE TABLE txnrecsByCat2(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING)
+PARTITIONED BY (category STRING)
+CLUSTERED BY (state) INTO 10 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+set hive.enforce.bucketing=true;
+
+I2. Load data into partition table (with multiple buckets)
+---------------------------------------------------
+INSERT OVERWRITE TABLE txnrecsByCat2 PARTITION(category) 
+SELECT txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, 
+txn.spendby, txn.category 
+FROM txnrecords txn
+DISTRIBUTE BY category;
+
+modd H2. Create partitioned table (only buckets)
+--------------------------------------------------
+CREATE TABLE txn_bucket(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+CLUSTERED BY (state) INTO 10 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+modd I2. Load data into partition table (only buckets)
+---------------------------------------------------
+INSERT OVERWRITE TABLE txn_bucket
+SELECT * FROM txnrecords;
+
+
+
+DESC FORMATTED txnrecords;
+
+SHOW TABLES ;
+
+DROP TABLE txnrecods ;
+
+SHOW TABLES ;
+
+CREATE EXTERNAL TABLE txnrecords(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS textfile
+LOCATION '/user/bigdatalab456422/sales';
+
+SHOW TABLES ;
+
+
+
+-------------------------
+User Defined Functions
+-------------------------
+CREATE TABLE testing(id string,unixtime string)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+
+DESC testing ;
+
+LOAD DATA LOCAL INPATH 'counter.txt' INTO TABLE testing;
+
+SELECT * FROM testing;
+
+$ jar tvf udfhive.jar
+
+add jar udfhive.jar;
+
+list jars ;
+
+CREATE TEMPORARY FUNCTION userdate AS 'hive.UnixtimeToDate';
+
+SELECT id, userdate(unixtime) FROM testing;
