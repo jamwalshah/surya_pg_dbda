@@ -1,0 +1,67 @@
+In Mysql
+create database my_db;
+use my_db;
+
+CREATE TABLE topten(
+   customer_id INT NOT NULL ,
+   fname VARCHAR(40) NOT NULL,
+   lname VARCHAR(40) NOT NULL,
+   age int NOT NULL,
+   profession VARCHAR(40) NOT NULL,
+   amount double NOT NULL
+   );
+
+CREATE TABLE student_master(
+   student_id INT NOT NULL AUTO_INCREMENT,
+   name VARCHAR(40) NOT NULL,
+   address VARCHAR(40) NOT NULL,
+   PRIMARY KEY ( student_id ));
+
+CREATE TABLE fy(
+   fy_id INT NOT NULL AUTO_INCREMENT,
+   student_id INT NOT NULL,
+   result double NOT NULL,
+   PRIMARY KEY (fy_id ));
+
+
+show tables;
+
+describe student_master;
+
+INSERT INTO student_master 
+     (name, address)
+     VALUES
+    ("Sanjay", "Bangalore");
+INSERT INTO student_master 
+     (name, address)
+     VALUES
+    ("Rajiv", "Delhi");
+
+INSERT INTO student_master 
+     (name, address)
+     VALUES
+    ("Rajesh", "Chennai");
+INSERT INTO student_master 
+     (name, address)
+     VALUES
+    ("Sandeep", "Delhi");
+
+INSERT INTO fy 
+     (student_id, result)
+     VALUES
+    (1, 81.90);
+INSERT INTO fy 
+     (student_id, result)
+     VALUES
+    (2, 78.90);
+
+INSERT INTO topten
+( customer_id,fname,lname,age,profession, amount)
+Values
+(4009485,'Stuart','House',58,'Teacher',1943.85);
+
+INSERT INTO topten
+( customer_id,fname,lname,age,profession, amount)
+Values
+(4006425,'Joe','Burns',30,'Economist',1732.09);
+
