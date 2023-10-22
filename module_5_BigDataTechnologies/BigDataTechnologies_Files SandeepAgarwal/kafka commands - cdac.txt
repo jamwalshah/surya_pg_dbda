@@ -1,0 +1,37 @@
+
+
+create a topic
+--------------
+/opt/cloudera/parcels/CDH/bin/kafka-topics --create --zookeeper 10.1.1.204:2181 --replication-factor 1 --partitions 1 --topic sandeep_cdac
+
+list the topics
+--------------
+/opt/cloudera/parcels/CDH/bin/kafka-topics --list --zookeeper 10.1.1.204:2181
+
+
+producer-api-console
+--------------------
+/opt/cloudera/parcels/CDH/bin/kafka-console-producer --broker-list 10.1.1.204:9092 --topic sandeep_cdac
+
+/opt/cloudera/parcels/CDH/bin/kafka-console-producer --broker-list 10.1.1.204:9092 --topic sandeep_cdac
+
+
+consumer-api-console
+--------------------
+/opt/cloudera/parcels/CDH/bin/kafka-console-consumer --bootstrap-server 10.1.1.204:9092  --topic sandeep_cdac --from-beginning
+
+/opt/cloudera/parcels/CDH/bin/kafka-console-consumer --bootstrap-server 10.1.1.204:9092  --topic sandeep_cdac --from-beginning
+
+
+import from a text file into kafka
+--------------------------------------
+
+/opt/cloudera/parcels/CDH/bin/kafka-topics --create --zookeeper 10.1.1.204:2181 --replication-factor 1 --partitions 1 --topic sandeep_cdac4
+
+/opt/cloudera/parcels/CDH/bin/kafka-topics --list --zookeeper 10.1.1.204:2181
+
+/opt/cloudera/parcels/CDH/bin/kafka-console-producer --broker-list 10.1.1.204:9092 --topic sandeep_cdac4 < /home/bigdatalab45644/custs.txt
+
+/opt/cloudera/parcels/CDH/bin/kafka-console-consumer --bootstrap-server 10.1.1.204:9092  --topic sandeep_cdac4 --from-beginning
+
+
