@@ -1,0 +1,34 @@
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/txns1.txt",1)
+
+txnRDD.count()
+
+'''
+>>> txnRDD1 = txnRDD.map(lambda a : a.encode("ascii","ignore"))
+>>> txnRDD1.count()
+
+>>> txnKVRDD = txnRDD1.map(lambda row : (row.split(',')[5], float(row.split(',')[3])))
+'''
+
+txnKVRDD = txnRDD.map(lambda row : (row.split(',')[5], float(row.split(',')[3])))
+txnKVRDD.count()
+
+for line in txnKVRDD.take(5):
+    print(line)
+
+spendbyProd = txnKVRDD.reduceByKey(lambda a,b : a+b)
+
+for line in spendbyProd.collect():
+    print(line)
+
+spendbyProd.count()
+
+sortbyval = spendbyProd.sortBy(lambda a : -a[1])
+
+for line in sortbyval.collect():
+    print(line)
+
+sortbyval.saveAsTextFile("hdfs://nameservice1/user/bigdatalab456422/training/spark1")
+
+sortbyval2 = sortbyval.map(lambda a : a[0] + "," + str(round(a[1],2)))
+
+sortbyval2.saveAsTextFile("hdfs://nameservice1/user/bigdatalab456422/training/spark2")

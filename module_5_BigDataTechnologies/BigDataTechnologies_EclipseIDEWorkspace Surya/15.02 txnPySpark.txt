@@ -1,0 +1,45 @@
+>>> txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/txns1.txt",1)
+>>> txnRDD1 = txnRDD.map(lambda a : a.encode("ascii","ignore"))
+>>> txnKVRDD = txnRDD1.map(lambda row : (row.split(',')[5], float(row.split(',')[3])))
+>>> for line in txnKVRDD.take(5):
+...     print(line)
+...
+('Cardio Machine Accessories', 40.33)
+('Weightlifting Gloves', 198.44)                                                                                                                                        
+('Weightlifting Machine Accessories', 5.58)                                                                                                                             
+('Gymnastics Rings', 198.19)                                                                                                                                            
+('Field Hockey', 98.81)                                                                                                                                                 
+>>>spendbyProd = txnKVRDD.reduceByKey(lambda a,b : a+b)
+>>> for line in spendbyProd.take(10):
+...     print(line)
+...
+('Cycling', 42243.91000000003)
+('Hunting', 39081.74)                                                                                                                                                   
+('Foosball', 43055.95999999997)                                                                                                                                         
+('Boxing', 44516.869999999966)                                                                                                                                          
+('Springboards', 37890.76000000001)                                                                                                                                     
+('Scuba Diving & Snorkeling', 40239.799999999996)                                                                                                                       
+('Dice Games', 40396.75)                                                                                                                                                
+('Boating', 43049.069999999934)                                                                                                                                         
+('Vaulting Horses', 41052.8)                                                                                                                                            
+('Portable Electronic Games', 41931.249999999985)                                                                                                                       
+>>> spendbyProd.count()                                                                                                                                                 
+125                                                                                                                                                                     
+>>>sortbyval = spendbyProd.sortBy(lambda a : -a[1])                                                                                                                    
+>>> for line in sortbyval.take(10):                                                                                                                                     
+...     print(line)                                                                                                                                                     
+...                                                                                                                                                                     
+('Yoga & Pilates', 47804.93999999993)
+('Swing Sets', 47204.13999999999)                                                                                                                                       
+('Lawn Games', 46828.44)                                                                                                                                                
+('Golf', 46577.67999999999)                                                                                                                                             
+('Cardio Machine Accessories', 46485.540000000045)                                                                                                                      
+('Exercise Balls', 45143.84)                                                                                                                                            
+('Weightlifting Belts', 45111.67999999996)                                                                                                                              
+('Mahjong', 44995.19999999999)                                                                                                                                          
+('Basketball', 44954.68000000004)                                                                                                                                       
+('Beach Volleyball', 44890.67000000005)                                 
+sortbyval.saveAsTextFile("hdfs://nameservice1/user/bigdatalab456422/training/spark1")
+sortbyval2 = sortbyval.map(lambda a : a[0] + "," + str(round(a[1],2)))
+sortbyval2.saveAsTextFile("hdfs://nameservice1/userbigdatalab456422/training/spark2")
+
