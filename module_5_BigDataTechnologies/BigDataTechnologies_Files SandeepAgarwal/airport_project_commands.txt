@@ -1,0 +1,190 @@
+create the airport table
+-----------------------------
+CREATE TABLE airport (
+airport_id INT,
+name STRING,
+city STRING,
+country STRING,
+iata STRING,
+icao STRING,
+latitude DOUBLE,
+longitude DOUBLE,
+altitude INT,
+timezone DOUBLE,
+dst STRING,
+TZ STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+-- 
+LOAD DATA LOCAL INPATH 'airports_mod.dat' OVERWRITE INTO TABLE airport ;
+
+--
+select * from airport limit 10;
+
+--
+SELECT count(airport_id) FROM airport ;
+-- 
+SELECT country, count(airport_id) FROM airport GROUP BY country ;
+
+-- 
+--
+CREATE TABLE airlines(
+airline_id INT,
+name STRING,
+alias STRING,
+iata STRING,
+icao STRING,
+callsign STRING,
+country STRING,
+active STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+--
+LOAD DATA LOCAL INPATH 'Final_airlines' OVERWRITE INTO TABLE airlines;
+--
+SELECT * FROM airlines LIMIT 10;
+--
+SELECT count(airline_id) FROM airlines;
+-- 
+--
+
+CREATE TABLE routes(
+airline_iata STRING,
+airline_id STRING,
+src_airport_iata STRING,
+src_airport_id INT,
+dest_airport_iata STRING,
+dest_airport_id INT,
+codeshare STRING,
+stop INT,
+equipment STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+-- 
+LOAD DATA LOCAL INPATH 'routes.dat' OVERWRITE INTO TABLE routes;
+-- 
+SELECT * FROM routes LIMIT 10;
+--
+SELECT count(airline_id) FROM routes; -- should be ~67k
+SELECT count(equipment) FROM routes ;
+
+
+-- 
+-- 
+
+asssignment/project problems
+airport: airport_id,name,city,country,iata,icao,latitude,longitude,altitude,timezone,dst,TZ
+airlines: airline_id,name,alias,iata,icao,callsign,country,active
+routes: airline_iata,airline_id,src_airport_iata,src_airport_id,dest_airport_iata,dest_airport_id,codeshare,stop,equipment
+
+-- 
+-- a. Find list of Airports operating in the Country India
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result10' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+SELECT * FROM airport WHERE country='India';
+-- use TRIM(UPPER()) before matching string types, to avoid missing any values
+-- sandeep's query
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result11' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+SELECT * FROM airport WHERE trim(upper(country)) = 'INDIA';
+
+-- 
+-- b. Find the list of Airlines having zero stops
+-- cross-check result : 540 records
+-- surya's query returns 50 records
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result20' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+SELECT distinct(al.name), rt.stop FROM airlines al JOIN routes rt ON al.airline_id=rt.airline_id WHERE rt.stop=0;
+-- sandeep's query
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result21' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+SELECT DISTINCT(name) 
+FROM airlines a 
+JOIN routes r 
+ON a.airline_id=r.airline_id
+WHERE stop=0;
+
+-- 
+-- c. List of Airlines operating with code share
+-- cross-check result : 146 records
+SELECT * FROM routes LIMIT 10;
+
+-- surya's query returns 146 records
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result30' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT distinct(al.airline_id), al.name, rt.codeshare FROM airlines al JOIN routes rt ON al.airline_id=rt.airline_id WHERE rt.codeshare='Y';
+
+-- sandeep's query returns 146 records
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result31' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT DISTINCT(name) FROM airlines a JOIN routes r ON a.airline_id=r.airline_id WHERE TRIM(UPPER(codeshare))='Y';
+
+
+-- 
+-- d. Which country (or) territory having highest Airports
+-- cross-check result : United States	1697
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result4' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT ap.country, count(ap.country) FROM airport ap GROUP BY country;
+-- result40
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result4' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT ap.country, max(count(ap.country)) FROM airport ap GROUP BY country; -- throws error
+-- FAILED: SemanticException [Error 10128]: Line 3:23 Not yet supported place for UDAF 'count'
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result4' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT max(countrycount) FROM (SELECT country, count(country) AS countrycount FROM airport GROUP BY country); -- throws error
+-- FAILED: ParseException line 3:108 cannot recognize input near '<EOF>' '<EOF>' '<EOF>' in subquery source
+
+
+-- sandeep's query returns "United States   1697"
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result47' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT country, count(airport_id) AS cnt FROM airport GROUP BY country HAVING cnt IN 
+(SELECT max(total) FROM 
+(SELECT count(airport_id) AS total FROM airport GROUP BY country) AS abc);
+
+-- PrasadAmle's query returns "United States,1697"
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result48' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM (SELECT country, count(airport_id), DENSE_RANK() 
+OVER (ORDER BY COUNT(airport_id) DESC) AS rnk 
+FROM airport GROUP BY country) AS X 
+WHERE X.rnk=1;
+
+-- 
+-- D.1. Which country (or) territory having lowest Airports
+-- cross-check result : 34 records
+-- sandeep's query returns 34 records
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result47a' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT country, count(airport_id) AS cnt FROM airport GROUP BY country HAVING cnt IN 
+(SELECT min(total) FROM 
+(SELECT count(airport_id) AS total FROM airport GROUP BY country) AS abc);
+-- using mod in PrasadAmle's query returns 34 records
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result48a' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM (SELECT country, count(airport_id), DENSE_RANK() 
+OVER (ORDER BY COUNT(airport_id) ASC) AS rnk 
+FROM airport GROUP BY country) AS X 
+WHERE X.rnk=1;
+
+
+
+asssignment/project problems
+airport: airport_id,name,city,country,iata,icao,latitude,longitude,altitude,timezone,dst,TZ
+airlines: airline_id,name,alias,iata,icao,callsign,country,active
+routes: airline_iata,airline_id,src_airport_iata,src_airport_id,dest_airport_iata,dest_airport_id,codeshare,stop,equipment
+--
+-- e. Find the list of Active Airlines in United States
+-- cross-check result : 136 records
+SELECT al.name, rt.src_airport_iata, rt.dest_airport_iata 
+FROM airlines al 
+JOIN routes rt ON al.airline_id = rt.airline_id 
+JOIN airport ap ON rt.src_airport_iata=ap.iata OR rt.dest_airport_iata=ap.iata -- JOIN does not support OR
+WHERE TRIM(UPPER(ap.country))='UNITED STATES';
+-- FAILED: SemanticException [Error 10019]: Line 7:19 OR not supported in JOIN currently 'iata'
+-- surya's query returns 135 records, which is wrong
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result51' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT distinct(al.name)
+FROM airlines al 
+JOIN routes rt ON al.airline_id = rt.airline_id 
+JOIN airport ap ON rt.src_airport_iata=ap.iata 
+JOIN airport ap2 ON rt.dest_airport_iata = ap2.iata
+WHERE TRIM(UPPER(ap.country))='UNITED STATES'
+OR TRIM(UPPER(ap2.country))='UNITED STATES';
+ -- avoid using iata code, prefer using id if it is available. using iata produces wrong result as some route might have null in iata
+-- sandeep's query returns 136 records which is correct
+INSERT OVERWRITE DIRECTORY 'hive/airport_project/result57' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT distinct(a.name)
+FROM airlines a 
+JOIN routes r ON a.airline_id = r.airline_id
+JOIN airport ar1 ON ar1.airport_id = src_airport_id
+JOIN airport ar2 ON ar2.airport_id = dest_airport_id
+WHERE TRIM(UPPER(ar1.country))='UNITED STATES'
+OR TRIM(UPPER(ar2.country))='UNITED STATES' ;
