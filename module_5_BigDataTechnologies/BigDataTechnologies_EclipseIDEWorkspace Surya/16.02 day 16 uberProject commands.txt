@@ -1,0 +1,37 @@
+dataset = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/uber_data")
+dataset.count()
+
+dataset.first()
+header = dataset.first()
+print(header)
+
+eliminate = dataset.filter(lambda line : line != header)
+eliminate.count()
+for a in eliminate.take(5):
+    print(a)
+
+
+format_data = "%m/%d/%Y"
+import datetime
+
+print(datetime.datetime.strptime('06/02/2023',format_data))
+print(datetime.datetime.strptime('06/02/2023',format_data).strftime("%A"))
+print(datetime.datetime.strptime('06/02/2023',format_data).strftime("%"))
+
+
+split = eliminate.map(lambda a : (a.split(",")[0], datetime.datetime.strptime(a.split(",")[1], format_data).strftime("%A"), a.split(",")[3]) )
+for a in split.take(5):
+    print(a)
+
+combine = split.map(lambda x : ( x[0] +" "+x[1], int(x[2]) ))
+for a in combine.take(5):
+    print(a)
+
+arrange = combine.reduceByKey(lambda a,b : a+b)
+for a in arrange.take(5):
+    print(a)
+
+sortbyval = arrange.sortBy(lambda a : -a[1])
+for a in sortbyval.collect():
+    print(a)
+

@@ -1,0 +1,18 @@
+import datetime
+
+dataset = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/uber_data")
+
+header = dataset.first()
+print(header)
+eliminate = dataset.filter(lambda line : line != header)
+
+format_data = "%m/%d/%Y"
+
+eliminate2 = eliminate.map(lambda row : row.encode("ascii","ignore")) 
+split = eliminate2.map(lambda a : (a.split(",")[0], datetime.datetime.strptime(a.split(",")[1], format_data).strftime("%A"), a.split(",")[3]) )
+
+combine = split.map(lambda x : ( x[0] +" "+x[1], int(x[2]) ))
+
+arrange = combine.reduceByKey(lambda a,b : a+b)
+
+sortbyval = arrange.sortBy(lambda a : -a[1])

@@ -1,0 +1,33 @@
+from pyspark.sql.types import StructType, StringType, IntegerType, DoubleType, LongType
+
+schema9 = StructType().add("exchange_name",StringType(),True).add("stock_id",StringType(),True).add("stock_dt",StringType(),True).add("open",DoubleType(),True).add("high",DoubleType(),True).add("low",DoubleType(),True).add("close",DoubleType(),True).add("volume",LongType(),True).add("adj_close",DoubleType(),True)
+
+print(schema9)
+
+df_with_schema = spark.read.format("csv").option("header","False").schema(schema9).load("hdfs://nameservice1/user/bigdatalab456422/training/NYSE.csv")
+
+df_with_schema.printSchema()
+
+df_with_schema.show()
+
+df_with_schema.registerTempTable("nyse")
+
+df_StockVol = spark.sql("SELECT stock_id, sum(volume) FROM nyse GROUP BY stock_id")
+df_StockVol.count()
+df_StockVol.show()
+
+
+
+df_StockVol = spark.sql("SELECT stock_id, sum(volume) AS total FROM nyse GROUP BY stock_id ORDER BY total DESC")
+df_StockVol.count()
+df_StockVol.show()
+
+df_StockVol.rdd.getNumPartitions()
+
+# use either repartition or coalesce command
+df_new = df_StockVol.repartition(1)
+df_new = df_StockVol.coalesce(1)
+
+df_new.rdd.getNumPartitions()
+
+df_new.write.csv("hdfs://nameservice1/user/bigdatalab456422/training/spark4")
