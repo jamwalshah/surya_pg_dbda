@@ -1,0 +1,38 @@
+write a program using shared variables like broadcast and accumulators to calculate total tax and total profit
+using Retail data
+
+
+retailRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/retail")
+
+retailRDD.count()
+
+retailRDD.getNumPartitions()
+
+gst = sc.broadcast(5.00)
+totalTax = sc.accumulator(0.00)
+totalProfit = sc.accumulator(0.00)
+
+arrayRDD = retailRDD.map(lambda a : a.split(";"))
+
+taxAndProfit = arrayRDD.map(lambda  a : ( float(a[8])*gst.value/100 , (float(a[8]) - float(a[7]))))
+
+for line in taxAndProfit.collect():
+...	totalTax += line[0]
+...
+
+
+print(totalTax)
+
+for line in taxAndProfit.collect():
+...	totalProfit += line[1]
+...
+
+//find net profit after deducting tax
+print(totalProfit.value - totalTax.value) 
+
+print(totalProfit)
+
+
+ 
+
+

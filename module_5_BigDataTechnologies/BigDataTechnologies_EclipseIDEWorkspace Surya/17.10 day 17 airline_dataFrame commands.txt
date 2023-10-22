@@ -1,0 +1,32 @@
+from pyspark.sql.types import StructType, StringType, IntegerType, DoubleType, LongType
+
+schema2 = StructType().add("Year",StringType(),True).add("Quarter",StringType(),True).add("ARPS",DoubleType(),True).add("Booked_seats",IntegerType(),True)
+print(schema2)
+
+df_with_schema2 = spark.read.format("csv").option("header", "True").schema(schema2).load("hdfs://nameservice1/user/bigdatalab456422/training/airlines.csv")
+df_with_schema2 = spark.read.format("csv").option("header", "True").schema(schema2).load("hdfs://nameservice1/user/bigdatalab456422/training/airlines.csv")
+df_with_schema2.count()
+df_with_schema2.show()
+
+df_with_schema2.registerTempTable("airlines")
+
+YrWiseRev= spark.sql("SELECT Year, sum(ARPS*Booked_seats) AS revenue FROM airlines GROUP BY Year ORDER BY revenue DESC")
+YrWiseRev.count()
+YrWiseRev.show(21)
+
+YrWiseRev= spark.sql("SELECT Year, sum(ARPS*Booked_seats)/1000000 AS revenue_in_mill FROM airlines GROUP BY Year ORDER BY revenue_in_mill DESC")
+YrWiseRev.show(21)
+
+YrWiseRev= spark.sql("SELECT Year, round(sum(ARPS*Booked_seats)/1000000, 2) AS revenue_in_mill FROM airlines GROUP BY Year ORDER BY revenue_in_mill DESC")
+YrWiseRev.show(21)
+
+YrWisePax = spark.sql("SELECT Year, sum(Booked_seats) AS total_pax FROM airlines GROUP BY Year ORDER BY total_pax DESC")
+YrWisePax.count()
+
+
+
+
+
+YrWiseRev = spark.sql("select year, round(sum(arps*booked_seats)/1000000,2) as total_in_mill from airlines group by year order by total_in_mill desc")
+
+YrWisePsx = spark.sql("select year, sum(booked_seats) as total_psx from airlines group by year order by total_psx desc")
