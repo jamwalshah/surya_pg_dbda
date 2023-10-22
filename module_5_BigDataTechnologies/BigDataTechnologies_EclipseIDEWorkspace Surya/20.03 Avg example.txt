@@ -1,0 +1,8 @@
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab45644/training/txns1.txt",1)
+txnVRDD = txnRDD.map(lambda row : (float(row.split(',')[3])))
+total = txnVRDD.reduce(lambda a,b : a + b)
+print(total)                                                                                                                                                    
+5110820.540000021
+total_avg = total / txnVRDD.count()
+print(total_avg)
+

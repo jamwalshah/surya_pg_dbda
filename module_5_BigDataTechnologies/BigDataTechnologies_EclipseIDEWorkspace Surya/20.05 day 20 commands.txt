@@ -1,0 +1,148 @@
+hbase shell
+
+create 'surya_table', 'info', 'roles'
+describe 'surya_table'
+put 'surya_table', 'cutting', 'info:height', '9 ft'
+scan 'surya_table'
+
+put 'surya_table', 'cutting', 'info:state', 'CA'
+scan 'surya_table'
+
+put 'surya_table', 'tlipcon', 'roles:Hive', 'Contributor'
+scan 'surya_table'
+
+put 'surya_table', 'cutting', 'roles:ASF', 'Director'
+put 'surya_table', 'cutting', 'roles:Hadoop', 'Founder'
+put 'surya_table', 'tlipcon', 'info:height', '5ft7'
+
+put 'surya_table', 'tlipcon', 'info:state', 'CA'
+put 'surya_table', 'tlipcon', 'roles:Hadoop', 'Committer'
+
+scan 'surya_table'
+
+describe 'surya_table'
+
+disable 'surya_table'
+alter 'surya_table' , {NAME=>'roles', VERSIONS=>3}
+enable 'surya_table'
+
+describe 'surya_table'
+
+put 'surya_table', 'tlipcon', 'roles:Hadoop', 'PMC'
+scan 'surya_table'
+
+get 'surya_table', 'cutting'
+get 'surya_table' , 'tlipcon' , {COLUMN => 'roles:Hadoop' , VERSIONS =>3}
+
+put 'surya_table', 'tlipcon', 'roles:Hadoop', 'PMC2'
+scan 'surya_table'
+
+get 'surya_table' , 'tlipcon' , {COLUMN => 'roles:Hadoop' , VERSIONS =>3}
+
+scan 'surya_table',  FILTER =>"ValueFilter(=, 'binary:CA')"
+get 'surya_table', 'tlipcon', {FILTER =>"ValueFilter(=, 'binary:CA')"}
+
+
+delete 'surya_table', 'cutting', 'info:height'
+scan 'surya_table'
+
+deleteall 'surya_table', 'cutting'
+scan 'surya_table'
+
+describe 'surya_table'
+
+disable 'surya_table'
+alter 'surya_table' , {NAME=>'nf', VERSIONS=>3}
+enable 'surya_table'
+
+describe 'surya_table'
+
+put 'surya_table', 'cutting', 'info:height', '9 ft'
+put 'surya_table', 'cutting', 'info:state', 'CA'
+put 'surya_table', 'cutting', 'roles:ASF', 'Director'
+put 'surya_table', 'cutting', 'roles:Hadoop', 'Founder'
+
+$ hive
+> set hive.cli.print.current.db = true ;
+> USE surya_training ;
+> CREATE EXTERNAL TABLE hbase_table_surya ( name string, height string, state string, ASF string, Hadoop string, Hive String)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES 
+("hbase.columns.mapping" = ":key,info:height, info:state, roles:ASF, roles:Hadoop, roles:Hive") TBLPROPERTIES("hbase.table.name" = "surya_table");
+
+> SHOW TABLES;
+
+> SELECT * FROM hbase_table_surya;
+
+put 'surya_table', 'tlipcon', 'roles:Hadoop', 'PMC4'
+
+> SELECT * FORM hbase_table_surya WHERE ASF='Director';
+
+
+
+
+---------
+pyspark
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/txns1.txt", 1)
+txnVRDD = txnRDD.map(lambda row: (float(row.split(','), [3])))
+
+for a in txnVRDD.take(5):
+	print(a)
+
+total_avg = txnVRDD.reduce(lambda a, b: a + b)
+print(total_avg)
+# 5110820.5400....
+total = txnVRDD.reduce(lambda a, b: a + b)
+total_avg = total / txnVRDD.count()
+pint(total_avg)
+# 102.22
+
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/txns1.txt",1)
+txnVRDD = txnRDD.map(lambda row : (float(row.split(',')[3])))
+total = txnVRDD.reduce(lambda a,b : a + b)
+print(total)                                                                                                                                                    
+5110820.540000021
+total_avg = total / txnVRDD.count()
+print(total_avg)
+
+
+
+
+-----------------
+$ pyspark
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab456422/training/txns1.txt",1)
+txnKVRDD = txnRDD.map(lambda row: (row.split(',')[5], float(row.split(','), [3])))
+for a in txnKVRDD.take(5):
+	print(a)
+
+amtAndCount = txnKVRDD.mapValues(lambda a: (a, 1))
+for a in amtAndCount.take(5):
+	print(a)
+
+totalByProd = amtAndCount.reduceByKey(lambda a,b : (a[0] + b[0], a[1] + b[1]))
+for a in totalByProd.take(5):
+	print(a)
+
+avgforProd = totalByProd.mapValues(lambda a : a[0] / a[1])
+for a in avgforProd.take(5):
+	print(a)
+
+maxAvg = avgforProd.sortBy(lambda a : -a[1])
+for a in maxAvg.collect():
+	print(a)
+
+
+-- sandeep's code
+txnRDD = sc.textFile("hdfs://nameservice1/user/bigdatalab45644/training/txns1.txt",1)
+txnKVRDD = txnRDD.map(lambda row : (row.split(',')[5], float(row.split(',')[3])))
+amtAndcount = txnKVRDD.mapValues(lambda x : (x, 1))
+totalbyProd = amtAndcount.reduceByKey(lambda x,y : (x[0] + y[0], x[1] + y[1]))
+avgforProd = totalbyProd.mapValues(lambda x : x[0]/ x[1])
+for a in avgforProd.collect():
+...	print(a)
+...
+maxAvg = avgforProd.sortBy(lambda a : -a[1])
+for a in maxAvg.collect():
+...     print(a)
+...
+-- 
+
