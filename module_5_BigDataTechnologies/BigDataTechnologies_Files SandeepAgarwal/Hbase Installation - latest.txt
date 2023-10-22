@@ -1,0 +1,90 @@
+Installation and Configuration of HBase
+. Steps:
+
+0. Move to your home directory
+cd ~
+
+1. Download HBase (version HBase v0.98.9)
+wget http://archive.apache.org/dist/hbase/hbase-0.98.9/hbase-0.98.9-hadoop2-bin.tar.gz
+
+*** file size is 81 MB
+
+
+
+
+2. Unzip this downloaded package 
+hduser@ubuntu:~$ tar xvzf hbase-0.98.9-hadoop2-bin.tar.gz
+
+3. Rename and move to this folder
+hduser@ubuntu:~$ mv hbase-0.98.9-hadoop2  hbase
+
+hduser@ubuntu:~$ sudo mv /home/hduser/hbase  /usr/local/
+
+4. Change owner for hduser  
+hduser@ubuntu:~$ sudo chown -R hduser:hadoop /usr/local/hbase
+
+5. Config hbase-site.xml file 
+hduser@ubuntu:~$  nano /usr/local/hbase/conf/hbase-site.xml
+
+Add these configuration and then save 
+<configuration>
+
+<property>
+<name>hbase.rootdir</name>
+<value>hdfs://localhost:54310/user/hbase/hbase-data</value>
+</property>
+
+<property>
+<name>hbase.zookeeper.property.dataDir</name>
+<value>/usr/local/hbase/zookeeper</value>
+</property>
+
+<property>
+<name>dfs.replication</name>
+<value>1</value>
+</property>
+
+<property>
+<name>hbase.zookeeper.property.clientPort</name>
+<value>2222</value>
+</property>
+
+<property>
+<name>hbase.zookeeper.quorum</name>
+<value>localhost</value>
+</property>
+
+</configuration>
+
+6. Uncomment this configuration in hbase-env.sh to allow HBase manage it's own instance of Zookeeper 1 
+hduser@ubuntu:~$ nano /usr/local/hbase/conf/hbase-env.sh
+
+export HBASE_MANAGES_ZK=true
+
+7. Update - 
+hduser@ubuntu:~$ nano ~/.bashrc
+
+# Add to the end of the file
+export HBASE_HOME=/usr/local/hbase
+export PATH=$JAVA_HOME/bin:$HBASE_HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
+export PATH=$JAVA_HOME:$PATH
+
+hduser@ubuntu:~$ source ~/.bashrc
+
+8. Start HBase 
+hduser@ubuntu:~$ start-hbase.sh
+jps
+
+starting master, logging to /usr/local/hbase/logs/hbase-hduser-master-ubuntu.out
+
+Importance: We must start Hadoop first
+
+9. Now, we can go to HBase shell to work 
+1 hduser@ubuntu:~$ hbase shell
+hbase(main):001:0>
+
+Or we can use HBase web based at: http://localhost:60010
+
+
+
+

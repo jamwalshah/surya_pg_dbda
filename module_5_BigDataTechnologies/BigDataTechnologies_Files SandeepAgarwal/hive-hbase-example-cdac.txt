@@ -1,0 +1,3 @@
+CREATE EXTERNAL TABLE hbase_table2 ( name string, height string, state string, ASF string, Hadoop string, Hive String)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES 
+("hbase.columns.mapping" = ":key,info:height, info:state, roles:ASF, roles:Hadoop, roles:Hive") TBLPROPERTIES("hbase.table.name" = "sandeep_table2");

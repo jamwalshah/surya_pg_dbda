@@ -1,0 +1,55 @@
+hbase shell
+
+create 'table2', 'info','roles'
+
+list
+describe 'table2'
+
+put 'table2', 'cutting', 'info:height', '9 ft'
+put 'table2', 'cutting', 'info:state', 'CA'
+put 'table2', 'cutting', 'roles:ASF', 'Director'
+put 'table2', 'cutting', 'roles:Hadoop', 'Founder'
+
+put 'table2', 'tlipcon', 'info:height', '5ft7'
+put 'table2', 'tlipcon', 'info:state', 'CA'
+put 'table2', 'tlipcon', 'roles:Hadoop', 'Committer'
+put 'table2', 'tlipcon', 'roles:Hive', 'Contributor'
+
+put 'table2', 'new', 'dummy:col1', 'temp data'
+
+update
+------
+put 'table2', 'tlipcon', 'roles:Hadoop', 'PMC'
+
+
+
+scan 'table2'
+if you want to enter multiple values in one cell we need to modify the VERSIONS schema of the family in the table
+
+disable 'table2'
+alter 'table2' , {NAME=>'roles', VERSIONS=>3}
+enable 'table2'
+
+to see the changes in the schema
+describe 'table2'
+
+if u want to see all the old values for e.g.
+get 'table2' , 'tlipcon' , {COLUMN => 'roles:Hadoop' , VERSIONS =>3}
+
+if u want to see all data with one row key
+get 'table2', 'cutting'
+
+get 'table2', 'tlipcon', {FILTER =>"ValueFilter(=, 'binary:CA')"}
+
+scan 'table2',  FILTER =>"ValueFilter(=, 'binary:CA')"
+
+disable 'table2'
+alter 'table2' , {NAME=>'dummy', VERSIONS=>3}
+enable 'table2'
+
+delete 'table2', 'cutting', 'info:height'
+
+deleteall 'table2', 'cutting' 
+
+
+
