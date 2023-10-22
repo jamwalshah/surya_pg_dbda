@@ -1,0 +1,245 @@
+ap.country, count(ap.country)
+ Fogo Island,1
+ Niuafo'ou Island,1
+ Santiago Island,1
+ Sheffield,1
+Afghanistan,21
+Albania,1
+Algeria,44
+American Samoa,3
+Angola,26
+Anguilla,1
+Antarctica,19
+Antigua and Barbuda,2
+Argentina,103
+Armenia,4
+Aruba,1
+Australia,263
+Austria,29
+Azerbaijan,11
+Bahamas,37
+Bahrain,2
+Bangladesh,13
+Barbados,1
+Belarus,9
+Belgium,34
+Belize,12
+Benin,1
+Bermuda,2
+Bhutan,1
+Bolivia,27
+Bosnia and Herzegovina,4
+Botswana,29
+Brazil,213
+British Indian Ocean Territory,1
+British Virgin Islands,2
+Brunei,3
+Bulgaria,7
+Burkina Faso,2
+Burma,43
+Burundi,1
+Cambodia,13
+Cameroon,10
+Canada,435
+Cape Verde,5
+Cayman Islands,3
+Central African Republic,3
+Chad,7
+Chile,38
+China,219
+Christmas Island,1
+Cocos (Keeling) Islands,1
+Colombia,72
+Comoros,4
+Congo (Brazzaville),3
+Congo (Kinshasa),36
+Cook Islands,8
+Costa Rica,29
+Cote d'Ivoire,7
+Croatia,14
+Cuba,30
+Cyprus,5
+Czech Republic,27
+Denmark,28
+Djibouti,3
+Dominica,3
+Dominican Republic,14
+East Timor,3
+Ecuador,38
+Egypt,25
+El Salvador,2
+Equatorial Guinea,2
+Eritrea,3
+Estonia,9
+Ethiopia,32
+Falkland Islands,5
+Faroe Islands,3
+Fiji,17
+Finland,51
+France,233
+French Guiana,22
+French Polynesia,36
+Gabon,14
+Gambia,1
+Georgia,5
+Germany,321
+Ghana,6
+Gibraltar,1
+Greece,60
+Greenland,29
+Grenada,3
+Guadeloupe,7
+Guam,2
+Guatemala,10
+Guernsey,2
+Guinea,6
+Guinea-Bissau,2
+Guyana,14
+Haiti,14
+Honduras,11
+Hong Kong,13
+Hungary,15
+Iceland,22
+India,140
+Indonesia,114
+Iran,81
+Iraq,10
+Ireland,25
+Isle of Man,1
+Israel,16
+Italy,92
+Jamaica,7
+Japan,131
+Jersey,1
+Johnston Atoll,1
+Jordan,6
+Kazakhstan,28
+Kenya,55
+Kiribati,18
+Korea,1
+Kuwait,2
+Kyrgyzstan,4
+Laos,11
+Latvia,3
+Lebanon,2
+Lesotho,3
+Liberia,3
+Libya,21
+Lithuania,8
+Luxembourg,1
+Macau,4
+Macedonia,2
+Madagascar,45
+Malawi,8
+Malaysia,47
+Maldives,42
+Mali,8
+Malta,8
+Marshall Islands,32
+Martinique,4
+Mauritania,10
+Mauritius,2
+Mayotte,1
+Mexico,94
+Micronesia,5
+Midway Islands,1
+Moldova,3
+Monaco,1
+Mongolia,13
+Montenegro,2
+Montserrat,2
+Morocco,22
+Mozambique,22
+Myanmar,1
+Namibia,19
+Nauru,1
+Nepal,36
+Netherlands,42
+Netherlands Antilles,8
+New Caledonia,11
+New Zealand,56
+Nicaragua,11
+Niger,7
+Nigeria,26
+Niue,1
+Norfolk Island,1
+North Korea,5
+Northern Mariana Islands,3
+Norway,69
+Oman,6
+Pakistan,46
+Palau,3
+Palestine,1
+Panama,26
+Papua New Guinea,57
+Paraguay,8
+Peru,43
+Philippines,64
+Poland,34
+Portugal,39
+Puerto Rico,15
+Qatar,3
+Reunion,10
+Romania,26
+Russia,249
+Rwanda,3
+Saint Helena,1
+Saint Kitts and Nevis,3
+Saint Lucia,3
+Saint Pierre and Miquelon,2
+Saint Vincent and the Grenadines,5
+Samoa,4
+Sao Tome and Principe,2
+Saudi Arabia,42
+Senegal,9
+Serbia,4
+Seychelles,11
+Sierra Leone,8
+Singapore,6
+Slovakia,10
+Slovenia,5
+Solomon Islands,27
+Somalia,11
+South Africa,103
+South Georgia and the Islands,2
+South Korea,31
+South Sudan,2
+Spain,84
+Sri Lanka,15
+Sudan,18
+Suriname,23
+Svalbard,4
+Swaziland,1
+Sweden,86
+Switzerland,53
+Syria,6
+Taiwan,32
+Tajikistan,5
+Tanzania,27
+Thailand,58
+Togo,2
+Tonga,5
+Trinidad and Tobago,2
+Tunisia,13
+Turkey,77
+Turkmenistan,8
+Turks and Caicos Islands,6
+Tuvalu,1
+Uganda,9
+Ukraine,33
+United Arab Emirates,19
+United Kingdom,209
+United States,1697
+Uruguay,13
+Uzbekistan,12
+Vanuatu,29
+Venezuela,58
+Vietnam,30
+Virgin Islands,8
+Wake Island,1
+Wallis and Futuna,2
+West Bank,1
+Western Sahara,3
+Yemen,11
+Zambia,13
+Zimbabwe,16

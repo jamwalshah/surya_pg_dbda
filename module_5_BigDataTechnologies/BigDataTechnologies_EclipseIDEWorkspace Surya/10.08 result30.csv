@@ -1,0 +1,147 @@
+al.airline_id, al.name, rt.codeshare
+24,American Airlines,Y
+28,Asiana Airlines,Y
+90,Air Europa,Y
+96,Aegean Airlines,Y
+116,Air Italy,Y
+130,Aeroflot Russian Airlines,Y
+137,Air France,Y
+197,Azerbaijan Airlines,Y
+214,Air Berlin,Y
+218,Air India Limited,Y
+225,Air Tahiti Nui,Y
+240,Air One,Y
+241,Air Sahara,Y
+242,Air Malta,Y
+316,Air Macau,Y
+319,Air Seychelles,Y
+321,AeroMéxico,Y
+324,All Nippon Airways,Y
+330,Air Canada,Y
+333,Air Baltic,Y
+345,Air New Zealand,Y
+407,Arik Air,Y
+412,Aerolineas Argentinas,Y
+439,Alaska Airlines,Y
+491,Austrian Airlines,Y
+502,Abu Dhabi Amiri Flight,Y
+503,Aeroflot-Nord,Y
+515,Avianca - Aerovias Nacionales de Colombia,Y
+524,Air Vanuatu,Y
+567,Air Caraïbes,Y
+596,Alitalia,Y
+751,Air China,Y
+837,Aer Lingus,Y
+879,Air Pacific,Y
+897,Air Philippines,Y
+1006,Air Astana,Y
+1034,Aerolane,Y
+1048,Atlantis European Airways,Y
+1057,Air Mauritius,Y
+1066,Air Madagascar,Y
+1316,AirTran Airways,Y
+1317,Air Transat,Y
+1355,British Airways,Y
+1422,Bangkok Airways,Y
+1478,Belavia Belarusian Airlines,Y
+1531,Brussels Airlines,Y
+1539,Binter Canarias,Y
+1623,Canadian North,Y
+1629,Cape Air,Y
+1680,Cathay Pacific,Y
+1756,China Airlines,Y
+1758,China Eastern Airlines,Y
+1767,China Southern Airlines,Y
+1868,Condor Flugdienst,Y
+1889,Copa Airlines,Y
+1908,Corsairfly,Y
+1925,Croatia Airlines,Y
+1936,Cubana de Aviación,Y
+1942,Cyprus Airways,Y
+1946,Czech Airlines,Y
+2009,Delta Air Lines,Y
+2056,Dragonair,Y
+2091,EVA Air,Y
+2117,Eastern Airways,Y
+2143,Egyptair,Y
+2183,Emirates,Y
+2220,Ethiopian Airlines,Y
+2222,Etihad Airways,Y
+2350,Finnair,Y
+2354,First Air,Y
+2420,Flybaboo,Y
+2421,Flybe,Y
+2468,Frontier Airlines,Y
+2520,Garuda Indonesia,Y
+2585,Golden Air,Y
+2622,Grupo TACA,Y
+2638,Gulf Air Bahrain,Y
+2660,Hainan Airlines,Y
+2688,Hawaiian Airlines,Y
+2822,Iberia Airlines,Y
+2987,Japan Airlines,Y
+3000,Jet Airways,Y
+3090,KLM Royal Dutch Airlines,Y
+3123,Kenmore Air,Y
+3126,Kenya Airways,Y
+3163,Korean Air,Y
+3197,LACSA,Y
+3200,LAN Airlines,Y
+3201,LAN Argentina,Y
+3210,LOT Polish Airlines,Y
+3233,Lao Airlines,Y
+3290,Lion Mentari Airlines,Y
+3320,Lufthansa,Y
+3329,Luxair,Y
+3342,L,Y
+3378,Malaysia Airlines,Y
+3386,Malmö Aviation,Y
+3392,Mandarin Airlines,Y
+3463,Meridiana,Y
+3490,Middle East Airlines,Y
+3737,Norwegian Air Shuttle,Y
+3754,Nas Air,Y
+3776,Olympic Airlines,Y
+3778,Oman Air,Y
+3865,Pacific Wings,Y
+3952,Philippine Airlines,Y
+4089,Qantas,Y
+4091,Qatar Airways,Y
+4234,Air Rarotonga,Y
+4248,Royal Air Maroc,Y
+4259,Royal Jordanian,Y
+4292,Rwandair Express,Y
+4304,SATA International,Y
+4305,South African Airways,Y
+4319,Scandinavian Airlines System,Y
+4329,S7 Airlines,Y
+4349,SriLankan Airlines,Y
+4435,Singapore Airlines,Y
+4533,Saudi Arabian Airlines,Y
+4547,Southwest Airlines,Y
+4559,Swiss International Air Lines,Y
+4599,Shandong Airlines,Y
+4609,Shanghai Airlines,Y
+4611,Shenzhen Airlines,Y
+4867,TAM Brazilian Airlines,Y
+4869,TAP Portugal,Y
+4940,Thai Airways International,Y
+4951,Turkish Airlines,Y
+5038,TransAsia Airways,Y
+5067,Transaero Airlines,Y
+5179,Tarom,Y
+5209,United Airlines,Y
+5265,US Airways,Y
+5281,Uzbekistan Airways,Y
+5282,Ukraine International Airlines,Y
+5309,Vietnam Airlines,Y
+5347,Virgin Atlantic Airways,Y
+5360,Virgin Australia,Y
+5416,WestJet,Y
+5496,Yemenia,Y
+9082,Uni Air,Y
+13983,Azul,Y
+16120,ZABAIKAL AIRLINES,Y
+16150,TransHolding System,Y
+16726,Era Alaska,Y
+18553,Maastricht Airlines,Y

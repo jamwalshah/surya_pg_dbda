@@ -1,0 +1,2 @@
+country, DENSE_RANK() OVER (ORDER BY COUNT(airport_id)
+United States,1697

@@ -1,0 +1,47 @@
+-- airport project
+
+$ hive
+set hive.cli.print.current.db = true;
+USE pwh;
+
+CREATE TABLE airport (
+airport_id INT, airport_name STRING, city STRING, country STRING,
+iata STRING, icao STRING, latitude DOUBLE, longitude DOUBLE,
+altitude INT, timezone DOUBLE, dst STRING, tz STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE ;
+
+LOAD DATA LOCAL INPATH 'airports_mod.dat' OVERWRITE INTO TABLE airport;
+
+SELECT * FROM airport LIMIT 10 ;
+
+SELECT country, COUNT(airport_id) FROM airport GROUP BY country LIMIT 10; 
+
+-- 
+
+CREATE TABLE airlines(
+airline_id INT, name STRING, alias STRING,
+iata STRING, icao STRING, callsign STRING,
+country STRING, active_status STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'Final_airlines' OVERWRITE INTO TABLE airlines;
+
+SELECT * FROM airlines LIMIT 10 ;
+
+SELECT count(airline_id) FROM airlines ;
+
+--
+
+CREATE TABLE routes (
+airline_iata STRING, airline_id INT, 
+src_airport_iata STRING, src_airport_id INT, 
+dst_airport_iata STRING, dst_airport_id INT,
+codeshare STRING, STOP INT equipment STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'routes.dat' OVERWRITE INTO TABLE routes;
+
+SELECT count(equipment) FROM routes ;
+-- 
+SELECT count(airport_id) FROM airport WHERE TRIM(UPPER(country)) = 'INDIA';
+--

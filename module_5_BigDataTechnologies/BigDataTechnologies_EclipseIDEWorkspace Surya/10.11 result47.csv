@@ -1,0 +1,2 @@
+country, count(airport_id)
+United States,1697

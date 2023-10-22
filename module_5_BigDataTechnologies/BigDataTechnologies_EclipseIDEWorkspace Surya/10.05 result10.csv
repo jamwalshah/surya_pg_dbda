@@ -1,0 +1,141 @@
+airport_id,name,city,country,iata,icao,latitude,longitude,altitude,timezone,dst,TZ
+2994,Ahmedabad,Ahmedabad,India,AMD,VAAH,23.077242,72.63465,189,5.5,N,Asia/Calcutta
+2995,Akola,Akola,India,AKD,VAAK,20.699006,77.058628,999,5.5,N,Asia/Calcutta
+2996,Aurangabad,Aurangabad,India,IXU,VAAU,19.862728,75.398114,1911,5.5,N,Asia/Calcutta
+2997,Chhatrapati Shivaji Intl,Mumbai,India,BOM,VABB,19.088686,72.867919,37,5.5,N,Asia/Calcutta
+2998,Bilaspur,Bilaspur,India,PAB,VABI,21.9884,82.110983,899,5.5,N,Asia/Calcutta
+2999,Bhuj,Bhuj,India,BHJ,VABJ,23.287828,69.670147,268,5.5,N,Asia/Calcutta
+3000,Belgaum,Belgaum,India,IXG,VABM,15.859286,74.618292,2487,5.5,N,Asia/Calcutta
+3001,Vadodara,Baroda,India,BDQ,VABO,22.336164,73.226289,129,5.5,N,Asia/Calcutta
+3002,Bhopal,Bhopal,India,BHO,VABP,23.287467,77.337375,1719,5.5,N,Asia/Calcutta
+3003,Bhavnagar,Bhaunagar,India,BHU,VABV,21.752206,72.185181,44,5.5,N,Asia/Calcutta
+3004,Daman,Daman,India,NMB,VADN,20.434364,72.843206,33,5.5,N,Asia/Calcutta
+3005,Deesa,Deesa,India,,VADS,24.267936,72.204433,485,5.5,N,Asia/Calcutta
+3006,Guna,Guna,India,,VAGN,24.654681,77.347347,1600,5.5,N,Asia/Calcutta
+3007,Goa,Goa,India,GOI,VAGO,15.380833,73.831422,184,5.5,N,Asia/Calcutta
+3008,Devi Ahilyabai Holkar,Indore,India,IDR,VAID,22.721786,75.801086,1850,5.5,N,Asia/Calcutta
+3009,Jabalpur,Jabalpur,India,JLR,VAJB,23.177817,80.052047,1624,5.5,N,Asia/Calcutta
+3010,Jamnagar,Jamnagar,India,JGA,VAJM,22.465522,70.012556,69,5.5,N,Asia/Calcutta
+3011,Kandla,Kandla,India,IXY,VAKE,23.112719,70.100289,96,5.5,N,Asia/Calcutta
+3012,Khajuraho,Khajuraho,India,HJR,VAKJ,24.817197,79.918597,728,5.5,N,Asia/Calcutta
+3013,Kolhapur,Kolhapur,India,KLH,VAKP,16.664658,74.289353,1996,5.5,N,Asia/Calcutta
+3014,Keshod,Keshod,India,IXK,VAKS,21.317069,70.270403,167,5.5,N,Asia/Calcutta
+3015,Dr Ambedkar Intl,Nagpur,India,NAG,VANP,21.092192,79.047183,1033,5.5,N,Asia/Calcutta
+3016,Nasik Road,Nasik Road,India,ISK,VANR,19.963739,73.807644,1959,5.5,N,Asia/Calcutta
+3017,Pune,Pune,India,PNQ,VAPO,18.582111,73.919697,1942,5.5,N,Asia/Calcutta
+3018,Porbandar,Porbandar,India,PBD,VAPR,21.648675,69.657219,23,5.5,N,Asia/Calcutta
+3019,Rajkot,Rajkot,India,RAJ,VARK,22.309183,70.779525,441,5.5,N,Asia/Calcutta
+3020,Raipur,Raipur,India,RPR,VARP,21.180406,81.738753,1041,5.5,N,Asia/Calcutta
+3021,Sholapur,Sholapur,India,SSE,VASL,17.627958,75.934842,1584,5.5,N,Asia/Calcutta
+3022,Surat,Surat,India,STV,VASU,21.114061,72.741792,16,5.5,N,Asia/Calcutta
+3023,Udaipur,Udaipur,India,UDR,VAUD,24.617697,73.8961,1684,5.5,N,Asia/Calcutta
+3037,Along,Along,India,,VEAN,28.175317,94.802036,900,5.5,N,Asia/Calcutta
+3038,Agartala,Agartala,India,IXA,VEAT,23.886978,91.24045,46,5.5,N,Asia/Calcutta
+3039,Aizawl,Aizwal,India,AJL,VEAZ,23.746603,92.802767,1001,5.5,N,Asia/Calcutta
+3040,Bagdogra,Baghdogra,India,IXB,VEBD,26.681206,88.328567,412,5.5,N,Asia/Calcutta
+3041,Bokaro,Bokaro,India,,VEBK,23.643489,86.148886,715,5.5,N,Asia/Calcutta
+3042,Bhubaneshwar,Bhubaneswar,India,BBI,VEBS,20.244364,85.817781,138,5.5,N,Asia/Calcutta
+3043,Netaji Subhash Chandra Bose Intl,Kolkata,India,CCU,VECC,22.654739,88.446722,16,5.5,N,Asia/Calcutta
+3044,Cooch Behar,Cooch-behar,India,COH,VECO,26.330508,89.467203,138,5.5,N,Asia/Calcutta
+3045,Dhanbad,Dhanbad,India,DBD,VEDB,23.834044,86.425261,847,5.5,N,Asia/Calcutta
+3048,Gaya,Gaya,India,GAY,VEGY,24.744308,84.951175,380,5.5,N,Asia/Calcutta
+3049,Hirakud,Hirakud,India,,VEHK,21.580231,84.005728,658,5.5,N,Asia/Calcutta
+3050,Imphal,Imphal,India,IMF,VEIM,24.75995,93.896697,2540,5.5,N,Asia/Calcutta
+3051,Jharsuguda,Jharsuguda,India,,VEJH,21.913536,84.050383,751,5.5,N,Asia/Calcutta
+3052,Jamshedpur,Jamshedpur,India,IXW,VEJS,22.813211,86.168844,505,5.5,N,Asia/Calcutta
+3053,Jorhat,Jorhat,India,JRH,VEJT,26.731528,94.175536,311,5.5,N,Asia/Calcutta
+3054,Kailashahar,Kailashahar,India,IXH,VEKR,24.308192,92.007156,79,5.5,N,Asia/Calcutta
+3055,Silchar,Silchar,India,IXS,VEKU,24.912928,92.978742,352,5.5,N,Asia/Calcutta
+3056,Lilabari,Lilabari,India,IXI,VELR,27.295494,94.09765,330,5.5,N,Asia/Calcutta
+3057,Dibrugarh,Mohanbari,India,MOH,VEMN,27.483853,95.016922,362,5.5,N,Asia/Calcutta
+3058,Muzaffarpur,Mazuffarpur,India,,VEMZ,26.119089,85.313664,174,5.5,N,Asia/Calcutta
+3059,Nawapara,Nawapara,India,,VENP,20.870036,82.519553,1058,5.5,N,Asia/Calcutta
+3060,Panagarh,Panagarh,India,,VEPH,23.474336,87.427508,240,5.5,N,Asia/Calcutta
+3061,Patna,Patina,India,PAT,VEPT,25.591317,85.087992,170,5.5,N,Asia/Calcutta
+3062,Purnea,Purnea,India,,VEPU,25.759594,87.410011,129,5.5,N,Asia/Calcutta
+3063,Birsa Munda,Ranchi,India,IXR,VERC,23.31425,85.321675,2148,5.5,N,Asia/Calcutta
+3064,Rourkela,Rourkela,India,RRK,VERK,22.25665,84.814567,659,5.5,N,Asia/Calcutta
+3065,Utkela,Utkela,India,,VEUK,20.097411,83.183797,680,5.5,N,Asia/Calcutta
+3066,Vishakhapatnam,Vishakhapatnam,India,VTZ,VEVZ,17.721167,83.224483,15,5.5,N,Asia/Calcutta
+3067,Zero,Zero,India,,VEZO,27.588283,93.828061,5403,5.5,N,Asia/Calcutta
+3079,Agra,Agra,India,AGR,VIAG,27.155831,77.960892,551,5.5,N,Asia/Calcutta
+3080,Allahabad,Allahabad,India,IXD,VIAL,25.440064,81.733872,322,5.5,N,Asia/Calcutta
+3081,Amritsar,Amritsar,India,ATQ,VIAR,31.709594,74.797264,756,5.5,N,Asia/Calcutta
+3082,Nal,Bikaner,India,,VIBK,28.070606,73.207161,750,5.5,N,Asia/Calcutta
+3083,Bakshi Ka Talab,Bakshi Ka Talab,India,,VIBL,26.988339,80.893117,385,5.5,N,Asia/Calcutta
+3084,Varanasi,Varanasi,India,VNS,VIBN,25.452358,82.859342,266,5.5,N,Asia/Calcutta
+3085,Kullu Manali,Kulu,India,KUU,VIBR,31.876706,77.154367,3573,5.5,N,Asia/Calcutta
+3086,Bhatinda,Bhatinda,India,,VIBT,30.270139,74.755772,662,5.5,N,Asia/Calcutta
+3087,Bhiwani,Bhiwani,India,,VIBW,28.837039,76.179094,720,5.5,N,Asia/Calcutta
+3088,Bareilly,Bareilly,India,,VIBY,28.422061,79.450842,580,5.5,N,Asia/Calcutta
+3089,Chandigarh,Chandigarh,India,IXC,VICG,30.673469,76.788542,1012,5.5,N,Asia/Calcutta
+3090,Kanpur Chakeri,Kanpur,India,,VICX,26.4043,80.410119,405,5.5,N,Asia/Calcutta
+3091,Safdarjung,Delhi,India,,VIDD,28.584511,77.205783,705,5.5,N,Asia/Calcutta
+3092,Dehradun,Dehra Dun,India,DED,VIDN,30.189689,78.180256,1831,5.5,N,Asia/Calcutta
+3093,Indira Gandhi Intl,Delhi,India,DEL,VIDP,28.5665,77.103088,777,5.5,N,Asia/Calcutta
+3094,Gwalior,Gwalior,India,GWL,VIGR,26.293336,78.227753,617,5.5,N,Asia/Calcutta
+3095,Hissar,Hissar,India,,VIHR,29.179444,75.755336,700,5.5,N,Asia/Calcutta
+3096,Jhansi,Jhansi,India,,VIJN,25.491172,78.558422,801,5.5,N,Asia/Calcutta
+3097,Jodhpur,Jodhpur,India,JDH,VIJO,26.251092,73.048869,717,5.5,N,Asia/Calcutta
+3098,Jaipur,Jaipur,India,JAI,VIJP,26.824192,75.812161,1263,5.5,N,Asia/Calcutta
+3099,Jaisalmer,Jaisalmer,India,JSA,VIJR,26.888653,70.864967,751,5.5,N,Asia/Calcutta
+3100,Jammu,Jammu,India,IXJ,VIJU,32.689142,74.837389,1029,5.5,N,Asia/Calcutta
+3101,Kanpur,Kanpur,India,KNU,VIKA,26.441444,80.364864,411,5.5,N,Asia/Calcutta
+3102,Kota,Kota,India,KTU,VIKO,25.160219,75.845631,896,5.5,N,Asia/Calcutta
+3103,Ludhiana,Ludhiaha,India,LUH,VILD,30.854681,75.952592,834,5.5,N,Asia/Calcutta
+3104,Leh,Leh,India,IXL,VILH,34.135872,77.546514,10682,5.5,N,Asia/Calcutta
+3105,Lucknow,Lucknow,India,LKO,VILK,26.760594,80.889339,410,5.5,N,Asia/Calcutta
+3106,Pathankot,Pathankot,India,IXP,VIPK,32.233778,75.634628,1017,5.5,N,Asia/Calcutta
+3107,Patiala,Patiala,India,,VIPL,30.314847,76.364469,820,5.5,N,Asia/Calcutta
+3108,Pantnagar,Nainital,India,PGH,VIPT,29.033408,79.473744,769,5.5,N,Asia/Calcutta
+3109,Fursatganj,Raibarelli,India,,VIRB,26.248489,81.380506,360,5.5,N,Asia/Calcutta
+3111,Sarsawa,Saharanpur,India,,VISP,29.993919,77.425311,891,5.5,N,Asia/Calcutta
+3112,Srinagar,Srinagar,India,SXR,VISR,33.987139,74.77425,5429,5.5,N,Asia/Calcutta
+3113,Satna,Satna,India,TNI,VIST,24.562319,80.854933,1060,5.5,N,Asia/Calcutta
+3130,Agatti,Agatti Island,India,AGX,VOAT,10.823656,72.176042,14,5.5,N,Asia/Calcutta
+3131,Bangalore,Bangalore,India,BLR,VOBL,12.949986,77.668206,2912,5.5,N,Asia/Calcutta
+3132,Bellary,Bellary,India,BEP,VOBI,15.162783,76.882775,30,5.5,N,Asia/Calcutta
+3133,Bidar,Bidar,India,,VOBR,17.908081,77.487142,2178,5.5,N,Asia/Calcutta
+3134,Vijayawada,Vijayawada,India,VGA,VOBZ,16.530433,80.796847,82,5.5,N,Asia/Calcutta
+3135,Coimbatore,Coimbatore,India,CJB,VOCB,11.030031,77.043383,1324,5.5,N,Asia/Calcutta
+3136,Cochin,Kochi,India,COK,VOCI,10.155556,76.391389,8,5.5,N,Asia/Calcutta
+3137,Calicut,Calicut,India,CCJ,VOCL,11.136839,75.9553,342,5.5,N,Asia/Calcutta
+3138,Cuddapah,Cuddapah,India,CDP,VOCP,14.509961,78.772833,430,5.5,N,Asia/Calcutta
+3139,Carnicobar,Carnicobar,India,,VOCX,9.152508,92.819628,5,5.5,N,Asia/Calcutta
+3140,Dundigul,Dundigul,India,,VODG,17.627178,78.403361,2013,5.5,N,Asia/Calcutta
+3141,Hyderabad,Hyderabad,India,HYD,VOHY,17.453117,78.467586,1742,5.5,N,Asia/Calcutta
+3142,Madurai,Madurai,India,IXM,VOMD,9.834508,78.093378,459,5.5,N,Asia/Calcutta
+3143,Mangalore,Mangalore,India,IXE,VOML,12.961267,74.890069,337,5.5,N,Asia/Calcutta
+3144,Chennai Intl,Madras,India,MAA,VOMM,12.994414,80.180517,52,5.5,N,Asia/Calcutta
+3145,Nagarjuna Sagar,Nagarjunsagar,India,,VONS,16.542653,79.318714,658,5.5,N,Asia/Calcutta
+3146,Port Blair,Port Blair,India,IXZ,VOPB,11.641161,92.729744,14,5.5,N,Asia/Calcutta
+3147,Pondicherry,Pendicherry,India,PNY,VOPC,11.968722,79.810058,118,5.5,N,Asia/Calcutta
+3148,Rajahmundry,Rajahmundry,India,RJA,VORY,17.110361,81.818208,151,5.5,N,Asia/Calcutta
+3149,Salem,Salem,India,,VOSM,11.783314,78.065606,1008,5.5,N,Asia/Calcutta
+3150,Tanjore,Tanjore,India,,VOTJ,10.722428,79.101567,253,5.5,N,Asia/Calcutta
+3151,Tirupati,Tirupeti,India,TIR,VOTP,13.632492,79.543256,350,5.5,N,Asia/Calcutta
+3152,Trichy,Tiruchirappalli,India,TRZ,VOTR,10.765364,78.709722,288,5.5,N,Asia/Calcutta
+3153,Thiruvananthapuram Intl,Trivandrum,India,TRV,VOTV,8.482122,76.920114,15,5.5,N,Asia/Calcutta
+3154,Tambaram,Tambaram,India,,VOTX,12.907214,80.121861,90,5.5,N,Asia/Calcutta
+5711,Diu Airport,Diu,India,DIU,VA1P,20.7131,70.9211,31,5.5,N,Asia/Calcutta
+6168,Hubli Airport,Hubli,India,HBX,VAHB,15.3617,75.0849,2171,5.5,N,Asia/Calcutta
+6172,Shillong Airport,Shillong,India,SHL,VEBI,25.7036,91.9787,2910,5.5,N,Asia/Calcutta
+6173,Lokpriya Gopinath Bordoloi International Airport,Guwahati,India,GAU,VEGT,26.106092,91.585939,162,5.5,N,Asia/Calcutta
+6174,Dimapur Airport,Dimapur,India,DMU,VEMR,25.8839,93.7711,487,5.5,N,Asia/Calcutta
+6175,Tezpur Airport,Tezpur,India,TEZ,VETZ,26.7091,92.7847,240,5.5,N,Asia/Calcutta
+6443,Dibrugarh Airport,Dibrugarh,India,DIB,\N,27.4839,95.0169,362,5.5,N,Asia/Calcutta
+6762,Shimla Airport,Shimla,India,SLV,VISM,31.081803,77.067967,5072,5.5,N,Asia/Calcutta
+6761,Nanded Airport,Nanded,India,NDC,VAND,19.1833,77.3167,1250,5.5,N,Asia/Calcutta
+6760,Kangra Airport,Kangra,India,DHM,VIGG,32.1651,76.2634,2525,5.5,N,Asia/Calcutta
+6741,Gorakhpur Airport,Gorakhpur,India,GOP,VEGK,26.739708,83.449708,259,5.5,N,Asia/Calcutta
+7535,Latur Airport,Latur,India,LTU,\N,18.411944,76.465,1584,5.5,U,Asia/Calcutta
+7774,Mysore Airport,Mysore,India,MYQ,VOMY,12.3072,76.6497,2349,5.5,U,Asia/Calcutta
+8660,Nagaur Airport,Nagaur,India,,VI73,27.20829964,73.71140289,3853,5.5,U,Asia/Calcutta
+8755,New Delhi Train Station,New Delhi,India,,\N,28.64197,77.2206,708,5.5,N,Asia/Calcutta
+8756,Agra Cantonment Railway Station,Agra,India,,\N,27.1578,77.98993,571,5.5,N,Asia/Calcutta
+8788,Gangtok Helipad,Gangtok,India,,\N,27.3521,88.6051,1500,5.5,N,Asia/Calcutta
+8970,Havelock Island Seaport,Havelock Island,India,,\N,12.042636,92.982574,0,5.5,N,Asia/Calcutta
+9053,Yelahanka AFB,Bangalore,India,YLK,VOYK,13.136,77.607,2912,5.5,N,Asia/Calcutta
+9300,Mormugao-Goa Port,Mormugao,India,,\N,15.4,73.8,0,5.5,N,Asia/Calcutta
+9301,Cochin Port,Cochin,India,,\N,9.58,76.14,0,5.5,N,Asia/Calcutta
+9489,Helipad of Viraj Group,Boisar,India,,\N,19.779,72.805,50,5.5,U,Asia/Calcutta

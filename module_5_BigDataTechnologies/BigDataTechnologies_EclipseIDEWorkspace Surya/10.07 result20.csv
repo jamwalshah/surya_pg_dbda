@@ -1,0 +1,541 @@
+distinct(al.name), rt.stop
+40-Mile Air,0
+ABSA - Aerolinhas Brasileiras,0
+ALAK,0
+Abaet,0
+Abu Dhabi Amiri Flight,0
+Adria Airways,0
+Aegean Airlines,0
+Aer Lingus,0
+Aereonautica militare,0
+Aero Condor Peru,0
+Aero Flight,0
+Aero Lanka,0
+Aero-Service,0
+AeroMéxico,0
+AeroWorld ,0
+Aerocondor,0
+Aeroflot Russian Airlines,0
+Aeroflot-Nord,0
+Aerolane,0
+Aeroline GmbH,0
+Aerolineas Argentinas,0
+Aerolineas Galapagos (Aerogal),0
+Aeromar,0
+Aeroper,0
+Afriqiyah Airways,0
+Aigle Azur,0
+Air Algerie,0
+Air Antilles Express,0
+Air Arabia,0
+Air Arabia Egypt,0
+Air Arabia Maroc,0
+Air Armenia,0
+Air Astana,0
+Air Atlanta Icelandic,0
+Air Austral,0
+Air Bagan,0
+Air Baltic,0
+Air Bangladesh,0
+Air Berlin,0
+Air Bosna,0
+Air Botswana,0
+Air Bourbon,0
+Air Burkina,0
+Air Busan,0
+Air Caledonie International,0
+Air Canada,0
+Air Caraïbes,0
+Air China,0
+Air Choice One,0
+Air Dolomiti,0
+Air Europa,0
+Air Europe,0
+Air Florida,0
+Air Foyle,0
+Air France,0
+Air Greenland,0
+Air Iceland,0
+Air India Express,0
+Air India Limited,0
+Air Italy,0
+Air Koryo,0
+Air Macau,0
+Air Madagascar,0
+Air Malta,0
+Air Mandalay,0
+Air Mauritius,0
+Air Moldova,0
+Air Mozambique,0
+Air Namibia,0
+Air New Zealand,0
+Air Nippon,0
+Air Niugini,0
+Air North Charter - Canada,0
+Air One,0
+Air Pacific,0
+Air Philippines,0
+Air Rarotonga,0
+Air Sahara,0
+Air Saint Pierre,0
+Air Salone,0
+Air Senegal International,0
+Air Seychelles,0
+Air Sicilia,0
+Air Sinai,0
+Air Tahiti,0
+Air Tahiti Nui,0
+Air Tindi,0
+Air Transat,0
+Air Vanuatu,0
+Air Zimbabwe,0
+AirAsia,0
+AirAsia X,0
+AirTran Airways,0
+Airbus France,0
+Aircompany Yakutia,0
+Airlinair,0
+Airlines Of Tasmania,0
+Airlines PNG,0
+Airnorth,0
+AlMasria Universal Airlines,0
+Alaska Airlines,0
+Alaska Central Express,0
+Alaska Seaplane Service,0
+Albanian Airlines,0
+Alitalia,0
+All Nippon Airways,0
+Allegiant Air,0
+Alpi Eagles,0
+Alrosa Mirny Air Enterprise,0
+Amaszonas,0
+American Airlines,0
+Amerijet International,0
+Apache Air,0
+Ariana Afghan Airlines,0
+Arik Air,0
+Arik Niger,0
+Arkefly,0
+Arkia Israel Airlines,0
+Arrow Air,0
+Aserca Airlines,0
+Asia Wings,0
+Asian Wings Airways,0
+Asiana Airlines,0
+Askari Aviation,0
+Astair,0
+Astrakhan Airlines,0
+Astral Aviation,0
+Atlant-Soyuz Airlines,0
+Atlantic Airways,0
+Atlantis European Airways,0
+Atlasjet,0
+Aurigny Air Services,0
+Austrian Airlines,0
+Avianca - Aerovias Nacionales de Colombia,0
+Avient Aviation,0
+Azerbaijan Airlines,0
+Azul,0
+BQB Lineas Aereas,0
+BRA-Transportes Aereos,0
+BVI Airways,0
+Bahamasair,0
+Baikotovitchestrian Airlines ,0
+Bangkok Airways,0
+Bearskin Lake Air Service,0
+Belair Airlines,0
+Belavia Belarusian Airlines,0
+Benin Golf Air,0
+Bering Air,0
+Berjaya Air,0
+Big Sky Airlines,0
+Biman Bangladesh Airlines,0
+Binter Canarias,0
+Birmingham European,0
+Blue Panorama Airlines,0
+British Airways,0
+Brussels Airlines,0
+Bulgaria Air,0
+BusinessAir,0
+CAL Cargo Air Lines,0
+Camair-co,0
+Cambodia Angkor Air (K6),0
+Cameroon Airlines,0
+Canadian National Airways,0
+Canadian North,0
+Cape Air,0
+Cargo Plus Aviation,0
+Cargoitalia,0
+Caribbean Airlines,0
+Carpatair,0
+Cathay Pacific,0
+Catovair,0
+Caucasus Airlines,0
+Cayman Airways,0
+Cebu Pacific,0
+Changan Airlines,0
+Chicago Express,0
+China Airlines,0
+China Eastern Airlines,0
+China SSS,0
+China Southern Airlines,0
+China United,0
+China United Airlines,0
+Chitaavia,0
+Ciel Canadien,0
+Cielos Airlines,0
+Citilink Indonesia,0
+City Connexion Airlines,0
+CityJet,0
+Comair,0
+Comores Airlines,0
+Compagnie Africaine d\\'Aviation,0
+Condor Flugdienst,0
+Conviasa,0
+Copa Airlines,0
+Corsairfly,0
+Corse-Mediterranee,0
+Cosmic Air,0
+Croatia Airlines,0
+Cubana de Aviación,0
+Cyprus Airways,0
+Cyprus Turkish Airlines,0
+Czech Airlines,0
+DAT Danish Air Transport,0
+Daallo Airlines,0
+Delta Air Lines,0
+Dennis Sky,0
+Dragonair,0
+Druk Air,0
+EVA Air,0
+Eagle Air,0
+East African,0
+Eastar Jet,0
+Eastern Airways,0
+Egyptair,0
+El Al Israel Airlines,0
+Emirates,0
+Empresa Ecuatoriana De Aviacion,0
+Era Alaska,0
+Estafeta Carga Aerea,0
+Estonian Air,0
+Ethiopian Airlines,0
+Etihad Airways,0
+Euro Exec Express,0
+Eurolot,0
+Eurowings,0
+Excel Airways,0
+Express One International,0
+Far Eastern Air Transport,0
+Finnair,0
+Firefly,0
+First Air,0
+Flightline,0
+Flightlink Tanzania,0
+Fly 6ix,0
+Fly Air,0
+Fly Colombia ( Interliging Flights ),0
+Fly Dubai,0
+Fly540,0
+FlyLal,0
+FlyNordic,0
+Flybaboo,0
+Flybe,0
+Formosa Airlines,0
+Frontier Airlines,0
+Fuji Dream Airlines,0
+Gabon Airlines,0
+Garuda Indonesia,0
+Gazpromavia,0
+Genesis,0
+Georgian Airways,0
+Georgian National Airlines,0
+Germania,0
+Germanwings,0
+Go Air,0
+Golden Air,0
+Great Lakes Airlines,0
+Grupo TACA,0
+Gulf Air Bahrain,0
+Hainan Airlines,0
+Hankook Airline,0
+Hapagfly,0
+Harmony Airways,0
+Hawaiian Airlines,0
+Hawkair,0
+Helijet,0
+Hello,0
+Helvetic Airways,0
+Hex'Air,0
+Hokkaido International Airlines,0
+Homer Air,0
+Hong Kong Airlines,0
+Hong Kong Express Airways,0
+Huaxia,0
+Iberia Airlines,0
+Iberworld,0
+Ibex Airlines,0
+Icelandair,0
+Illinois Airways,0
+IndiGo Airlines,0
+Indonesia AirAsia,0
+Insel Air (7I/INC) (Priv),0
+Interair South Africa,0
+Interjet (ABC Aerolineas),0
+Interlink Airlines,0
+Intersky,0
+Interstate Airline,0
+Iran Air,0
+Iran Aseman Airlines,0
+Island Air (WP),0
+Isles of Scilly Skybus,0
+Israir,0
+IzAvia,0
+Japan Air System,0
+Japan Airlines,0
+Japan Asia Airways,0
+Japan Transocean Air,0
+Jat Airways,0
+Jazeera Airways,0
+Jeju Air,0
+Jet Airways,0
+Jet2.com,0
+JetBlue Airways,0
+Jetstar Airways,0
+Jetstar Asia Airways,0
+Jetstar Pacific,0
+Jin Air,0
+Juneyao Airlines,0
+KLM Royal Dutch Airlines,0
+KSY,0
+Kam Air,0
+Kampuchea Airlines,0
+Kenmore Air,0
+Kenya Airways,0
+Kish Air,0
+Korean Air,0
+Kuwait Airways,0
+L,0
+LACSA,0
+LAN Airlines,0
+LAN Argentina,0
+LOT Polish Airlines,0
+LSM Airlines,0
+LTU International,0
+Lao Airlines,0
+Leeward Islands Air Transport,0
+Libyan Arab Airlines,0
+Linhas A,0
+Lion Mentari Airlines,0
+Lufthansa,0
+Luxair,0
+MIAT Mongolian Airlines,0
+Maastricht Airlines,0
+Mahan Air,0
+Malaysia Airlines,0
+Maldivian,0
+Malindo Air,0
+Malmö Aviation,0
+Mandala Airlines,0
+Mandarin Airlines,0
+Mango,0
+Marusya Airways,0
+Marysya Airlines,0
+Mauritania Airlines International,0
+Maxair,0
+Maya Island Air,0
+Meridiana,0
+Metro Batavia,0
+MexicanaLink,0
+Middle East Airlines,0
+Midwest Airlines (Egypt),0
+Mongolian International Air Lines ,0
+Montenegro Airlines,0
+Moskovia Airlines,0
+Motor Sich,0
+Myway Airlines,0
+NHT Lineas Aereas,0
+Nas Air,0
+Nasair,0
+Nationwide Airlines,0
+Nauru Air Corporation,0
+Nepal Airlines,0
+NextJet,0
+Niki,0
+Nile Air,0
+Nok Air,0
+NordStar Airlines,0
+Northern Dene Airways,0
+Northwestern Air,0
+Norwegian Air Shuttle,0
+Nouvel Air Tunisie,0
+Oceanair,0
+Olympic Airlines,0
+Oman Air,0
+Omni Air International,0
+Omskavia Airline,0
+Onur Air,0
+Orenburg Airlines,0
+Orient Thai Airlines,0
+Overland Airways,0
+PAN Air,0
+PB Air,0
+Pacific Coastal Airline,0
+Pacific East Asia Cargo Airlines,0
+Pacific Wings,0
+Pakistan International Airlines,0
+Pal airlines,0
+Papillon Grand Canyon Helicopters,0
+Patriot Airways,0
+Peach Aviation,0
+Pegasus Airlines,0
+Peninsula Airways,0
+Peruvian Airlines,0
+Philippine Airlines,0
+Piedmont Airlines (1948-1989),0
+Pinnacle Airlines,0
+Polet Airlines (Priv),0
+Porter Airlines,0
+Potomac Air,0
+Precision Air,0
+Primaris Airlines,0
+Proflight Commuter Services,0
+Qantas,0
+Qatar Airways,0
+Rainbow Air Polynesia,0
+Reem Air,0
+Regional Express,0
+Rossiya-Russian Airlines,0
+Royal Air Cambodge,0
+Royal Air Maroc,0
+Royal Brunei Airlines,0
+Royal Falcon,0
+Royal Jordanian,0
+Rwandair Express,0
+Ryanair,0
+S7 Airlines,0
+SATA Air Acores,0
+SATA International,0
+SATENA,0
+SENIC AIRLINES,0
+SOCHI AIR CHATER,0
+Safi Airlines,0
+Salmon Air,0
+Salzburg arrows,0
+Santa Barbara Airlines,0
+Saratov Aviation Division,0
+Sat Airlines,0
+Saudi Arabian Airlines,0
+Scandinavian Airlines System,0
+Scat Air,0
+Scoot,0
+SeaPort Airlines,0
+Seaborne Airlines,0
+Senegal Airlines,0
+Servicios de Transportes A,0
+Shaheen Air International,0
+Shandong Airlines,0
+Shanghai Airlines,0
+Sharp Airlines,0
+Shenzhen Airlines,0
+Shuttle America,0
+Sibaviatrans,0
+Sichuan Airlines,0
+SilkAir,0
+Singapore Airlines,0
+Sky Airline,0
+SkyWork Airlines ,0
+Skymark Airlines,0
+Skynet Airlines,0
+Skyservice Airlines,0
+SmartLynx Airlines,0
+Solomon Airlines,0
+South African Airways,0
+South East Asian Airlines,0
+Southern Winds Airlines,0
+Southwest Airlines,0
+Spicejet,0
+Spirit Airlines,0
+SriLankan Airlines,0
+Sriwijaya Air,0
+Star Flyer,0
+Star Peru (2I),0
+Star1 Airlines,0
+Starbow Airlines,0
+Starline.kz,0
+Sudan Airways,0
+Sun Country Airlines,0
+SunExpress,0
+Surinam Airways,0
+Swiss International Air Lines,0
+T.J. Air,0
+TAAG Angola Airlines,0
+TACV,0
+TAM Brazilian Airlines,0
+TAM Mercosur,0
+TAME,0
+TAP Portugal,0
+TRIP Linhas A,0
+TUIfly,0
+TUR Avrupa Hava YollarÄ±,0
+Tajik Air,0
+Tarom,0
+Thai AirAsia,0
+Thai Airways International,0
+Thomas Cook Airlines,0
+Thomsonfly,0
+Tiara Air,0
+Tiger Airways,0
+Tiger Airways Australia,0
+TransAsia Airways,0
+TransHolding System,0
+Transaero Airlines,0
+Transavia France,0
+Transavia Holland,0
+Travel Service,0
+Tropic Air,0
+Tuninter,0
+Tunisair,0
+Turkish Airlines,0
+Turkmenistan Airlines,0
+Tway Airlines,0
+Twin Jet,0
+US Airways,0
+UTair-Express,0
+Ukraine International Airlines,0
+Uni Air,0
+United Airlines,0
+United Airways,0
+Ural Airlines,0
+Uzbekistan Airways,0
+VRG Linhas Aereas,0
+Valuair,0
+Varig Log,0
+Vietnam Airlines,0
+Viking Hellas,0
+Virgin America,0
+Virgin Atlantic Airways,0
+Virgin Australia,0
+Virgin Express,0
+Virgin Pacific,0
+VivaColombia,0
+Volaris,0
+WebJet Linhas A,0
+West Air China,0
+WestJet,0
+Widerøe,0
+Windward Islands Airways,0
+Wizz Air,0
+Wizz Air Ukraine,0
+XL Airways France,0
+Xiamen Airlines,0
+Yangon Airways,0
+Yemenia,0
+Yeti Airways,0
+ZABAIKAL AIRLINES,0
+Zambia Skyways,0
+Zest Air,0
+Zip,0
+Zoom Airlines,0
+bmibaby,0
+easyJet,0

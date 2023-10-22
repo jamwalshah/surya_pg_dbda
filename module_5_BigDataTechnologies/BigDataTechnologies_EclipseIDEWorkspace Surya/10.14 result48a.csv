@@ -1,0 +1,35 @@
+country, count(airport_id)
+ Santiago Island,1,1
+ Niuafo'ou Island,1,1
+Saint Helena,1,1
+West Bank,1,1
+Palestine,1,1
+Wake Island,1,1
+ Sheffield,1,1
+Albania,1,1
+Anguilla,1,1
+Aruba,1,1
+Barbados,1,1
+Benin,1,1
+Bhutan,1,1
+British Indian Ocean Territory,1,1
+Tuvalu,1,1
+Burundi,1,1
+Christmas Island,1,1
+Cocos (Keeling) Islands,1,1
+Gambia,1,1
+Gibraltar,1,1
+Swaziland,1,1
+Isle of Man,1,1
+Jersey,1,1
+Johnston Atoll,1,1
+Korea,1,1
+ Fogo Island,1,1
+Luxembourg,1,1
+Mayotte,1,1
+Midway Islands,1,1
+Monaco,1,1
+Myanmar,1,1
+Nauru,1,1
+Niue,1,1
+Norfolk Island,1,1
