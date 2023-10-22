@@ -1,0 +1,100 @@
+package com.cdac.moduleEnd;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Product implements Comparable<Product>{
+	String ProductName;
+	int Quantity;
+	
+	public Product(String productName, int quantity) {
+		super();
+		ProductName = productName;
+		Quantity = quantity;
+	}
+
+	public Product() {
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	public void setProductName(String productName) {
+		ProductName = productName;
+	}
+
+	public void setQuantity(int quantity) {
+		Quantity = quantity;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [ProductName=" + ProductName + ", Quantity=" + Quantity + "]";
+	}
+
+	@Override
+	public int compareTo(Product o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
+	
+}
+
+public class Inventory {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		ArrayList<Product> ProductList = new ArrayList<Product>();
+		int choice = 0;
+		Scanner sc = new Scanner(System.in);
+		Scanner scn = new Scanner(System.in);
+		
+		
+		do {
+			System.out.println("\n1. Add Product Details");
+			System.out.println("\n2. Remove Product Details");
+			System.out.println("\n3. Display Complete Inventory in sorted order");
+			System.out.println("\n4. Exit");
+			choice = sc.nextInt();
+			
+			switch (choice) {
+			case 1: //add products
+				System.out.println("Enter Poduct Details to add product");
+				Product p1 = new Product();
+				System.out.println("Enter Product Name: ");
+				p1.setProductName(scn.nextLine());
+				System.out.println("Enter Quantity: ");
+				p1.setQuantity(sc.nextInt());
+				
+				ProductList.add(p1);//add single product
+				
+				break;
+
+			case 2: //remove products
+				
+				break;
+
+			case 3: //display products
+				
+				System.out.println("All of inventory in sorted order");
+				for(Product oneProduct: ProductList) {
+					System.out.println(oneProduct.toString());
+				}
+				break;
+
+			case 4:
+				System.out.println("Exiting App...");
+				break;
+
+			default:
+				System.out.println("Invalid choice option");
+				break;
+			}
+			
+		}while(choice !=4 );
+		
+		
+	}
+
+}

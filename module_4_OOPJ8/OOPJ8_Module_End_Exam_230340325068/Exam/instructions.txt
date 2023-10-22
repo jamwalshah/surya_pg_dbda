@@ -1,0 +1,7 @@
+Guys, for tomorrow's lab exam you have to follow below steps  :
+1. Create empty folder on desktop (folder name: 12digit PRN Number)
+2. Choose that folder as a workspace for exam
+3. Name your Java project as : Exam
+4. Create one word/doc file for output screenshots 
+5. After exam completion you have to upload Doc file &  SRC folder in another folder (Name: Your Name)
+ and Upload it on Drive or git then submit drive link in Submission wala Google form

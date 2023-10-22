@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="java.util.Scanner"/>
+    <fullyQualifiedTypeName name="java.lang.System"/>
+    <fullyQualifiedTypeName name="java.lang.Comparable"/>
+    <fullyQualifiedTypeName name="java.util.Collections"/>
+    <fullyQualifiedTypeName name="java.util.Comparator"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.CompareProduct.Product"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.CompareProduct"/>
+    <fullyQualifiedTypeName name="java.util.Iterator"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.Product"/>
+    <fullyQualifiedTypeName name="java.lang.Enum"/>
+    <fullyQualifiedTypeName name="java.lang.Character"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.Student"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.Person"/>
+    <fullyQualifiedTypeName name="java.lang.Double"/>
+    <fullyQualifiedTypeName name="java.lang.String"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.ValueException"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.FitnessTracker"/>
+    <fullyQualifiedTypeName name="java.lang.NullPointerException"/>
+    <fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
+    <fullyQualifiedTypeName name="com.cdac.moduleEnd.FitnessTrackingTest"/>
+</qualifiedTypeNameHistroy>

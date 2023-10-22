@@ -1,0 +1,61 @@
+package com.cdac.moduleEnd;
+
+class ValueException extends Exception{
+	public ValueException(String msg) {
+		super(msg);
+	}
+}
+
+class FitnessTracker{
+	String WorkoutDuration;
+	String Distance;
+	
+	public FitnessTracker(String workoutDuration, String distance) throws NumberFormatException, NullPointerException, ValueException {
+		super();
+		this.setWorkoutDuration(workoutDuration);
+//		WorkoutDuration = workoutDuration;
+		this.setDistance(distance);
+//		Distance = distance;
+	}
+
+	public void setWorkoutDuration(String workoutDuration) throws ValueException, NullPointerException, NumberFormatException {
+		try {
+			Double wod = Double.parseDouble(workoutDuration);
+			if(wod>0) {
+				this.WorkoutDuration = String.valueOf(wod);
+			}
+			else {
+				throw new ValueException("WorkoutDuration is negative or zero");
+			}
+		} catch (ValueException e) {
+			System.out.println("Exception caught in setWorkoutDuration: "+e.getMessage());
+		}
+//		WorkoutDuration = workoutDuration; // to directly assign work out duration
+	}
+	public void setDistance(String distance) throws ValueException, NullPointerException, NumberFormatException{
+		try {
+			Double dist = Double.parseDouble(distance);
+			if(dist>0) {
+				this.Distance = String.valueOf(dist);
+			}
+			else {
+				throw new ValueException("Distance is negative or zero");
+			}
+		} catch (ValueException e) {
+			System.out.println("Exception caught in setDistance: "+e.getMessage());
+		}
+		Distance = distance;
+	}
+	
+	
+	
+}
+
+public class FitnessTrackingTest {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
