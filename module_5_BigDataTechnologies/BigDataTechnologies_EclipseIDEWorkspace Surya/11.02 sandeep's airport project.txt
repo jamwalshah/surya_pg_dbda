@@ -1,0 +1,159 @@
+create the airport table
+--------------------------
+
+create table airport(
+airport_id int,
+name string,
+city string,
+country string,
+iata string,
+icao string,
+latitude double,
+longitude double,
+altitude int,
+timezone double,
+dst string,
+tz string)
+row format delimited 
+fields terminated by ',' 
+stored as textfile;
+
+load data local inpath 'airports_mod.dat' overwrite into table airport;
+
+select count(airport_id) from airport;
+
+total = 8107
+
+select country, count(airport_id) from airport group by country;
+
+India = 140
+
+
+create table airlines(
+airline_id int,
+name string,
+alias string,
+iata string,
+icao string,
+callsign string,
+country string,
+active string)
+row format delimited 
+fields terminated by ',' 
+stored as textfile;
+
+load data local inpath 'Final_airlines' overwrite into table airlines;
+
+select count(airline_id) from airlines;
+
+total = 6048
+
+create table routes(
+airline_iata string,
+airline_id int,
+src_airport_iata string,
+src_airport_id int,
+dest_airport_iata string,
+dest_airport_id int,
+codeshare string,
+stops int,
+equipment string)
+row format delimited 
+fields terminated by ',' 
+stored as textfile;
+
+load data local inpath 'routes.dat' overwrite into table routes;
+
+select count(*) from routes;
+
+total = 67663
+
+
+q1)
+
+select * from airport where trim(upper(country)) = 'INDIA';
+
+140 rows
+
+q2)
+
+select distinct name from
+airlines a join routes r
+on
+a.airline_id = r.airline_id
+where stops = 0;
+
+540 rows
+
+q3)
+select distinct name from
+airlines a join routes r
+on
+a.airline_id = r.airline_id
+where
+trim(upper(codeshare)) = 'Y';
+
+
+146 rows
+
+
+
+
+q4)
+
+SELECT *
+FROM (
+    SELECT country, dense_rank() OVER (ORDER BY COUNT(airport_id) DESC) AS rnk
+    FROM airport
+    GROUP BY country
+) AS X
+WHERE X.rnk = 1;
+
+OR
+
+select country, count(airport_id) as cnt from airport group by country having cnt in (
+select max(total) from
+(select count(airport_id) as total from airport group by country) abc );
+
+United States 1697
+
+find list of countries or terr having least number of airports
+-------------------------------------------------------------
+select country, count(airport_id) as cnt from airport group by country having cnt in (
+select min(total) from
+(select count(airport_id) as total from airport group by country) abc );
+
+
+q5)
+
+select distinct a.name from
+airlines a join routes r
+on
+a.airline_id = r.airline_id
+
+join
+airport ar1
+on
+ar1.airport_id = src_airport_id
+
+join
+airport ar2
+on
+ar2.airport_id = dest_airport_id
+
+where
+
+trim(upper(ar1.country)) = 'UNITED STATES'
+or
+trim(upper(ar2.country)) = 'UNITED STATES';
+
+
+136 rows
+
+
+
+
+
+
+
+
