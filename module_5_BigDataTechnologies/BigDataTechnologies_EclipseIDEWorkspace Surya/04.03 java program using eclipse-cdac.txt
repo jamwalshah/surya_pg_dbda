@@ -1,0 +1,46 @@
+steps for creating jar file in eclipse
+----------------------------------------
+1) Launch the eclipse application using Java perspective
+
+2) Click OK for Workspace Launcher
+
+3) creata a new project -
+a) File ->New --->Java project
+b) Enter "Hadoop" as project name and click Finish
+
+4) create a new java program
+a) Expand the said project in the Package explorer
+b) Right click on Hadoop project --->New --->Class
+c) Enter the class name as "StockVolume" and click Finish
+d) copy the orginal program in the eclipse and save
+
+5) add external jar files for the project
+a) Right click on Hadoop project --->Build path --->Configure build path
+b) select the Libraries tab and click on "Add external jars"
+c) click on File System and add 2 jars as under
+	hadoop-common.jar
+	hadoop-mapreduce-client-core.jar
+d) After saving the changes there should not be any ERROR in java program
+
+6) Create a jar file from class files
+a) Right click on Hadoop project --->Export--->Java--->Jar file-->Next
+b) enter the jar file name with full path in export destination
+myjar.jar
+c) click on Finish
+
+7) Upload the file myjar.jar and NYSE.csv to client from your base machine.
+
+
+
+create a training folder
+-----------------------
+hadoop fs -mkdir cdac
+
+upload NYSE.csv on hdfs
+------------------------
+hadoop fs -put NYSE.csv cdac
+
+
+Run the java jar file on Hadoop
+----------------------------------
+hadoop jar myjar.jar StockVolume cdac/NYSE.csv cdac/out1

@@ -1,0 +1,18 @@
+Using OVA Files with VirtualBox
+To use OVA files with VirtualBox, you need to import them and let VirtualBox configure the file as it needs to. 
+The process is quite straightforward.
+
+Download and install VirtualBox if you don’t have it already.
+
+https://www.virtualbox.org/wiki/Downloads
+
+
+
+Open VirtualBox and select File > Import Appliance…
+Now, select your OVA file in the import box and verify the settings in the center window.
+Make any changes if you need to in that center window.
+Click Import at the bottom.
+Allow VirtualBox to import the file and then configure it for use.
+It may take a little while to import OVA files. I recently imported a new Mac OS image and it took over an hour. A previous Linux image took a mere ten minutes so you may or may not need to be patient waiting for VirtualBox to install the operating system on your virtual machine. The procedure is fairly reliable, though, so it is safe to go have a coffee or something while it’s working. Just let the setup process run until it’s finished.
+
+When you select the OVA file to import, the main details of the VM appear in the center of the import box. You can change some details but not others. If you don’t change them here, you can modify some of them later in the main Settings menu within VirtualBox.
