@@ -1,0 +1,106 @@
+hive
+
+hive > set hive.cli.print.current.db = true;
+
+hive(default)>
+
+create database training;
+
+folder - training.db will get created under /user/hive/warehouse
+
+
+show databases;
+
+use training;
+
+create table nyse (exchange_name string, stock_id string, stk_date date, 
+open double, high double, low double, 
+close double, volume bigint, adj_close double
+) row format delimited 
+fields terminated by ',' 
+stored as textfile;
+
+create table nyse_orc (exchange_name string, stock_id string, stk_date date, 
+open double, high double, low double, 
+close double, volume bigint, adj_close double
+) 
+stored as orc;
+
+insert overwrite table nyse_orc select * from nyse;
+
+
+show tables;
+
+describe nyse;
+
+select * from nyse;
+
+desc formatted nyse;
+
+location : hdfs://quickstart.cloudera/user/hive/warehouse/training.db/nyse
+
+
+show tables;
+
+on the new linux command prompt
+
+ls NYSE.csv
+
+hadoop fs -put NYSE.csv /user/hive/warehouse/training.db/nyse
+
+
+select * from nyse limit 10;
+
+
+set hive.cli.print.header =true;
+
+
+find the total volume for each stock
+------------------------------------
+select stock_id, sum(volume)  as total from nyse group by stock_id;
+
+
+
+highest vol - top 10 stocks
+----------------------------
+select stock_id, sum(volume)  as total from nyse group by stock_id order by total desc limit 10;
+
+
+find all time low price for each stock
+
+AEA = 0.8
+
+
+find all time high price for each stock
+
+AEA = 23.94
+
+
+
+
+
+if we want to write the result on hadoop
+
+
+
+insert overwrite directory 'hive/result1' row format delimited fields terminated by ',' select stock_id, sum(volume) from nyse group by stock_id;
+
+create table stkvol as
+select stock_id, sum(volume) as total from nyse group by stock_id;
+
+
+
+insert overwrite directory 'hive/result2' row format delimited fields terminated by ',' 
+select stock_id, max(high), min(low) from nyse group by stock_id;
+
+insert overwrite directory 'hive/result2' row format delimited fields terminated by ',' 
+select stock_id, max(high), min(low) min(low), round(avg(close), 2)from nyse group by stock_id;
+AEA, 23.94, 0.8, 10.57
+
+
+
+
+
+
+
+
