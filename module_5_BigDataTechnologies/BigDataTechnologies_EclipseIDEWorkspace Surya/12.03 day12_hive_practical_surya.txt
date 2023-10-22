@@ -1,0 +1,142 @@
+-- 
+-- 
+C2. Create customer table
+-------------------------------
+CREATE TABLE customer(custno INT, firstname STRING, lastname STRING, age INT, profession STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+SHOW TABLES ;
+
+
+D1. Load the data into the table (from local file system)
+-----------------------------------------------------
+LOAD DATA LOCAL INPATH 'custs.txt' OVERWRITE INTO TABLE customer;
+
+SELECT COUNT(*) FROM customer ;
+
+
+D1. Load the data into the table (from local file system)
+-----------------------------------------------------
+LOAD  DATA LOCAL INPATH 'custs_add' INTO TABLE customer;
+
+SELECT COUNT(*) FROM customer ;
+
+-- 
+-- 
+C1. Create transaction table
+-------------------------------
+$ hadoop fs -mkdir sales
+$ hadoop fs -put txns1.txt sales
+$ hadoop fs -ls sales
+
+CREATE TABLE txnrecords(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS textfile
+LOCATION '/user/bigdatalab456422/sales';
+
+SELECT * FROM txnrecords LIMIT 10
+
+
+-- 
+-- 
+C1. Create transaction table
+-------------------------------
+CREATE TABLE txn_orc(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+STORED AS ORC;
+
+INSERT OVERWRITE TABLE txn_orc SELECT * FROM txnrecords;
+
+SELECT * FROM txn_orc LIMIT 10;
+
+$ hadoop fs -cat "/user/hive/warehouse/surya_training.db/txn_orc/*" ;
+
+DESC FORMATTED txn_orc ;
+
+-- 
+-- 
+C1. Create transaction table
+-------------------------------
+CREATE TABLE txn_parquet(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+STORED AS PARQUET;
+
+INSERT OVERWRITE TABLE txn_parquet SELECT * FROM txnrecords;
+
+SELECT * FROM txn_parquet LIMIT 10;
+
+$ hadoop fs -cat "/user/hive/warehouse/surya_training.db/txn_parquet/*" ;
+
+DESC FORMATTED txn_parquet ;
+
+-- 
+-- 
+H1. Create partitioned table
+---------------------------------------------
+CREATE TABLE txnrecsByCat(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING) PARTITIONED BY (category STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+DESC txnrecsByCat;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+I1. Load data into partition table (single bucket)
+---------------------------------------------------
+INSERT OVERWRITE TABLE txnrecsByCat
+PARTITION(category)
+SELECT txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.spendby, txn.category FROM txnrecords txn
+DISTRIBUTE BY category;
+
+-- 
+-- 
+H3. Create partitioned table (single bucket) on a derived column
+-----------------------------------------------------------------
+CREATE TABLE txnrecsByCat3(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING)
+PARTITIONED BY (category STRING,spendby STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+DESC txnrecsByCat3;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+I3. Load data into partition table (single bucket)
+---------------------------------------------------
+FROM txnrecords txn
+INSERT OVERWRITE TABLE txnrecsByCat3
+PARTITION(category,spendby)
+SELECT txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.category, txn.spendby
+DISTRIBUTE BY category,spendby;
+
+-- 
+-- 
+H3. Create partitioned table (single bucket) on a derived column
+-----------------------------------------------------------------
+CREATE TABLE txnrecsByCat4(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category String, product STRING, city STRING, state STRING, spendby STRING)
+PARTITIONED BY (month STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+DESC txnrecsByCat4;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+I3. Load data into partition table (single bucket)
+---------------------------------------------------
+FROM txnrecords txn
+INSERT OVERWRITE TABLE txnrecsByCat4
+PARTITION(month)
+SELECT txn.txnno, txn.txndate,txn.custno, txn.amount,txn.category,txn.product,txn.city,txn.state, txn.spendby,substring(txn.txndate,1,2)
+DISTRIBUTE BY substring(txn.txndate,1,2);
+
+
+
+
+
