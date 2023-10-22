@@ -1,0 +1,85 @@
+CREATE TABLE airport(
+airport_id INT, name STRING,
+city STRING, country STRING,
+iata_code STRING, icao_code STRING,
+longitude DOUBLE, latitude DOUBLE,
+altitude INT,
+timezone DOUBLE, daylight STRING, tzregion STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'airports_mod.dat' OVERWRITE INTO TABLE airport;
+
+
+CREATE TABLE airlines(
+airline_id INT,  airline_name STRING, alias STRING,
+airline_iata  STRING, airline_icao  STRING,
+callsign STRING,
+reg_country STRING, active_status  STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'Final_airlines' OVERWRITE INTO TABLE airlines;
+
+CREATE TABLE routes(
+airline_iata STRING, airline_id INT, 
+src_airport_iata STRING, src_airport_id INT,
+dest_airport_iata STRING, dest_airport_id INT,
+codeshare STRING, stops INT, equipment STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH 'routes.dat' OVERWRITE INTO TABLE routes;
+
+
+-- 1. Which airports have the highest altitude ?
+SELECT country, max(altitude) FROM airport GROUP BY country;
+
+-- 2. How many routes are operated by active airlines from the United States ?
+SELECT DISTINCT(airline_name) FROM airlines al 
+JOIN routes r ON al.airline_id = r.airline_id
+JOIN airport ap1 ON ap1.airport_id = r.src_airport_id
+WHERE TRIM(UPPER(ap1.country)) = 'UNITED STATES';
+
+
+-- 3. Which airlines operate routes that have less than 3 stops number of stops top 10 alphabetically?
+SELECT DISTINCT(airline_name) FROM airlines al
+JOIN routes r ON al.airline_id = r.airline_id
+WHERE r.stops < 3 LIMIT 10;
+
+-- 4. How many airlines have a specific IATA code ‘W9’?
+SELECT count(airline_id) FROM airlines WHERE airline_iata = 'W9';
+
+-- 5. Find the airlines that operate routes with a specific equipment as ‘AN4’ and codeshare enabled
+SELECT DISTINCT(airline_name) FROM airlines al
+JOIN routes r ON al.airline_id = r.airline_id
+WHERE equipment = 'AN4' AND TRIM(UPPER(codeshare)) = 'Y';
+
+
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+from pyspark.sql.types import StrucType, StringType, IntegerType, LongType, DoubleType
+
+airline_schema = StructType().add("Year", IntegerType(), True).add("Quarter", IntegerType(), True).add("ARPS", DoubleType(), True).add("Booked_seats", LongType(), True)
+print(airline_schema)
+
+df1 = spark.read.format("csv").option("header", "False").schema(airline_schema).load("hdfs://nameservice1/user/bigdatalab456422/airlines.csv")
+
+df1.printSchema();
+df1.count();
+df1.show();
+
+df1.registerTempTable("airline_table")
+
+
+
+
+-- 1. What is the total revenue generated in each year?
+yearly_revenue_mn = spark.sql("SELECT Year, ROUND(sum(ARPS * Booked_seats)/1000000, 2) FROM airline_table GROUP BY Year")
+yearly_revenue_mn.show()
+
+-- 2. Which year had the highest average revenue per seat?
+highest_rev_mn_year = spark.sql("SELECT max(total_rev) FROM (SELECT sum(ARPS * Booked_seats)/1000000 AS total_rev FROM airline_table GROUP BY Year) AS tbl1")
+highest_rev_mn_year.show()
+
+-- 3. What is the total number of booked seats for each quarter in a given year?
+total_seats = spark.sql("SELECT Quarter, Booked_seats FROM airline_table GROUP BY Quarter")
+total_seats.show()
+
