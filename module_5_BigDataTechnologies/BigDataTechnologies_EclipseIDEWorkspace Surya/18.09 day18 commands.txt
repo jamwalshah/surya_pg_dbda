@@ -1,0 +1,148 @@
+mysql -u bigdatamind4385 -phadooplab234
+
+
+
+pyspark --jars mysql-connector-java-5.1.47-bin.jar
+
+mysql -u bigdatamind4385 -phadooplab234
+show tables;
+mysql -u bigdatamind4385 -phadooplab234
+
+
+pyspark
+# pyspark --jars mysql-connector-java-5.1.47-bin.jar
+>>> studentDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","student_master1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+>>> fyDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","fy1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+>>> studentDF.registerTempTable("student")
+>>> fyDF.registerTempTable("fy")
+>>> df1.show()
+>>> df1 = spark.sql("SELECT a.student_id, name, address, coalesce(result,0) AS result FROM student a LEFT OUTER JOIN fy b ON a.student_id=b.student_id ORDER BY student_id")
+>>> df1.show()
+>>> studentDF.printSchema()
+>>> fyDF.printSchema()
+>>> studentDF.rdd.getNumPartitions()
+>>> studentDF.write.csv("hdfs://nameservice1/user/bigdatalab456422/student_master")
+>>> # check in hue
+>>> fyDF.write.csv("hdfs://nameservice1/user/bigdatalab456422/fy")
+>>> # check in hue
+SELECT * FORM txnrecords LIMIT 10;
+SELECT * FORM customer LIMIT 10;
+>>> customerDF = spark.sql("SEELCT * FROM surya_training.customer")
+>>> customerDF.count()
+>>> customerDF.show()
+>>> txnDF = spark.sql("SELECT * FROM surya_training.txnrecords")
+>>> customerDF.registerTempTable("customer")
+>>> txnDF.registerTempTable("txn")
+>>> txnDF.count()
+>>> txnDF.show()
+
+SELECT * FORM txnrecords WHERE custno=4000001;
+DESC txnrecords;
+# find total amount spent by each cust id
+# ---------------------------------------
+SELECT custno, sum(amount) FROM txnrecords GROUP BY custno;
+SELECT custno, round(sum(amount), 2) FROM txnrecords 
+    GROUP BY custno;
+SELECT custno, round(sum(amount), 2) AS total FROM txnrecords 
+    GROUP BY custno ORDER BY total DESC LIMIT 10;
+SELECT * FORM customer WHERE custno = 4009485;
+# throws error as GROUP bY takes all cols except aggregation as key
+/*SELECT t.custno, firstname, lastname, age, profession, 
+    round(sum(amount), 2) AS total 
+    FROM txnrecords t LEFT OUTER JOIN customer c
+    ON t.custno = c.custno
+    GROUP BY t.custno ORDER BY total DESC LIMIT 10;*/
+# this query runs as 
+SELECT t.custno, firstname, lastnmae, age, profession, 
+    round(sum(amount), 2) AS total 
+    FROM txnrecords t LEFT OUTER JOIN customer c
+    ON t.custno = c.custno
+    GROUP BY t.custno, firstname, lastname, age, profession ORDER BY total DESC LIMIT 10;
+>>> toptenDF = spark.sql("SELECT t.custno, firstname, lastname, age, profession, round(sum(amount),2) AS total FROM txn t LEFT OUTER JOIN customer c ON t.custno = c.custno GROUP BY t.custno, firstname, lastname, age, profession ORDER BY total DESC LIMIT 10")
+>>> toptenDF.write.mode("overwrite").saveAsTable("surya_training.topten")
+# <possible missing query>
+SHOW TABLES;
+DESC FORMATTED topten;
+$ cd
+$ hadoop fs -cat "/user/hive/warehouse/surya_training.db/topten/*"
+
+
+
+
+In Mysql
+create database my_db;
+use my_db;
+
+CREATE TABLE topten(
+   customer_id INT NOT NULL ,
+   fname VARCHAR(40) NOT NULL,
+   lname VARCHAR(40) NOT NULL,
+   age int NOT NULL,
+   profession VARCHAR(40) NOT NULL,
+   amount double NOT NULL
+   );
+
+CREATE TABLE student_master(
+   student_id INT NOT NULL AUTO_INCREMENT,
+   name VARCHAR(40) NOT NULL,
+   address VARCHAR(40) NOT NULL,
+   PRIMARY KEY ( student_id ));
+
+CREATE TABLE fy(
+   fy_id INT NOT NULL AUTO_INCREMENT,
+   student_id INT NOT NULL,
+   result double NOT NULL,
+   PRIMARY KEY (fy_id ));
+
+
+show tables;
+
+describe student_master;
+
+INSERT INTO student_master (name, address)
+    VALUES ("Sanjay", "Bangalore");
+INSERT INTO student_master (name, address)
+    VALUES ("Rajiv", "Delhi");
+INSERT INTO student_master (name, address)
+    VALUES ("Rajesh", "Chennai");
+INSERT INTO student_master (name, address)
+    VALUES ("Sandeep", "Delhi");
+
+INSERT INTO fy (student_id, result)
+    VALUES (1, 81.90);
+INSERT INTO fy (student_id, result)
+    VALUES (2, 78.90);
+
+INSERT INTO topten (customer_id,fname,lname,age,profession, amount)
+    Values (4009485,'Stuart','House',58,'Teacher',1943.85);
+
+INSERT INTO topten (customer_id,fname,lname,age,profession, amount)
+    Values (4006425,'Joe','Burns',30,'Economist',1732.09);
+
+
+mysql -u bigdatamind4385 -phadooplab234
+
+pyspark --jars mysql-connector-java-5.1.47-bin.jar
+
+studentDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","student_master1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+fyDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","fy1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+df1 = spark.sql("select a.student_id, name, address, coalesce(result,0) from student a left outer join fy b on a.student_id=b.student_id order by student_id")
+
+df1.write.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","result").option("user","bigdatamind4385").option("password","hadooplab234").save()
+
+
+
+
+customerDF = spark.sql("select * from sandeep_training.customer")
+
+txnDF = spark.sql("select * from sandeep_training.txnrecords")
+
+customerDF.registerTempTable("customer")
+
+txnDF.registerTempTable("txn")
+
+toptenDF = spark.sql("select t.custno, firstname, lastname, age, profession, round(sum(amount),2) as total from txn t left outer join customer c on t.custno = c.custno group by t.custno, firstname, lastname, age, profession order by total desc limit 10") 
+
+toptenDF.write.mode("overwrite").saveAsTable("sandeep_training.topten")                                                                                              

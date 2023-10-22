@@ -1,0 +1,11 @@
+mysql -u bigdatamind4385 -phadooplab234
+
+pyspark --jars mysql-connector-java-5.1.47-bin.jar
+
+studentDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","student_master1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+fyDF = spark.read.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","fy1").option("user","bigdatamind4385").option("password","hadooplab234").load()
+
+df1 = spark.sql("select a.student_id, name, address, coalesce(result,0) from student a left outer join fy b on a.student_id=b.student_id order by student_id")
+
+df1.write.format("jdbc").option("url","jdbc:mysql://ip-10-1-1-204.ap-south-1.compute.internal:3306/bigdatamind4385").option("driver","com.mysql.jdbc.Driver").option("dbtable","result").option("user","bigdatamind4385").option("password","hadooplab234").save()

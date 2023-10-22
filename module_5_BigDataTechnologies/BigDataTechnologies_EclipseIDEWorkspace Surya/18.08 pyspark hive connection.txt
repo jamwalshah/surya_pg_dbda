@@ -1,0 +1,11 @@
+customerDF = spark.sql("select * from sandeep_training.customer")
+
+txnDF = spark.sql("select * from sandeep_training.txnrecords")
+
+customerDF.registerTempTable("customer")
+
+txnDF.registerTempTable("txn")
+
+toptenDF = spark.sql("select t.custno, firstname, lastname, age, profession, round(sum(amount),2) as total from txn t left outer join customer c on t.custno = c.custno group by t.custno, firstname, lastname, age, profession order by total desc limit 10") 
+
+toptenDF.write.mode("overwrite").saveAsTable("sandeep_training.topten")                                                                                              

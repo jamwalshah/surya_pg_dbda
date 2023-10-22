@@ -1,0 +1,311 @@
+A. create database
+------------------
+create database training;
+
+--this creates a folder by the name of training.db under /user/hive/warehouse
+
+A1. show all the databases in hive
+----------------------------------
+show databases;
+
+B. Select a database
+--------------------
+use training;
+
+B1. Show tables under the database
+----------------------------------
+show tables;
+
+
+C1. Create transaction table
+-------------------------------
+create table txnrecords(txnno INT, txndate STRING, custno INT, amount DOUBLE, 
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+row format delimited
+fields terminated by ','
+stored as textfile
+location '/user/bigdatamind4385/sales';
+
+
+create table txn_orc(txnno INT, txndate STRING, custno INT, amount DOUBLE, 
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+stored as orc;
+
+insert overwrite table txn_orc select * from txnrecords;
+
+
+create table txn_parquet(txnno INT, txndate STRING, custno INT, amount DOUBLE, 
+category STRING, product STRING, city STRING, state STRING, spendby STRING)
+stored as parquet;
+
+insert overwrite table txn_parquet select * from txnrecords;
+
+
+
+
+
+
+C2. Create customer table
+-------------------------------
+create table customer(custno INT, firstname STRING, lastname STRING, age INT, profession STRING)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+C3. Create NYSE table
+-------------------------------
+create table nyse(exchange_name String, stock_id STRING, stk_dt string, open double, high double, low double, close double, volume bigint, adj_close double)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+ 
+D1. Load the data into the table (from local file system)
+-----------------------------------------------------
+LOAD DATA LOCAL INPATH 'txns1.txt' OVERWRITE INTO TABLE txnrecords;
+
+LOAD DATA LOCAL INPATH 'custs.txt' OVERWRITE INTO TABLE customer;
+
+LOAD DATA LOCAL INPATH 'custs_add' INTO TABLE customer;
+
+LOAD DATA LOCAL INPATH 'NYSE.csv' OVERWRITE INTO TABLE nyse;
+
+D2. Load the data into the table (from hdfs system)
+-----------------------------------------------------
+LOAD DATA INPATH 'hdfs path' OVERWRITE INTO TABLE txnrecords;
+
+
+D3. Load the data without header
+--------------------------------
+create table employee_header(empno INT, empname STRING, salary bigint)
+row format delimited
+fields terminated by ','
+stored as textfile
+tblproperties("skip.header.line.count"="1");
+
+load data local inpath 'header_data.txt' overwrite into table employee_header;
+
+ 
+E 1. Describing metadata or schema of the table
+---------------------------------------------
+describe txnrecords;
+
+E 2. Describing detailed metadata or schema of the table
+---------------------------------------------
+describe extended txnrecords;
+
+or
+
+describe formatted txnrecords;
+
+
+F. Counting no of records
+-------------------------
+select count(*) from txnrecords;
+
+G1. Count of each profession in the Customers List
+---------------------------------------------------
+select profession, count(*) as headcount from customer group by profession order by headcount;
+
+G2. Top 10 Customers List
+------------------------
+select a.custno, b.firstname,b.lastname, b.age, b.profession, round(sum(a.amount),2) as amt from txnrecords a join customer b on a.custno=b.custno group by a.custno, b.firstname, b.lastname, b.age, b.profession order by amt desc limit 10;
+
+H1. Create partitioned table
+---------------------------------------------
+create table txnrecsByCat(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING)
+partitioned by (category STRING)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+
+H2. Create partitioned table (with multiple buckets)
+--------------------------------------------------
+create table txnrecsByCat2(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING)
+partitioned by (category STRING)
+clustered by (state) into 10 buckets
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+H3. Create partitioned table (single bucket) on a derived column
+-----------------------------------------------------------------
+create table txnrecsByCat4(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+category String, product STRING, city STRING, state STRING, spendby STRING)
+partitioned by (month STRING)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+create table txnrecsByCat3(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING)
+partitioned by (category STRING,spendby STRING)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+set hive.enforce.bucketing=true;
+
+
+I1. Load data into partition table (single bucket)
+---------------------------------------------------
+INSERT OVERWRITE TABLE txnrecsByCat PARTITION(category) select txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.spendby, txn.category from txnrecords txn DISTRIBUTE By category;
+
+I2. Load data into partition table (with multiple buckets)
+---------------------------------------------------
+INSERT OVERWRITE TABLE txnrecsByCat2 PARTITION(category) 
+select txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, 
+txn.spendby, txn.category 
+from txnrecords txn
+DISTRIBUTE By category;
+
+
+I3. Load data into partition table (single bucket)
+---------------------------------------------------
+from txnrecords txn INSERT OVERWRITE TABLE txnrecsByCat4 PARTITION(month) select txn.txnno, txn.txndate,txn.custno, txn.amount,txn.category,txn.product,txn.city,txn.state, txn.spendby,substring(txn.txndate,1,2) DISTRIBUTE By substring(txn.txndate,1,2);
+
+
+from txnrecords txn INSERT OVERWRITE TABLE txnrecsByCat3 PARTITION(category,spendby) select txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.category, txn.spendby DISTRIBUTE By category,spendby;
+
+
+Static partition
+----------------
+create table txnrecsByCat3(txnno INT, txndate STRING, custno INT, amount DOUBLE,
+product STRING, city STRING, state STRING, spendby STRING)
+partitioned by (category STRING)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+from txnrecords txn INSERT OVERWRITE TABLE txnrecsByCat3 PARTITION(category) select txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.spendby, txn.category where txn.category="Exercise & Fitness";
+
+
+J.create external tables
+----------------------
+***first load the data set on hadoop
+
+$ hadoop fs -mkdir /user/training
+$ hadoop fs -put /home/hduser/custs /user/training
+
+create external table customer(custno string, firstname string, lastname string, age int,profession string)
+row format delimited
+fields terminated by ','
+stored as textfile
+location '/user/training/data';
+
+select * from customer;
+
+describe extended customer;
+
+
+K 1. Storing output in local file
+------------------------------
+INSERT OVERWRITE LOCAL DIRECTORY '/home/hduser/training/hive/custcount' row format delimited fields terminated by ',' 
+select profession, count(*) as headcount from customer group by profession order by headcount desc limit 10;
+
+
+INSERT OVERWRITE LOCAL DIRECTORY '/home/hduser/mindtree/topten' row format delimited fields terminated by ',' 
+select a.custno, b.firstname,b.lastname, b.age, b.profession, round(sum(a.amount),2) as amt from txnrecords a, customer b where a.custno=b.custno group by a.custno, b.firstname, b.lastname, b.age, b.profession order by amt desc limit 10;
+
+
+K 2. Storing output in hdfs file system
+-------------------------------------------
+INSERT OVERWRITE DIRECTORY '/user/training/intel1/custcount' 
+select profession, '\t', count(*) as headcount from customer group by profession order by headcount desc;
+
+
+INSERT OVERWRITE DIRECTORY '/training/topten' row format delimited fields terminated by ',' 
+select a.custno, b.firstname,b.lastname, b.age, b.profession, sum(a.amount) as amt from txnrecords a, customer b where a.custno=b.custno group by a.custno, b.firstname, b.lastname, b.age, b.profession order by amt desc limit 10;
+
+INSERT OVERWRITE DIRECTORY '/hanoi/topten' row format delimited fields terminated by ',' 
+select a.custno, b.firstname,b.lastname, b.age, b.profession, sum(a.amount) as amt from txnrecords a, customer b where a.custno=b.custno group by a.custno, b.firstname, b.lastname, b.age, b.profession order by amt desc limit 10;
+
+INSERT OVERWRITE DIRECTORY '/user/training/topten_vol' select stock_id, ',' , sum(volume) as stkvol from nyse group by stock_id order by stkvol desc limit 10 ;
+
+INSERT OVERWRITE DIRECTORY '/user/training/topten_variance' select stock_id, ',' , max((high-low)/low*100) as maxvar from nyse group by stock_id order by maxvar desc limit 10 ;
+
+L. to execute script from command prompt
+--------------------------------------
+$ hive -f filename.sql
+$ hive -f professioncount.sql
+
+M. to execute command from command prompt
+--------------------------------------
+$ hive -e "select * from training.customer"
+
+
+N1. how do i know i am in which database currently
+--------------------------------------------------
+set hive.cli.print.current.db=true;
+
+N2. how do i print my headers of my table
+-------------------------------------
+set hive.cli.print.header=true;
+
+N3. how do i set my default file format
+---------------------------------------
+set hive.default.fileformat=textfile;
+
+
+create an index on customer (earlier created) table on profession column
+--------------------------------------------------------------------------
+use training;
+
+*** deferred rebuild will create an empty index
+create index prof_index on table customer(profession) as 'compact' with deferred rebuild;
+
+create index age_prof_index on table customer(age,profession) as 'compact' with deferred rebuild;
+
+
+**** alter index will actually create the index
+alter index prof_index on customer rebuild;
+alter index age_prof_index on customer rebuild;
+
+******list all the indexes on the table
+show indexes on customer;
+
+*****schema of the index
+describe retail__customer_prof_index__;
+
+select * from retail__customer_prof_index__ where profession = "Pilot";
+
+select profession, size(`_offsets`) from training__customer_prof_index__;
+
+User Define Functions
+-------------------------
+create table testing(id string,unixtime string)
+row format delimited
+fields terminated by ',';
+
+load data local inpath 'counter.txt' into table testing;
+
+hive> select * from testing;
+
+****OK
+****one		1386023259550
+****two		1389523259550
+****three	1389523259550
+****four	1389523259550
+
+******* adding the jar in the hive script *********
+add jar udfhive.jar;
+
+****** to display the jar files in hive *********
+list jars;
+
+******define user function ************
+create temporary function userdate as 'UnixtimeToDate';
+
+
+****Then use function 'userdate' in sql command
+
+select id, userdate(unixtime) from testing;
+
