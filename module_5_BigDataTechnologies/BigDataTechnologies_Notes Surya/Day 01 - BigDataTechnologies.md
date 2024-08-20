@@ -53,7 +53,7 @@ the organization)
 
     1. Massive and continuous flow of data
     2. Analysis of streaming data
-    3. That which is being generated rapidly (real-time data)
+    3. Data which is being generated rapidly (Real-Time data)
     4. Data from stock markets, location tracking, telematics like car sensors, games like cricket are generated rapidly
 
 4. **Veracity**
