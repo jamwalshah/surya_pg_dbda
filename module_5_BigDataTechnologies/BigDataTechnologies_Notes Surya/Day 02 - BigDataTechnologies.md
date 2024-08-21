@@ -2,59 +2,64 @@
 
 ## HDFS
 
-1. Hadoop Distributed File System
+1. HDFS stands for Hadoop Distributed File System
 2. Based on Master-Slave Architecture
-3. Basic rule : more the partitioning/division, faster the processing
-4. HDFS = Master (nameNodes) + Slaves(NameNodes)
-5. Metadata of name Node
-    1. Contains FS image and edit logs
-    2. In case metadata is destroyed or Name Node goes down, all files in hadoop cluster become inaccessible
-    3. Is a very critical part of Hadoop cluster to access files
-6. Metadata of block
-    1. Block IDs + location/IP of Data Node storing a block
-    2. Block pool (BP)
-7. Block size
+3. Basic rule : more the number of partitions/divisions, faster the processing
+4. HDFS = Master (NameNodes) + Slaves(DataNodes)
+5. *Metadata of Name Node*
+    1. Contains File System (F.S.) image and Edit Logs
+    2. In case, metadata is destroyed or Name Node goes down, all files in hadoop cluster become inaccessible
+    3. Metadata is a very critical part of Hadoop cluster to access files
+6. *Metadata of Block*
+    1. Block IDs + Location/IP of Data Node storing a block
+    2. Block Pool (BP)
+7. Block Size
     1. Size of split being created
     2. Default block size in HDFS (Hadoop v3) is 128MB (but Hadoop v2 or previous had default block size 64MB)
     3. e.g. : A file of 10GB size with default block size of 128MB splits into 80 blocks
         - ${\frac{10GB}{128MB}} = \frac{10GB \times 1024MB}{128MB} = 80\ Splits\ or\ Blocks$
         - ${\frac{1TB}{128MB} = \frac{1TB \times 1024GB \times 1024MB}{128MB} = 8192\ Splits\ or\ Blocks}$
 
-8. Client Machine
+8. Client Machine/Gateway
     1. Also known as *Gateway*, refers to the interface to communicate with the Hadoop File System
-    2. User can connect to HDFS using Client/Gateway
+    2. Users can connect to HDFS using Client/Gateway
     3. User can fire queries using Client
     4. Can Read/Write data to Data Nodes using Name Node
     5. While writing a file, client Splits the file as per default Block Size and sends files to Name Node for storage
     6. Client only writes the first replica, but other replicas are created by Name Node
     7. While reading a file, Client only sends the filename to Name node and it fetches the data
-    8. Client can delete old data using rm command, and all the blocks along with their Metadata will be deleted
+    8. Client can delete old data using hdfs `-rm` command, and all the blocks along with their Metadata will be deleted from hdfs
     9. Filesystem Client has following commonly used types
         1. `hdfs dfs` : Basic Filesystem Client, used to connect to a Hadoop Filesystem and perform basic Linux related tasks, uses *ClientProtocol* to communicate with a Name Node daemon, and connects directly to Data Nodes to Read/Write Block Data
         2. `hdfs dfsadmin` : to perform administrative tasks on HDFS
         3. `hdfs haadmin` : for High-Availability (H.A.) tasks
 9. HDFS Has two types of Nodes in Hadoop cluster:
     1. **Master Node/Name Node**
-        1. Only one Master Node / Name Node which manages the Hadoop cluster
-        2. Is a very powerful machine as it has to do cluster management tasks
-        3. Should always be in a running state, otherwise files become inaccessible
+        1. Only one Master Node / Name Node can exist which manages the Hadoop cluster
+        2. NameNode is a very powerful machine as it has to do cluster management tasks
+        3. It should always be in a running state, otherwise files become inaccessible
         4. Based on UNIX + Hadoop + Java
-        5. Assigns Block Pool, block IDs and Locations/IPs of Data Node to splits of file received from client to store on Data Node
+        5. Assigns Block Pool, Block IDs and Locations/IPs of Data Node to splits of file received from client to store on Data Node
         6. Contains Metadata which includes FS (File System) image and Edit Logs
-        7. Manages all the Slave/Data nodes in Hadoop cluster, manage data and communication between Slave/data nodes
-        8. Sends heartbeat signal to Zookeeper
+        7. Manages all the Slave/Data Nodes in Hadoop cluster, manage data and communication between Slave/Data Nodes
+        8. Sends heartbeat signal *to Zookeeper* for monitoring
         9. Runs Resource Manager (R.M.) service to manage resources and Jobs on Data Nodes
     2. **Slave Node/Data Node**
         1. There may be number of Slave Nodes called Data Nodes
         2. Minimum one Data Node is required for cluster
         3. Can be of heterogeneous configuration
-        4. Sends heartbeat signal to Name Node every 3 secs
+        4. Sends heartbeat signal *to Name Node* every 3 secs
         5. Sends block report to Name Node every 30 secs
-        6. Runs Node Manager service which accepts tasks and resources(files) from Resource manager on name Node to store & process data
-        7. Data is stored on Slave Nodes/Data nodes as splits distributed over different Data Nodes
-10. Zookeeper
-    1. A separate set of services
+        6. Runs Node Manager service which accepts tasks and resources (files) from Resource Manager (R.M.) on Name Node to store & process data
+        7. Data is stored on Slave Nodes/Data Nodes as splits distributed over different Data Nodes
+10. Apache Zookeeper
+    1. A separate set of centralized services for maintaining configuration information, naming, providing distributed synchronization, and providing group services
     2. Monitors health of every Name Node
+    3. Adds automatic failover capabilities to an HDFS deployment
+    4. Zookeeper is a highly available service for maintaining small amounts of coordination data, notifying clients of changes in that data, and monitoring clients for failures
+    5. HDFS relies on Zookeeper for following
+        1. **Failure Detection:** Each of Name Node machines in the cluster maintains a persistent session in Zookeeper. If the Name Node crashes, the Zookeeper session will expire, notifying the other Name Node (Standby NameNode) that a failover should be triggered
+        2. **Active NameNode Election:** Zookeeper provides a simple mechanism to exclusively elect a NameNode as active. If the current active NameNode crashes, another node may take a special exclusive lock in Zookeeper to indicating that it should become the next active NameNode
 
 ## Objectives of Cluster
 
@@ -101,8 +106,8 @@
         ![Replication-Factor-2](../content_BigDataTechnologies/Replication-Factor-2.png)
         ![Replication-Factor-3](../content_BigDataTechnologies/Replication-Factor-3.png)
     2. Method 2 - **Rack Awareness**
-        1. 3rd copy or *Disaster Recovery (DR)* copy
-        2. Placing the nodes not in one location , but at at-least 2 locations
+        1. Represents creating a 3rd copy or *Disaster Recovery (DR)* copy
+        2. Placing the nodes not in one location, but at at-least 2 different locations
         3. Storing data in *different Racks* at *different Locations* to avoid failure of the cluster all at once
         4. Hadoop cluster consists of all the racks at different locations
         5. Each rack contains multiple Data Nodes
@@ -116,20 +121,21 @@
             5. Causes lot of downtime, as recovering becomes difficult because it can only be recovered to the last backup and the jobs are lost which are launched after backup was taken
         2. **Standby Name Node**
             1. Exists from Hadoop v3.0
-            2. Is an “perfect” replica of Active Name Node
+            2. Is a “perfect” replica of Active Name Node
             3. Backup of Metadata which includes File System (F.S.) Image and Edit Logs, is taken simultaneously
             4. Can recover to immediate state of Active Name Node, so no running job is lost
             5. Near to zero downtime as hot Standby Name Node starts working immediately after Active Name Node goes down
+            6. Hadoop v3.x+ supports mode than 2 NameNode (or more than 1 Standby NameNode)
             ![Backup-Node](../content_BigDataTechnologies/Backup-Node.png)
 
 ## Types of failures
 
-1. **Block Failure:** One or more blocks get corrupt, so Name Node replicates only the corrupt
-blocks by copying the corrupt Blocks from other replicas of those blocks
-2. **Node Failure:** Data Node fail, so Name Node replicates the blocks stored on the failing
+1. **Block Failure:** One or more blocks get corrupt, so NameNode replicates only the corrupt
+block(s) by copying the corrupt Blocks from other replicas of those blocks
+2. **Node Failure:** DataNode fails, so NameNode replicates the blocks stored on the failing
 Data Node to other Data Node to maintain replication factor
 3. **Location Failure/Rack Failure:** A rack or some of the nodes are down
-4. **Name Node Failure:** Standby Node is automatically launched in case Name Node fails
+4. **Name Node Failure:** Standby Node is automatically launched using failover trigger in case Name Node fails
 
 ## Properties of Hadoop System
 
@@ -312,6 +318,53 @@ Found 2 items
 drwxr-xr-x - bigdatalab456422 bigdatalab456422 0 2023-05-16 12:34 /user/bigdatalab456422/training
 ```
 
-### Delete a file on hdfs (Move to trash)
+### Delete a file on hdfs (Move to trash) using hdfs `-rm` utility
 
-- asa
+- Use the command below to delete the `newfile.txt` in `training/` directory
+
+```bash
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -rm /user/bigdatalab456422/training/newfile.txt
+```
+
+```console
+23/05/16 12:46:15 INFO fs.TrashPolicyDefault: Moved: 'hdfs://nameservice1/user/bigdatalab456422/training/newfile.txt' to trash at: hdfs://nameservice1/user/bigdatalab456422/.Trash/Current/user/bigdatalab456422/training/newfile.txt
+```
+
+### Deleting an empty directory in hdfs using hdfs `-rmdir` utility
+
+- You may use the command below to create an empty directory
+
+```bash
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -mkdir /user/bigdatalab456422/training2
+```
+
+- Now, Use the command below to delete this empty directory
+
+```bash
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -rmdir /user/bigdatalab456422/training2
+```
+
+### Delete a non-empty directory in hdfs
+
+- First try to use the command below with hdfs `-rmdir` utility (same as above) to delete a non-empty directory on hdfs, and notice that it does not allow to delete a non-empty directory on hdfs
+
+```bash
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -rmdir /user/bigdatalab456422/training
+```
+
+```console
+rmdir: '/user/bigdatalab456422/training': Directory is not empty
+```
+
+- Instead you may use hdfs `rmr` utility to delete/remove directories recursively, to be used to remove non-empty directories which need to be removed recursively
+
+```bash
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -rmr /user/bigdatalab456422/training
+```
+
+```console
+rmr: DEPRECATED: Please use '-rm -r' instead.
+23/05/16 13:04:53 INFO fs.TrashPolicyDefault: Moved: 'hdfs://nameservice1/user/bigdatalab456422/training' to trash at: hdfs://nameservice1/user/bigdatalab456422/.Trash/Current/user/bigdatalab456422/training
+```
+
+> **Alternate:** Since `rmr` utility is deprecated, so you may use `-rm -r` to delete/remove non-empty directories recursively
