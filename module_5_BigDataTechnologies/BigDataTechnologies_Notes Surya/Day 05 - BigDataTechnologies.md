@@ -146,7 +146,7 @@ AEA     4.69
 #### Generating the .jar file
 
 1. Launch Eclipse application using Java perspective, click OK for Workspace Launcher
-2. Open Project `Hadoop`, Expand the Project `Hadoop` in the package explorer, R`ight-click on Hadoop project > New > Class`
+2. Open Project `Hadoop`, Expand the Project `Hadoop` in the package explorer, `Right-click on Hadoop project > New > Class`
 3. Enter the class name as `AllTimeHigh` and click Finish
 4. Add the below code to `AllTimeHigh.java`, and save it
 
@@ -930,17 +930,17 @@ File Output Format Counters
 
 #### Upload the `data` files using FTP
 
-- First create a directory `data` under `training/` in the hdfs using command below
+- First create a directory `data` in the hdfs using command below
 
 ```bash
-hadoop fs -mkdir training/data
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -mkdir data
 ```
 
 - Upload the files `data1.text`, `data2.text` and `data3.text` to Client/Linux Filesystem
-- Then copy these files on Client/Linux Filesystem to `training/data` directory on hdfs using command below
+- Then copy these files on Client/Linux Filesystem to `data` directory on hdfs using command below
 
 ```bash
-hadoop fs -put data1.txt data2.txt data3.txt training/data
+[bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -put data1.txt data2.txt data3.txt data
 ```
 
 #### Unzip the .jar file for WordCount
