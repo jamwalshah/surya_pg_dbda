@@ -489,7 +489,7 @@ AEA     4.69
  640 Thu May 18 17:00:00 UTC 2023 .classpath
 ```
 
-#### Run the MapReduce job using `hadoop jar` utility  for AllTimeLow
+#### Run the MapReduce job using `hadoop jar` utility for AllTimeLow
 
 - Run the command below to launch the MapReduce job for `AllTimeLow` class extracted from `myjar.jar` file, it'll read input from `training/NYSE.csv` dataset and it'll dump output/results in `training/out4` directory
 
@@ -740,7 +740,7 @@ AEA     4.69
  640 Thu May 18 17:00:00 UTC 2023 .classpath
 ```
 
-#### Run the MapReduce job using `hadoop jar` utility  for AvgClosingPrice
+#### Run the MapReduce job using `hadoop jar` utility for AvgClosingPrice
 
 - Run the command below to launch the MapReduce job for `AvgClosingPrice` class extracted from `myjar.jar` file, it'll read input from `training/NYSE.csv` dataset and it'll dump output/results in `training/out5` directory
 
@@ -972,16 +972,16 @@ File Output Format Counters
  640 Thu May 18 17:00:00 UTC 2023 .classpath
 ```
 
-#### Run the MapReduce job using `hadoop jar` utility  for WordCount
+#### Run the MapReduce job using `hadoop jar` utility for WordCount
 
-- Run the command below to launch the MapReduce job for `WordCount` class extracted from `myjar.jar` file, it'll read input from `data` dataset and it'll dump output/results in `training/out6` directory
+- Run the command below to launch the MapReduce job for `WordCount` class extracted from `myjar.jar` file, it'll read input from `data` directory dataset and it'll dump output/results in `training/out6` directory
 
 ```bash
 [bigdatalab456422@ip-10-1-1-204 ~]$ hadoop jar myjar.jar WordCount data training/out6
 ```
 
 - In verbose text, notice that it shows
-    1. It is processing all three input files inside `training/data` directory on hdfs which is indicated by message
+    1. It is processing all three input files inside `data` directory on hdfs which is indicated by message
 
         ```console
         INFO input.FileInputFormat: Total input files to process : 3
