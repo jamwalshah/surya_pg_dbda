@@ -276,10 +276,29 @@ ON e.id = d.id;
   - Must be sorted with same key
   - Each input data should be divided in same number of partition
 - You will use Map side join if one of your table can be fit in memory which will reduce the overhead on your sort and shuffle data
-- Map side join produces a Left Join
-- It is used where one data set is large which has one or many lookup/reference/small data sets
+- Map side join produces a `LEFT JOIN`
+- It is used where one data set is large say 100TB which has one or many small/lookup/reference data sets, say of 100MB
 - Map side join is similar to a join but all the tasks are performed by the mapper alone so only mapper is needed in Map side join
 - One Lookup file data is in memory in Map side join
+
+#### Example: Customers Map side JOIN Orders
+
+- Since Map Side join only has one stage which is Mapper, it does not require any Reducer or Shuffle stage
+
+```text
+(LookUp) cust               (BigData) orders
+id,name                     order_id,id,amt
+1,John                      101,1,2000
+                            102,2,3000
+```
+
+```sql
+SELECT c.id, c.name, sum(o.amt)
+FROM customers c
+JOIN orders o
+ON c.id=o.id
+GROUP BY o.id;
+```
 
 #### Advantages of Map Side Join
 
@@ -448,7 +467,7 @@ ON e.id = d.id;
             2. it has `map()` method which will run multiple times for each record/row, and defines the logic for the Join to be performed on `id` columns
         2. In `main()` driver
             1. we've created an instance of `Configuration()`, set it for seprator, then pass it to create an instance of `Job`
-            2. we've set class for jar as `MapJoin` class, using `jjob.setJarByClass(MapJoin.class)`
+            2. we've set class for jar as `MapJoin` class, using `job.setJarByClass(MapJoin.class)`
             3. we've set Mapper class as `MyMapper` class extending from `Mapper`, using `job.setMapperClass(MyMapper.class)`
             4. we've added Cache file paths using `job.addCacheFile()`
             5. we've set the code to run no reducer using `job.setNumReduceTasks(0)`, since we need to run Map side join logic which requires only mapper to perfrom mapping to produce join
@@ -517,7 +536,7 @@ ON e.id = d.id;
         INFO input.FileInputFormat: Total input files to process : 1
         ```
 
-    2. It has Launched 1 Mapper task to collect from 1 file big file
+    2. It has Launched 1 Mapper task to collect from 1 big file
 
         ```console
                 Launched map tasks=1
@@ -596,8 +615,8 @@ File Output Format Counters
 
 - To see the output files, launch the `Hue` tool from the Nuevopro web dashboard from where you earlier launched the `Web Console`, or you can go to the already open `Hue` tool
 - Once `Hue` tool is open, it navigate to `/user/bigdatalab456422/training/out10` where it should have dumped the output partitioned files
-- Notice that it has `.success` file which indicates that the Mapper job completed successfully, and also it has a file `part-m-00000` which shows only one partition of a file was created & `m` in its name indicates that it is Mapper output because only Mapper is used for Map side join, no Reducer task is run in this job
-- Note that it has joined based on `id` columns from `Employees.txt`, `salary.txt`, `desig.txt` files generating a Left join output
+- Notice that it has `.success` file which indicates that the Mapper job completed successfully, and also it has a file `part-m-00000` & `m` in its name indicates that it is Mapper output because only Mapper is used for Map side join, no Reducer task is run in this job
+- Note that it has joined based on `id` columns from `Employees.txt`, `salary.txt`, `desig.txt` files generating a LEFT JOIN output
 
 ![Hue-training_out10_file_MapJoin](../content_BigDataTechnologies/Hue-training_out10_file_MapJoin.png)
 
@@ -753,7 +772,7 @@ File Output Format Counters
             2. it has `map()` method which will run multiple times for each record/row, and defines the logic for the Join to be performed on `id` columns
         2. In `main()` driver
             1. we've created an instance of `Configuration()`, set it for seprator, then pass it to create an instance of `Job`
-            2. we've set class for jar as `MapJoin` class, using `jjob.setJarByClass(MapJoin.class)`
+            2. we've set class for jar as `MapJoin` class, using `job.setJarByClass(MapJoin.class)`
             3. we've set Mapper class as `MyMapper` class extending from `Mapper`, using `job.setMapperClass(MyMapper.class)`
             4. we've added Cache file paths using `job.addCacheFile()`
             5. we've set the code to run no reducer using `job.setNumReduceTasks(0)`, since we need to run Map side join logic which requires only mapper to perfrom mapping to produce join
@@ -824,7 +843,7 @@ File Output Format Counters
         INFO input.FileInputFormat: Total input files to process : 1
         ```
 
-    2. It has Launched 1 Mapper task to collect from 1 file big file
+    2. It has Launched 1 Mapper task to collect from 1 big file
 
         ```console
                 Launched map tasks=1
@@ -903,7 +922,7 @@ File Output Format Counters
 
 - To see the output files, launch the `Hue` tool from the Nuevopro web dashboard from where you earlier launched the `Web Console`, or you can go to the already open `Hue` tool
 - Once `Hue` tool is open, it navigate to `/user/bigdatalab456422/training/out11` where it should have dumped the output partitioned files
-- Notice that it has `.success` file which indicates that the Mapper job completed successfully, and also it has a file `part-m-00000` which shows only one partition of a file was created & `m` in its name indicates that it is Mapper output because only Mapper is used for Map side join, no Reducer task is run in this job
-- Note that it has joined based on `id` columns from `Employees.txt`, `salary.txt`, `desig.txt` files generating a Inner join output
+- Notice that it has `.success` file which indicates that the Mapper job completed successfully, and also it has a file `part-m-00000` & `m` in its name indicates that it is Mapper output because only Mapper is used for Map side join, no Reducer task is run in this job
+- Note that it has joined based on `id` columns from `Employees.txt`, `salary.txt`, `desig.txt` files generating a INNER JOIN output
 
 ![Hue-training_out11_file_InnerMapJoin](../content_BigDataTechnologies/Hue-training_out11_file_InnerMapJoin.png)
