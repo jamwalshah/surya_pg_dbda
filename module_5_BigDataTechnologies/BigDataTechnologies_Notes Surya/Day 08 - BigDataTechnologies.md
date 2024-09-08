@@ -534,6 +534,6 @@ File Output Format Counters
 
 - Note that
   - it has joined based on `id` columns which is key from `custs.txt`, `txns1.txt` files generating a FULL OUTER JOIN output
-  - data is alwayd sorted on key column, but we've not included it in output so output may seem non-sorted at first glance, but it is actually sorted on key/`id` column
+  - data is always sorted on key column (key is `cust_id` column), but we've not included it in output, so output may seem non-sorted at first glance, but it is actually sorted on key/`cust_id` column
 
 ![Hue-training_out12_file_ReduceJoin-key-sorted](../content_BigDataTechnologies/Hue-training_out12_file_ReduceJoin-key-sorted.png)
