@@ -864,7 +864,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 ### Disadvantages Hive
 
-1. L**imited Real-Time Processing :** designed for Batch-processing, not a best tool for real-time data processing
+1. **Limited Real-Time Processing :** designed for Batch-processing, not a best tool for real-time data processing
 2. **Slow Performance :** can become slower than traditional databases since it is built on top of Hadoop, which makes it optimized for batch processing rather than interactive querying
 3. **Steep learning curve :** while it is a SQL-like language, it still requires users to have knowledge of Hadoop & distributed computing, thus difficult for beginners
 4. **lack of support for transactions :** does not supports transactions, so difficulty to maintain consistency
@@ -876,30 +876,513 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 ![Hive-architecture-annotation](../content_BigDataTechnologies/Hive-architecture-annotation.png)
 
-- THhe key components of the Apache Hive architecture are Hive Server 2, Hive Query Language (HiveQL/HQL), external Apache Metastore and Hive Beeline shell
+- The key components of the Apache Hive architecture are `Hive Server 2`, `Hive Query Language (HiveQL/HQL)`, external `Apache Metastore` and `Hive Beeline shell`
+
+1. **Hive Server 2 :** accepts incoming requests from users & creates an execution plan, auto-generates a YARN job to process SQL queries. It also supports the Hive optimizer and Hive compiler to streamline data extraction and processing.
+
+2. **Hive Query Language :**  By enabling the implementation of SQL-reminiscent code, Hive negates the need for long-winded JavaScript codes to sort through unstructured data & allows users to make queries using built-in HQL statements (HQL). These statements can be used to navigate large datasets, refine results, and share data in a code-effective and time-efficient manner.
+
+3. **Hive Metastore :** is the central repository of the Apache Hive infrastructure. Using metastore, Hive can also be formatted into Hive tables and partitions, to compare data across relational databases. Metastore includes table names, column names, data types, partition information and data location on HDFS.
+
+4. **Hive Beeline Shell :** In line with other DBMS, Hive has its own built-in command-line interface where users can run HQL statements. Hive shell also runs Hive JDBC & ODBC drivers, so able to conduct queries on Open DB connection or Java DB connection apps.
 
 ### Hive CLI
 
-- Hive CLI
+- `Hive Shell` or `Hive CLI` is a shell utility at `$HIVE_HOME/bin/hive`, which can be used to run Hive queries in either interactive or batch mode
+- `HiveServer2` (introduced in Hive 0.11) has its own CLI called `Beeline`, which is a JDBC client based on `SQLLine`
+- `Hive CLI` is an older part of Apache Hive, and now deprecated, so command-line is migrated to Beeline is recommended.
+- Hive CLI is a legacy tool which had two main use cases
+    1. it served as a thick client for SQL Hadoop
+    2. it served as a command-line tool for Hive Server (the original Hive Server, now often referred as `HiveServer`)
+- `HiveServer` has been deprecated and removed from the code base as of Hive v1.0.0 and replaced with `HiveServer2`, so the second use case no longer applies
+- For the First usecase, `Beeline` provides or is supposed to provide equal functionality, yet is implemented differently from Hive CLI
+- Ideally, `Hive CLI` should have been deprecated as Hive community haslong recommended using the `Beeline` plus `HiveServer2`configuration, however, because of the wide use of Hive CLI, we instead are replacing the `Hive CLI`'s implementation with a new `Hive CLI` on top of `Beeline` plus embedded `HiveServer2`, so that the Hive community needs to maintain a single code path. In this way, the new `Hive CLI` is just an alias to `Beeline` at both the shell-script level and the high-code level. The goal is that no or minimal changes are required from existing user scripts using `Hive CLI`
+
+#### Beeline
+
+- `HiveServer2`supports a new command-line shell `Beeline`, that works with `HiveServer2`
+- Its a JDBC client based on the `SQLLine CLI`
+- `Beeline` shell works in both embedded mode as well as remote mode
+  - In embedded mode, it runs an embedded Hive (similar to Hive CLI)
+  - While remote mode is for connecting to a separate `HiveServer2` over `Thrift` protocol
+- Starting in Hive v0.14, when Beeline is used with `HiveServer2`, it also prints the log messages from `HiveServer2` for queries it executes to `STDERR`
+
+| Option | Description |
+| :- | :- |
+| `-u <database URL>` | The JDBC URL to connect to. Usage: `beeline -u db_URL` |
+| `-n <username>` | The username to connect as. Usage: `beeline -n valid_user` |
+| `-p <password>` | The password to connect as. Usage: `beeline -p valid_password` |
+| `-d <driver class>` | The driver class to use. Usage: `beeline -d driver_class` |
+| `-e <query>` | Query that should be executed. Double or single quotes enclose the query string. This option can be specified multiple times. Usage: `beeline -e "query_string"`|
+| `-f <file>` | Script file that should be executed. Usage: `beeline -f filepath` |
+| `--hiveconf property=value` | Use value for the given configuration property. Properties that are listed in hive.conf.restricted.list cannot be reset with **hiveconf**. Usage: `beeline --hiveconf prop1=value1` |
+| `--hivevar name=value` | Hive variable name and value. This is a Hive-specific setting in which variables can be set at the session level and referenced in Hive commands or queries. Usage: `beeline --hivevar var1=value1` |
 
 #### Starting Hive CLI
 
+- The CLI when invoked without `-i` option, will attempt to load `$HIVE_HOME/bin/.hiverc` and `$HOME/.hiverc` as initialization files
+- When `$HIVE_HOME/bin/hive` is run with the `-e` or `-f` option, it executes SQL commands in batch mode
+- `hive -e <SQLQuery-String>` executes the SQL query string
+- `hive -f <filePath>` executes one or more SQL queries form a file
+- When `$HIVE_HOME/bin` is run without either `-e` or `-f` option, it enters interactive shell mode
+  - Use `;` (semi-colon) to terminate commands
+  - Comments in scripts can be specified using the `--` prefix
+
+| Command | Description |
+| :- | :- |
+| `quit` `exit` | Use `quit` or `exit` to leave the interactive shell. |
+| `reset` | Resets the configuration to the default values (as of Hive 0.10). |
+| `set <key>=<value>` | Sets the value of a particular configuration variable (key). |
+| | If you misspell the variable name, the CLI will not show an error. |
+| `set` | Prints a list of configuration variables that are overridden by the user or Hive. |
+| `set -v` | Prints all Hadoop and Hive configuration variables. |
+| `add FILE[S] <filepath> <filepath>*` | Adds one or more **files** to the list of resources in the distributed cache. |
+| `add JAR[S] <filepath> <filepath>*` | Adds one or more **jars** to the list of resources in the distributed cache. |
+| `add ARCHIVE[S] <filepath> <filepath>*` | Adds one or more **archives** to the list of resources in the distributed cache. |
+| `list FILE[S]` | Lists the resources already added to the distributed cache. |
+| `list JAR[S]` | Lists the resources already added to the distributed cache. |
+| `list ARCHIVE[S]` | Lists the resources already added to the distributed cache. |
+| `list FILE[S] <filepath>*` | Checks whether the given resources are already added to the distributed cache or not. |
+| `list JAR[S] <filepath>*` | Checks whether the given resources are already added to the distributed cache or not. |
+| `list ARCHIVE[S] <filepath>*` | Checks whether the given resources are already added to the distributed cache or not. |
+| `delete FILE[S] <filepath>*` | Removes the resource(s) from the distributed cache. |
+| `delete JAR[S] <filepath>*` | Removes the resource(s) from the distributed cache. |
+| `delete ARCHIVE[S] <filepath>*` | Removes the resource(s) from the distributed cache. |
+| `! <command>` | Executes a shell command from the Hive shell. |
+| `dfs <dfs command>` | Executes a dfs command from the Hive shell. |
+| `<query string>` | Executes a Hive query and prints results to standard output. |
+| `source <filepath>` | Executes a script file inside the CLI. |
+
+- Start hive CLI using command below, it launches hive interactive shell mode
+
+    ```hive
+    [bigdatalab456422@ip-10-1-1-204 ~]$ hive
+    ```
+
+    ![Start-hive-cli](../content_BigDataTechnologies/Start-hive-cli.png)
+
 #### Setup Hive CLI to print current db
+
+- Run command below to set `hive.cli.print.current.db` to `true` which sets the control to print the current database in use, it won't print any errror message even if you made a mistake in typing the property
+
+    ```hive
+    hive> set hive.cli.print.current.db = true ;
+    ```
 
 #### SHOW DATABASES
 
+- Run command below to print the databases in current `default` database
+
+    ```hive
+    hive (default)> SHOW DATABASES;
+    ```
+
+    ```console
+    OK
+    01_piyali
+    01piyali
+    03jav2023
+    03march2023...
+    ...
+    ...
+    ...zaq
+    zeus_pract
+    zome
+    Time taken: 1.537 seconds, Fetched: 1028 row(s)
+    ```
+
 #### CREATE DATABASE
+
+- Run command below to create a database `sandeep_training`
+
+    ```hive
+    hive (default)> CREATE DATABASE sandeep_training;
+    ```
+
+    ![CREATE-DATABASE-sandeep_training](../content_BigDataTechnologies/CREATE-DATABASE-sandeep_training.png)
+
+- Run command below to create a database `surya_training`
+
+    ```hive
+    hive (default)> CREATE DATABASE surya_training ;
+    ```
+
+    ```console
+    OK
+    Time taken: 0.2 seconds
+    hive (default)> 
+    ```
+
+- You may open the `Hue` tool and open the path fot hive warehouse `/user/hive/warehouse` to locate this new database `surya_training`, so path for new database would be `/user/hive/warehouse/surya_training.db`
+
+    ![Hue-_user_hive_warehouse_surya_training_db](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training_db.png)
+
+    ![Hue-_user_hive_warehouse_sandeep_training_db_annotation](../content_BigDataTechnologies/Hue-_user_hive_warehouse_sandeep_training_db_annotation.png)
 
 #### Change Current Database `USE database`
 
+- Run `USE` command as shown below to change to this new database `surya_training`
+
+    ```hive
+    hive (default)> USE surya_training ;
+    ```
+
+    ```console
+    OK
+    Time taken: 0.029 seconds
+    hive (surya_training)>
+    ```
+
 #### `SHOW TABLES` in Current Database
+
+- Run command below to see table in this new database `surya_training`
+
+    ```hive
+    hive (surya_training)> SHOW TABLES ;
+    ```
+
+    ```console
+    OK
+    Time taken: 0.067 seconds
+    hive (surya_training)>
+    ```
 
 #### `CREATE TABLE nyse`
 
+- Run the command below to create a table `nyse` for `NYSE.csv` dataset
+
+    ```hive
+    hive (surya_training)> create table nyse (exchange_name string, stock_id string, stk_date date,
+    open double, high double, low double,
+    close double, volume bigint, adj_close double
+    row format delimited
+    fields terminated by ','
+    stored as textfile;
+    ```
+
+    ```console
+    OK
+    Time taken: 0.132 seconds
+    hive (surya_training)>
+    ```
+
+> **Note:** While creating a table, remember
+    1. Number of columns = Number of fields
+    2. Proper Data types to be used
+    3. Proper Delimiter to be used
+
 ##### SHOW TABLES
 
-#### DESC
+- Now run `SHOW TABLES` command to confirm `nyse` table is created
 
-#### DESC FORMATTED
+    ```hive
+    hive (surya_training)> SHOW TABLES ;
+    ```
 
-#### SELECT
+    ```console
+    OK
+    nyse
+    Time taken: 0.054 seconds, Fetched: 1 row(s)
+    hive (surya_training)>
+    ```
+
+#### DESC describe `nyse` table
+
+- To descibe/get schema information of a table, run `DESC` command for table `nyse` as below
+
+    ```hive
+    hive (surya_training)> DESC nyse ;
+    ```
+
+    ```console
+    OK
+    exchange_name           string
+    stock_id                string
+    stk_date                date
+    open                    double
+    high                    double
+    low                     double
+    close                   double
+    volume                  bigint
+    adj_close               double
+    Time taken: 0.069 seconds, Fetched: 9 row(s)
+    hive (surya_training)>
+    ```
+
+#### DESC FORMATTED `nyse` table
+
+- To describe/get schema information along with deailed table information and Storage information, use `DESC FORMATTED` command on `nyse` table
+
+    ```hive
+    hive (surya_training)> DESC FORMATTED nyse ;
+    ```
+
+    ![DESC-FORMATTED-nyse](../content_BigDataTechnologies/DESC-FORMATTED-nyse.png)
+
+- In the output, notice that it shows the actual Location of the table, table type is `MANAGED_TABLE`, SerDes Library is `LazySimpleSerDe`
+
+#### SELECT records from table
+
+- To print records from a table, use `SELECT` command to print all records from `nyse` table (it should print zero records, since no data has been inserted into it)
+
+    ```hive
+    hive (surya_training)> SELECT * FROM nyse ;
+    ```
+
+    ```console
+    OK
+    Time taken: 0.366 seconds
+    hive (surya_training)>
+    ```
+
+#### Moving data into  `nyse` table
+
+- You need to use `hadoop fs -mv` utility to move `NYSE.csv` which we uploaded in early days, to the table location we got from `Hue` tool, so use th command below to move the data set to managed table `nyse`, but you need to execute this command on `Hadoop client CLI` (not on this `Hive CLI`), You may open Hadoop client CLI in another web-browser tab, or exit this `Hive CLI` using command `exit`
+
+    ```bash
+    [bigdatalab456422@ip-10-1-1-204 ~]$ hadoop fs -mv /user/bigdatalab456422/training/NYSE.csv /user/hive/warehouse/surya_training.db/nyse
+    ```
+
+##### SELECT records from `nyse`
+
+- If you have exited from `Hive CLI`, launch it again using command `hive` or if `Hive CLI` is already available, you may run the `SELECT` command to print first 10 records from `nyse` table, it should print 10 records this time as we have mapped data set into the table directory
+
+    ```hive
+    hive (surya_training)> SELECT * FROM nyse LIMIT 10 ;
+    ```
+
+    ![SELECT-_-FROM-nyse-LIMIT-10](../content_BigDataTechnologies/SELECT-_-FROM-nyse-LIMIT-10.png)
+
+### Run Analytical Hive Queries
+
+- Now, your data is loaded into the table, you may do further analytical processing by just launching SQL like Hive queries, it'll convert SQL query into `jar` file internally, and launch that `jar` file on ResourceManager to perfrom the processing
+
+#### Find the Total Volume for each Stock
+
+- Now you jsut need to run a SQL like Hive Query and Hive will do all the processing using Hadoop/mapReduce in the background
+
+    ```hive
+    hive (surya_training)> SELECT stock_id, sum (volume) FROM nyse GROUP BY stock_id ;
+    ```
+
+    ![SELECT-stock_id_-sum-_volume_-FROM-nyse-GROUP-BY-stock_id_1](../content_BigDataTechnologies/SELECT-stock_id_-sum-_volume_-FROM-nyse-GROUP-BY-stock_id.png)
+
+#### Find the top 10 Highest Volume stocks
+
+- Run the command below
+
+    ```hive
+    hive (surya_training)> SELECT stock_id, sum(volume) AS total_vol FROM nyse GROUP BY stock_id ORDER BY total_vol DESC LIMIT 10;
+    ```
+
+    ![SELECT-stock_id_-sum_volume_-AS-total_vol-FROM-nyse-GROUP-BY-stock_id-ORDER-BY-total_vol-DESC-LIMIT-10](../content_BigDataTechnologies/SELECT-stock_id_-sum_volume_-AS-total_vol-FROM-nyse-GROUP-BY-stock_id-ORDER-BY-total_vol-DESC-LIMIT-10.png)
+
+> Notice that, running analytical queries on Hive is much faster & a lot easier than MapReduce on Hadoop, it can complete the query within few seconds, while MapReduce took a couple of minutes for the same job
+
+#### Find the All Time Low Price for each Stock
+
+- Run the command below
+
+    ```hive
+    hive (surya_training)> SELECT stock_id, min(low) FROM nyse GROUP BY stock_id;
+    ```
+
+    ![SELECT-stock_id_-min_low_-FROM-nyse-GROUP-BY-stock_id](../content_BigDataTechnologies/SELECT-stock_id_-min_low_-FROM-nyse-GROUP-BY-stock_id.png)
+
+#### Find All Time High Price for each Stock
+
+- Run the command below, and confirm if `AEA` stock has value `23.94`
+
+    ```hive
+    hive (surya_training)> SELECT stock_id, max(high) FROM nyse GROUP BY stock_id;
+    ```
+
+    ![SELECT-stock_id_-max_high_-FROM-nyse-GROUP-BY-stock_id](../content_BigDataTechnologies/SELECT-stock_id_-max_high_-FROM-nyse-GROUP-BY-stock_id.png)
+
+### Save Hive Query output to a file
+
+#### Save Total Volume for each Stock in row format file with fields demilited by `,`
+
+- To save output to a file, we need to use `INSERT OVERWRITE DIRECTORY <dirPath>` clause
+- Run the command below to save data into file `hive/result1` which will be created in user directory, file will be row formatted & fields sill be delimited by `,`
+
+    ```hive
+    hive (surya_training)> INSERT OVERWRITE DIRECTORY 'hive/result1' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+    SELECT stock_id, sum(volume) FROM nyse GROUP BY stock_id;
+    ```
+
+    ```console
+    Query ID = bigdatalab456422_20230524071018_0a7286c1-718f-4a18-897d-7c8567317622
+    Total jobs = 1
+    Launching Job 1 out of 1
+    Number of reduce tasks not specified. Estimated from input data size: 1
+    In order to change the average load for a reducer (in bytes):
+      set hive.exec.reducers.bytes.per.reducer=<number>
+    In order to limit the maximum number of reducers:
+      set hive.exec.reducers.max=<number>
+    In order to set a constant number of reducers:
+      set mapreduce.job.reduces=<number>
+    23/05/24 07:10:19 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    23/05/24 07:10:19 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    Starting Job = job_1684866872278_0374, Tracking URL = http://ip-10-1-1-204.ap-south-1.compute.internal:6066/proxy/application_1684866872278_0374/
+    Kill Command = /opt/cloudera/parcels/CDH-6.2.1-1.cdh6.2.1.p0.1425774/lib/hadoop/bin/hadoop job -kill job_1684866872278_0374
+    Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+    2023-05-24 07:11:26,556 Stage-1 map = 0%, reduce = 0%
+    2023-05-24 07:11:54,284 Stage-1 map = 100%, reduce = 0%, Cumulative CPU 6.1 sec
+    2023-05-24 07:12:14,119 Stage-1 map = 100%, reduce = 100%, Cumulative CPU 8.52 sec
+    MapReduce Total cumulative CPU time: 8 seconds 520 msec
+    Ended Job = job_1684866872278_0374
+    Moving data to directory hive/result1
+    MapReduce Jobs Launched:
+    Stage-Stage-1: Map: 1 Reduce: 1 Cumulative CPU: 8.52 sec HDFS Read: 41000225 HDFS Write: 2918 HDFS EC Read: 0 SUCCESS
+    Total MapReduce CPU Time Spent: 8 seconds 520 msec
+    OK
+    Time taken: 118.308 seconds
+    hive (surya_training)>
+    ```
+
+- To view the output file/dump, Open `Hue` tool and open the path `/user/bigdatalab456422/hive/result1`, notice that it has only one file `000000_0` which is the only partition we have here
+
+    ![Hue-_user_bigdatalab456422_hive_result1](../content_BigDataTechnologies/Hue-_user_bigdatalab456422_hive_result1.png)
+
+- Now if you open this file `000000_0` in Hue tool, you can see the fields are separated by `,` in a row format
+
+    ![Hue-_user_bigdatalab456422_hive_result1_000000_0](../content_BigDataTechnologies/Hue-_user_bigdatalab456422_hive_result1_000000_0.png)
+
+### Save AllTimeHigh, AllTimeLow, AverageClose for each Stock in file
+
+- Run the command below
+
+    ```hive
+    hive (surya_training)> INSERT OVERWRITE DIRECTORY 'hive/result2' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+    SELECT stock_id, max(high), min(low), round(avg(close), 2) FROM nyse GROUP BY stock_id;
+    ```
+
+    ```console
+    Query ID = bigdatalab456422_20230524072336_7a5d4b20-1939-4828-8699-8a49ed1fef3f
+    Total jobs = 1
+    Launching Job 1 out of 1
+    Number of reduce tasks not specified. Estimated from input data size: 1
+    In order to change the average load for a reducer (in bytes):
+      set hive.exec.reducers.bytes.per.reducer=<number>
+    In order to limit the maximum number of reducers:
+      set hive.exec.reducers.max=<number>
+    In order to set a constant number of reducers:
+      set mapreduce.job.reduces=<number>
+    23/05/24 07:23:36 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    23/05/24 07:23:36 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    Starting Job = job_1684866872278_0396, Tracking URL = http://ip-10-1-1-204.ap-south-1.compute.internal:6066/proxy/application_1684866872278_0396/
+    Kill Command = /opt/cloudera/parcels/CDH-6.2.1-1.cdh6.2.1.p0.1425774/lib/hadoop/bin/hadoop job -kill job_1684866872278_0396
+    Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+    2023-05-24 07:23:51,461 Stage-1 map = 0%, reduce = 0%
+    2023-05-24 07:24:07,120 Stage-1 map = 100%, reduce = 0%, Cumulative CPU 8.59 sec
+    2023-05-24 07:24:16,561 Stage-1 map = 100%, reduce = 100%, Cumulative CPU 13.89 sec
+    MapReduce Total cumulative CPU time: 13 seconds 890 msec
+    Ended Job = job_1684866872278_0396
+    Moving data to directory hive/result2
+    MapReduce Jobs Launched:
+    Stage-Stage-1: Map: 1 Reduce: 1 Cumulative CPU: 13.89 sec HDFS Read: 41002190 HDFS Write: 4215 HDFS EC Read: 0 SUCCESS
+    Total MapReduce CPU Time Spent: 13 seconds 890 msec
+    OK
+    Time taken: 41.592 seconds
+    hive (surya_training)>
+    ```
+
+- To view the output file/dump, Open `Hue` tool and open the path `/user/bigdatalab456422/hive/result2`, notice that it has only one file 000000_0 which is the only partition we have here
+
+    ![Hue-_user_bigdatalab456422_hive_result2](../content_BigDataTechnologies/Hue-_user_bigdatalab456422_hive_result2.png)
+
+- Now if you open this file `000000_0` in Hue tool, you can see the fields are separated by `,` in a row format
+
+    ![Hue-_user_bigdatalab456422_hive_result2_000000_0](../content_BigDataTechnologies/Hue-_user_bigdatalab456422_hive_result2_000000_0.png)
+
+### Save Hive Query output to another table
+
+- Lets first check how many tables do we have in current database, we should only see `nyse` table
+
+    ```hive
+    hive (surya_training)> SHOW TABLES ;
+    ```
+
+    ```console
+    OK
+    nyse
+    Time taken: 0.034 seconds, Fetched: 1 row(s)
+    hive (surya_training)>
+    ```
+
+#### Save Total Volume of each Stock in another Table
+
+- To save output to another table, we need to use `CREATE TABLE <tableName> AS` clause
+- Run the command below
+
+    ```hive
+    hive (surya_training)> CREATE TABLE stkvol AS
+    SELECT stock_id, sum(volume) AS total_vol FROM nyse GROUP BY stock_id;
+    ```
+
+    ```console
+    Query ID = bigdatalab456422_20230524073028_d3a92865-6298-4b0b-8208-c8a9bd75ac9d
+    Total jobs = 1
+    Launching Job 1 out of 1
+    Number of reduce tasks not specified. Estimated from input data size: 1
+    In order to change the average load for a reducer (in bytes):
+      set hive.exec.reducers.bytes.per.reducer=<number>
+    In order to limit the maximum number of reducers:
+      set hive.exec.reducers.max=<number>
+    In order to set a constant number of reducers:
+      set mapreduce.job.reduces=<number>
+    23/05/24 07:30:28 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    23/05/24 07:30:28 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    Starting Job = job_1684866872278_0397, Tracking URL = http://ip-10-1-1-204.ap-south-1.compute.internal:6066/proxy/application_1684866872278_0397/
+    Kill Command = /opt/cloudera/parcels/CDH-6.2.1-1.cdh6.2.1.p0.1425774/lib/hadoop/bin/hadoop job -kill job_1684866872278_0397
+    Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+    2023-05-24 07:30:37,678 Stage-1 map = 0%, reduce = 0%
+    2023-05-24 07:30:47,000 Stage-1 map = 100%, reduce = 0%, Cumulative CPU 4.11 sec
+    2023-05-24 07:30:54,291 Stage-1 map = 100%, reduce = 100%, Cumulative CPU 7.21 sec
+    MapReduce Total cumulative CPU time: 7 seconds 210 msec
+    Ended Job = job_1684866872278_0397
+    Moving data to directory hdfs://nameservice1/user/hive/warehouse/surya_training.db/stkvol
+    MapReduce Jobs Launched:
+    Stage-Stage-1: Map: 1 Reduce: 1 Cumulative CPU: 7.21 sec HDFS Read: 41000385 HDFS Write: 2998 HDFS EC Read: 0 SUCCESS
+    Total MapReduce CPU Time Spent: 7 seconds 210 msec
+    OK
+    Time taken: 28.605 seconds
+    hive (surya_training)>
+    ```
+
+- Run the command below to check if new table has been created to which data has been dumped
+
+    ```hive
+    hive (surya_training)> SHOW TABLES ;
+    ```
+
+    ```console
+    OK
+    nyse
+    stkvol
+    Time taken: 0.037 seconds, Fetched: 2 row(s)
+    hive (surya_training)>
+    ```
+
+- Run `SELECT` command as show below to print first 10 records from the table `stkvol` which has been created to dump the output
+
+    ```hive
+    hive (surya_training)> SELECT * FROM stkvol LIMIT 10;
+    ```
+
+    ```console
+    OK
+    AA      42061448400
+    AAI     5246821400
+    AAN     817567400
+    AAP     2802701500
+    AAR     49882000
+    AAV     834246600
+    AB      1125446300
+    ABA     11686500
+    ABB     4532301800
+    ABC     11439581700
+    Time taken: 0.081 seconds, Fetched: 10 row(s)
+    hive (surya_training)>
+    ```
