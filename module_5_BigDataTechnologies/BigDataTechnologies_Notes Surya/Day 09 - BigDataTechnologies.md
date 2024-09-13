@@ -869,12 +869,27 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 3. **Steep learning curve :** while it is a SQL-like language, it still requires users to have knowledge of Hadoop & distributed computing, thus difficult for beginners
 4. **lack of support for transactions :** does not supports transactions, so difficulty to maintain consistency
 5. **Limited Flexibility :** not as flexible as other data-warehousing tools, since its designed specifically to work with Hadoop, which limits its usability in other environemnts
+6. **Indexing :** although indexing makes queries faster, but hive has a limited indexing capability
 
 ### Hive Architecture
 
 ![Hive-architecture](../content_BigDataTechnologies/Hive-architecture.png)
 
 ![Hive-architecture-annotation](../content_BigDataTechnologies/Hive-architecture-annotation.png)
+
+![Hive-architecture-drawing](../content_BigDataTechnologies/Hive-architecture-drawing.png)
+
+- When we run SQL queries on an RDBMS, it needs SQL drivers such as JDBC, ODBC, etc., but when we run Hive QL queries, it generates a `jar` file, which will be automatically used to launch MapReduce Jobs to process data on HDFS
+
+![Hive-architecture-launching-HiveQL](../content_BigDataTechnologies/Hive-architecture-launching-HiveQL.png)
+
+- Metastore it is like a local database which stores table structure, while HDFS is file system which actually stores the data
+
+![Hive-architecture-metastore](../content_BigDataTechnologies/Hive-architecture-metastore.png)
+
+- When we run a Hive query, it'll trigger a `run()` method, so using any tool either Hive or MapReduce, we are just invoking the `run()` method which has all the instructions describing what needs to be done
+
+![Hive-architecture-run](../content_BigDataTechnologies/Hive-architecture-run.png)
 
 - The key components of the Apache Hive architecture are `Hive Server 2`, `Hive Query Language (HiveQL/HQL)`, external `Apache Metastore` and `Hive Beeline shell`
 
@@ -955,7 +970,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 - Start hive CLI using command below, it launches hive interactive shell mode
 
-    ```hive
+    ```bash
     [bigdatalab456422@ip-10-1-1-204 ~]$ hive
     ```
 
