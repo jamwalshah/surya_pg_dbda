@@ -1069,7 +1069,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
     ```hive
     hive (surya_training)> create table nyse (exchange_name string, stock_id string, stk_date date,
     open double, high double, low double,
-    close double, volume bigint, adj_close double
+    close double, volume bigint, adj_close double)
     row format delimited
     fields terminated by ','
     stored as textfile;
