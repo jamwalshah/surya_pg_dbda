@@ -235,7 +235,7 @@
 
   1. Using Suitable File formats in Hive preferably ORC format
   2. Indexing
-  3. Using optimized Execution Engine
+  3. Optimizing Execution Engine
   4. Vectorization
   5. Cost Based Optimization (CBO)
   6. Compression
@@ -518,11 +518,14 @@
 
 #### Avro
 
-- First released in 2009, developed within Apache Hadoop's architecture
+- First released in 2009, developed within Apache Hadoop's architecture by Doug Cutting
 - uses JSON to define data types and schemas
 - uses row-based storage
 - trades compression efficiency to provide condensed binary format to reduce data storage needs compared to ORC and Parquet
 - supports 100% schema enforcement with schema & data stored in same file or message
+- language-neutral data serialization system
+
+> Avro is not really a file format, it’s a file format plus a serialization and de-serialization framework with regular old sequence files you can store complex objects but you have to manage the process
 
 ##### Advantages of Avro Files
 
@@ -531,6 +534,7 @@
 3. **Row-based storage :** Row-based storage makes it a better choice when all the fields need to be accessed
 4. **Data Serialization :** better option for data streaming where data needs to be serialized to share across different system due to its row-based storage
 5. **Language Independent :** uses a binary encoding for serialized data, ensuring storage and data transmission regardless of programming language used
+6. **Fast Serialization:** it depends heavily on its schema, allows data to be written with no prior knowledge of the schema, so it serializes fast and the resulting serialized data is lesser in size
 
 ##### Disadvantages of Avro Files
 
@@ -706,9 +710,87 @@
     ON table_name REBUILD;
     ```
 
-## Partitioning
+### Optimizing Execution Engine
 
-## Bucketing/Clustering
+- Execution engine is used to communicate with Hadoop daemons such as NameNode, DataNodes and job tracker to execute the Hive query on top of Hadoop file system
+- executes the execution plan created by the compiler
+
+#### Types of Execution Engines in Hive
+
+- Hive queries can run using three execution engines
+  1. MapReduce
+  2. Tex
+  3. Spark
+- In Hive v1.x (prior to Hive v2.0.0), the default execution engine in hive was `MapReduce (MR)`, which was replaced in Hive v2.0+ with `Apache Tez`
+- For Hive workloads, We can choose Apache Tez to optimize the execution engine by using the command below
+
+    ```hive
+    SET hive.execution.engine=tez ;
+    ```
+
+- If you need to change execution engine for all Hive queries, you need to override the `hive.execution.engine` property in `hive-site.xml`
+
+1. **MapReduce (MR) Execution Engine**
+    - You may want to avoid using traditional MapReduce due to its performance being too slow than other execution engines
+    - If execution engine is set to `mr`, query will be submitted as MapReduce jobs
+    - A number of Mappers and Reducers will be assigned and it will run in a traditional distributed way
+
+        ```hive
+        SET hive.execution.engine=mr;
+        ```
+
+2. **Tez Execution Engine**
+    - If you're primarily using Hive or have an ETL workload, and want to improve performance for HQL queries, use Tez Execution Engine
+    - If execution engine is set to `tez`, query will be submitted as Tez job
+    - Apache Tez is an application framework that is purposefully built on top of Hadoop YARN
+    - is an alternate of the traditional MapReduce design in Hadoop
+    - used to build high performance batch & interactive data processing applications
+    - improves query performance by using the expressions of Directed Acyclic Graphs (DAGs) and data transfer primitives
+    - instead of creating separate jobs for each stage in MapReduce, Apache Tez creates a Single job for all the tasks represented in a DAG
+    - Tez framework is for purpose-built tools such as Hive
+    - Tez containers can shut down when finished to save resources
+
+        ```hive
+        SET hive.execution.engine=tez;
+        ```
+
+    - If Low-Latency Analytical Processing (LLAP) is supported for Hive queries, Apache Tez provides the following execution modes:
+      1. **Container Mode :** Every time you run a Hive query, Tez requests a container from YARN
+      2. **LLAP Mode :** Every time you run a Hive query, Tez asks the LLAP daemon for a free thread, and starts running a fragment
+
+3. **Spark Execution Engine**
+    - If execution engine is set to `spark`, query will be submitted as Spark job
+    - Spark Execution Engine is faster for running Hive queries but has some resource management drawbacks
+    - used for large scale data processing, used by mainstream developers
+    - Spark's containers hog resources even when not processing
+
+        ```hive
+        SET hive.execution.engine=spark;
+        ```
+
+### Vectorization/Parallel Execution
+
+- Vectorization was introduced in Hive v0.13
+- To improve the performance of operations such as reads, aggregations, filters & joins, we use Vectorized Query Execution
+- It happens by performing operations in a batch of 1024 rows at once, instead of single row each time
+- can significantly improve query execution time
+- You can enable Vectorization using two parameter to help in better parallel execution
+
+    ```hive
+    SET hive.vectorized.execution = true ;
+    SET hive.vectorized.execution.enabled = true ;
+    SET hive.vectorized.execution.reduce.groupby.enabled = true ;
+    ```
+
+> Note that, Parallel execution increases cluster utilization, and if cluster utilization is already high then parallel execution can't help much to improve performance
+
+### Cost Based Optimization (CBO)
+
+### Compression
+
+### Partitioning
+
+### Bucketing/Clustering
 
 ---
 
