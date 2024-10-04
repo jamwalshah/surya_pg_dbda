@@ -890,7 +890,7 @@ SELECT SUM(amount) FROM txnrecsbycat WHERE category = 'Exercise & Fitness';
 
 ```sql
 CREATE TABLE table1(col1 dt1, col2 dt2, ...)
-PARTITIONED  BY (partition1col dt,partition2 col dt, ...) ;
+PARTITIONED  BY (partition1col dt, partition2col dt, ...) ;
 ```
 
 - And in insert statements, Partition column(s) are mentioned in the start using `PARTITION()` to define the partition column optionally with possible values in partition column(s), then table values using `VALUES` keyword to specify values of table columns first & values of partition column(s) at end for each record as shown in syntax below
@@ -955,9 +955,11 @@ VALUES(col1_Val, col2_Val, ..., ) ;
 
 #### Best Practices for Partitioning
 
-1. Select only those columns as partition keys which will effectively filter the data and are used frequently to filter data
-2. Limit the Number of partitions as too many partitions can lead to performance overhead
-3. Consider that each partition should have enough data to be beneficial so that small file problem can be avoided
+1. Never partition on a Unique ID column or any other column with high cardinality
+2. Size partitions to greater than or equal to 1 GB on average, Consider that each partition should have enough data to be beneficial so that small file problem can be avoided
+3. Design queries to process not more than 1000 partitions, Limit the Number of partitions as too many partitions can lead to performance overhead
+4. Select only those columns as partition keys which will effectively filter the data and are used frequently to filter data, otherwise it you would lose the purpose of partitioning
+5. While creating partitions, do not use a partition name which has invalid characters `:`, `?` or `%`, since directories will be named using the URL encoding of these characters
 
 #### 1. Partition table by a single column
 
@@ -1288,15 +1290,440 @@ Time taken: 36.021 seconds
 hive (surya_training)>
 ```
 
-- You may open `Hue` tool and visit the hdfs path at `/user/hive/warehouse/surya_training.db/txnrecsByCat4` to open the table and see the different folders created for each of the partitions for column `month` created from previous command
+- You may open `Hue` tool and visit the hdfs path at `/user/hive/warehouse/surya_training.db/txnrecsbycat4` to open the table and see the different folders created for each of the partitions for column `month` created from previous command
 
-    ![Hue-_user_hive_warehouse_surya_training.db_txnrecsByCat4](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txnrecsByCat4.png)
+    ![Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat4](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat4.png)
 
   - Now open the folder for `month=01` partition resulting into path `/user/hive/warehouse/surya_training.db/txnrecsbycat4/month=01` to see the file(s) in the partition for column `month`
 
-    ![Hue-_user_hive_warehouse_surya_training.db_txnrecsByCat4_month_01](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txnrecsByCat4_month_01.png)
+    ![Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat4_month_01](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat4_month_01.png)
 
-### 7. Bucketing/Clustering
+### 7. Bucketing
+
+```text
+Bucketing (clustering)
+
+
+A,20
+B,10
+C,5
+A,30
+B,20
+C,40
+
+2 clusters or buckets
+
+Hash Partitioning
+
+hashcode(A) = 200
+hashcode(B) = 205
+hashcode(C) = 210
+
+hashcode % number of buckets = bucket no
+
+200 % 2 = 0
+205 % 2 = 1
+210 % 2 = 0
+```
+
+![Bucketing-clustering-hashcode-calculation-annotation](../content_BigDataTechnologies/Bucketing-clustering-hashcode-calculation-annotation.png)
+
+![Bucketing-number-of-buckets-calculation-annotation](../content_BigDataTechnologies/Bucketing-number-of-buckets-calculation-annotation.png)
+
+- At max 20,000 partitions are allowed, and to avoid creating a lot of partitions, we create clusters/buckets
+- uses hash partitioning to decide which record will go into which bucket
+- At times, there is a huge dataset available, but even after partitioning on column(s), the partitioned file size still doesn't match with the actual expectations and it remains huge
+  - So user might need to create buckets to divide the table data sets into more manageable parts
+- it provides the flexibility to further segregate the data into more manageable sections called **buckets** or **cluster**
+- it is based on the hash function, which depends on the type of bucketing column
+- Records bucketed by the same column value will always be stored in the same bucket
+- `CLUSTERED BY` clause is used to divide the table into buckets
+- You can divide the tables or partitions into buckets, which are stored in the following ways
+  1. As files in the directories of partitions if the table is partitioned
+  2. As files in the directory for the table
+- We can create a table which is partitioned on one column, and bucketed/clustered into 'n' buckets on another column using syntax below
+
+    ```sql
+    CREATE TABLE table1(col1, dt1, col2, dt2, ...)
+    PARTITIONED BY(partition1col dt, partition2col dt, ...)
+    CLUSTERED BY(clus1col) SORTED BY (sort1col) INTO n BUCKETS;
+    ```
+
+> Buckets are created as multiple files, while Partitions are created as multiple folders
+
+- Before inserting data into a bucketed table, we need to first enforce bucketing by setting the property `hive.enforce.bucketing`
+
+    ```sql
+    SET hive.enforce.bucketing = true;
+    ```
+
+#### Advantages of Bucketing
+
+1. works well with the columns having high cardinality
+2. enables parallel processing since data from each bucket can be processed independently
+3. results into a manageable data sized buckets as compared to the original single large dataset
+4. can prove beneficial in joining columns when used with ORC File format
+
+#### Disadvantages of Bucketing
+
+1. Data is unevenly distributed over the bucket files, as records are placed based on the hash function, this might lead to performance issues
+2. once a table is bucketed, it has fixed number of buckets, and you may require bucket that data again proving to be a resource-intensive process
+
+#### Best Practices for Bucketing
+
+1. Use a single key for the buckets of the largest table
+2. Normally, do not bucket and sort on the same column
+
+#### 1. Bucketing: Partitioned Table with Multiple Buckets
+
+- We'll create a table `PARTITIONED BY` column `category` and `CLUSTERED BY` column state `INTO 10 BUCKETS`, and then load data into it using `DISTRIBUTE BY category`, which will create multiple partitions for each value of `category` column, and within each of those partition folders, it'll have 10 buckets created across all the values of `state` column, so that it becomes faster for hive to filter records by column `category` and easy to store by creating buckets for values of `state` column
+
+##### CREATE TABLE `txnrecsByCat2` `PARTITIONED BY` single column `CLUSTERED BY` another column `INTO multiple BUCKETS`
+
+- Create a table `PARTITIONED BY` column `category` and `CLUSTERED BY` `state` column `INTO 10 BUCKETS` using the command below
+- H2. Create partitioned table (with multiple buckets & partitioning)
+
+```sql
+hive (surya_training)> CREATE TABLE txnrecsByCat2(txnno INT, txndate STRING, custno INT, amount DOUBLE, 
+product STRING, city STRING, state STRING, spendby STRING) 
+PARTITIONED BY (category STRING) 
+CLUSTERED BY (state) INTO 10 buckets 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+```
+
+```console
+OK
+Time taken: 0.437 seconds
+hive (surya_training)>
+```
+
+> In bucketing, we only specify the number of buckets we want and hive will do the rest of decision making how the buckets will be created based on hash function, but in case of partitioning, we need to specify on which column we want to create partitions and optionally we can tell on which exact values of that column we want to create partitions
+
+- You've just created a partitioned table with buckets, but before loading data into it, we need to set some hive properties/flags
+  - First, enable dynamic partitioning in nonstrict mode using command below, since this table uses partitioning
+
+    ```sql
+    hive (surya_training)> SET hive.exec.dynamic.partition.mode = nonstrict;
+    hive (surya_training)> SET hive.exec.dynamic.partition = true;
+    ```
+
+  - Second, we need to enforce bucketing using command below, since this table also uses bucketing/clustering
+
+    ```sql
+    hive (surya_training)> SET hive.enforce.bucketing = true;
+    ```
+
+##### Loading data into `txnrecsByCat2` table `DISTRIBUTE BY` single column `category`
+
+- Load data into table `txnrecsByCat2` using `INSERT OVERWRITE` to rewrite any existing data, `PARTITION(category)` to specify partition column, `DISTRIBUTE BY category` to indicate how the data will be distributed across different reducers, use the command below
+- I2. Load data into partition table (with multiple buckets & partitioning)
+
+    ```sql
+    hive (surya_training)> INSERT OVERWRITE TABLE txnrecsByCat2 
+    PARTITION(category) 
+    SELECT txn.txnno, txn.txndate, txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.spendby, txn.category 
+    FROM txnrecords txn 
+    DISTRIBUTE BY category;
+    ```
+
+    ```console
+    hive (surya_training)> INSERT OVERWRITE TABLE txnrecsByCat2 PARTITION (category)
+                        >
+                        > SELECT txn.txnno, txn.txndate,txn.custno, txn.amount, txn.product, txn.city,txn.state,
+                        >
+                        > txn.spendby, txn.category
+                        >
+                        > FROM txnrecords txn
+                        >
+                        > DISTRIBUTE BY category;
+    Query ID = bigdatalab456422_20230530092516_5c09c625-7ad3-4699-9250-166751c81898
+    Total jobs = 2
+    Launching Job 1 out of 2
+    Number of reduce tasks not specified. Estimated from input data size: 1
+    In order to change the average load for a reducer (in bytes):
+    set hive.exec.reducers.bytes.per.reducer=<number>
+    In order to limit the maximum number of reducers:
+    set hive.exec.reducers.max=<number>
+    In order to set a constant number of reducers:
+    set mapreduce.job.reduces=<number>
+    23/05/30 09:25:18 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    23/05/30 09:25:18 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    Starting Job = job_1684866872278_3996, Tracking URL = http://ip-10-1-1-204.ap-south-1.compute.internal:6066/proxy/application_1684866872278_3996/
+    Kill Command = /opt/cloudera/parcels/CDH-6.2.1-1.cdh6.2.1.p0.1425774/lib/hadoop/bin/hadoop job  -kill job_1684866872278_3996
+    Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+    2023-05-30 09:27:02,024 Stage-1 map = 0%,  reduce = 0%
+    2023-05-30 09:27:47,005 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 5.32 sec
+    2023-05-30 09:28:13,003 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 10.6 sec
+    MapReduce Total cumulative CPU time: 10 seconds 850 msec
+    Ended Job = job_1684866872278_3996
+    Launching Job 2 out of 2
+    Number of reduce tasks determined at compile time: 10
+    In order to change the average load for a reducer (in bytes):
+    set hive.exec.reducers.bytes.per.reducer=<number>
+    In order to limit the maximum number of reducers:
+    set hive.exec.reducers.max=<number>
+    In order to set a constant number of reducers:
+    set mapreduce.job.reduces=<number>
+    23/05/30 09:28:45 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    23/05/30 09:28:45 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    Starting Job = job_1684866872278_4018, Tracking URL = http://ip-10-1-1-204.ap-south-1.compute.internal:6066/proxy/application_1684866872278_4018/
+    Kill Command = /opt/cloudera/parcels/CDH-6.2.1-1.cdh6.2.1.p0.1425774/lib/hadoop/bin/hadoop job  -kill job_1684866872278_4018
+    Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 10
+    2023-05-30 09:30:42,711 Stage-2 map = 0%,  reduce = 0%
+    2023-05-30 09:31:52,883 Stage-2 map = 100%,  reduce = 10%, Cumulative CPU 9.69 sec
+    2023-05-30 09:32:53,034 Stage-2 map = 100%,  reduce = 10%, Cumulative CPU 10.62 sec
+    2023-05-30 09:32:55,121 Stage-2 map = 100%,  reduce = 30%, Cumulative CPU 21.38 sec
+    2023-05-30 09:33:55,266 Stage-2 map = 100%,  reduce = 30%, Cumulative CPU 23.27 sec
+    2023-05-30 09:34:03,604 Stage-2 map = 100%,  reduce = 40%, Cumulative CPU 28.16 sec
+    2023-05-30 09:34:05,667 Stage-2 map = 100%,  reduce = 50%, Cumulative CPU 33.5 sec
+    2023-05-30 09:35:06,423 Stage-2 map = 100%,  reduce = 50%, Cumulative CPU 35.94 sec
+    2023-05-30 09:35:21,908 Stage-2 map = 100%,  reduce = 60%, Cumulative CPU 41.05 sec
+    2023-05-30 09:35:22,962 Stage-2 map = 100%,  reduce = 70%, Cumulative CPU 46.61 sec
+    2023-05-30 09:36:23,097 Stage-2 map = 100%,  reduce = 70%, Cumulative CPU 48.84 sec
+    2023-05-30 09:36:28,206 Stage-2 map = 100%,  reduce = 80%, Cumulative CPU 54.42 sec
+    2023-05-30 09:36:35,419 Stage-2 map = 100%,  reduce = 90%, Cumulative CPU 59.17 sec
+    2023-05-30 09:37:35,844 Stage-2 map = 100%,  reduce = 90%, Cumulative CPU 61.44 sec
+    2023-05-30 09:37:42,003 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 66.68 sec
+    2023-05-30 09:38:42,141 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 67.64 sec
+    MapReduce Total cumulative CPU time: 1 minutes 7 seconds 640 msec
+    Ended Job = job_1684866872278_4018
+    Loading data to table surya_training.txnrecsbycat2 partition (category=null)
+
+            Time taken to load dynamic partitions: 0.713 seconds
+            Time taken for adding to write entity : 0.004 seconds
+    MapReduce Jobs Launched:
+    Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 10.85 sec   HDFS Read: 4427194 HDFS Write: 4868792 HDFS EC Read: 0 SUCCESS
+    Stage-Stage-2: Map: 1  Reduce: 10   Cumulative CPU: 67.64 sec   HDFS Read: 4920524 HDFS Write: 3510614 HDFS EC Read: 0 SUCCESS
+    Total MapReduce CPU Time Spent: 1 minutes 18 seconds 490 msec
+    OK
+    Time taken: 817.442 seconds
+    hive (surya_training)>
+    ```
+
+- When data is loaded into the table, multiple partitions are created for `category` column, and each partition folder has 10 buckets for `state` column
+- You may open `Hue` tool and visit the hdfs path at `/user/hive/warehouse/surya_training.db/txnrecsbycat2` to open the table and see the different folders created for each of the partitions for column `category` created from previous command
+
+  ![Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat2](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat2.png)
+
+  - Now open the folder for `month=01` partition resulting into path `/user/hive/warehouse/surya_training.db/txnrecsbycat2/category=Air%20Sports` to see the buckets in the form of 10 files for the column `state`
+
+    ![Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat2_category_Air_20Sports](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txnrecsbycat2_category_Air_20Sports.png)
+
+- Notice that all the partitions are of varying size, some are smaller while others are huge, this is because records are placed into buckets based on the hash function
+
+#### 2. Bucketing: Table with only buckets
+
+- We'll create a table `CLUSTERED BY` column state `INTO 10 BUCKETS`, and then load data into it, which will create 10 buckets across all the values of `state` column, so that it becomes easy to store data by creating buckets for values of `state` column
+- This time we're not creating partitions, but pure bucketing, so bucket files will be created directly into the table folder in hive warehouse location on hdfs
+
+##### CREATE TABLE `txn_bucket` `CLUSTERED BY` single column `INTO multiple BUCKETS`
+
+- Create a table `CLUSTERED BY` `state` column `INTO 10 BUCKETS` using the command below
+- mod H2. Create partitioned table (only buckets)
+
+    ```sql
+    hive (surya_training)> CREATE TABLE txn_bucket(txnno INT, txndate STRING, custno INT, amount DOUBLE, 
+    category STRING, product STRING, city STRING, state STRING, spendby STRING) 
+    CLUSTERED BY (state) INTO 10 buckets 
+    ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+    ```
+
+    ```console
+    OK
+    Time taken: 0.116 seconds
+    hive (surya_training)>
+    ```
+
+- This time, we don't need to set hive flags to enforce bucketing as we've set that earlier before loading data into `txnrecsbycat2`
+
+##### Loading data into `txn_bucket` table
+
+- No need to use `DISTRIBUTE BY` clause while loading data into a clustered table since we're only doing pure bucketing not involving partitioning
+- Load data into table `txn_bucket` using `INSERT OVERWRITE` to rewrite any existing data, by taking a `SELECT` from `txnrecords` table, use the command below
+
+    ```sql
+    hive (surya_training)> INSERT OVERWRITE TABLE txn_bucket SELECT * FROM txnrecords;
+    ```
+
+    ```console
+    hive (surya_training)> INSERT OVERWRITE TABLE txn_bucket
+                        >
+                        > SELECT FROM txnrecords;
+    Query ID = bigdatalab456422_20230530095035_e735f98c-174d-41ee-8193-767036d18e15
+    Total jobs = 1
+    Launching Job 1 out of 1
+    Number of reduce tasks determined at compile time: 10
+    In order to change the average load for a reducer (in bytes):
+    set hive.exec.reducers.bytes.per.reducer=<number>
+    In order to limit the maximum number of reducers:
+    set hive.exec.reducers.max=<number>
+    In order to set a constant number of reducers:
+    set mapreduce.job.reduces=<number>
+    23/05/30 09:50:37 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    23/05/30 09:50:37 INFO client.RMProxy: Connecting to ResourceManager at ip-10-1-1-204.ap-south-1.compute.internal/10.1.1.204:8032
+    Starting Job = job_1684866872278_4071, Tracking URL = http://ip-10-1-1-204.ap-south-1.compute.internal:6066/proxy/application_1684866872278_4071/
+    Kill Command = /opt/cloudera/parcels/CDH-6.2.1-1.cdh6.2.1.p0.1425774/lib/hadoop/bin/hadoop job  -kill job_1684866872278_4071
+    Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 10
+    2023-05-30 09:52:43,812 Stage-1 map = 0%,  reduce = 0%
+    2023-05-30 09:53:43,943 Stage-1 map = 0%,  reduce = 0%
+    2023-05-30 09:53:54,258 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.84 sec
+    2023-05-30 09:54:44,308 Stage-1 map = 100%,  reduce = 13%, Cumulative CPU 9.44 sec
+    2023-05-30 09:54:45,331 Stage-1 map = 100%,  reduce = 20%, Cumulative CPU 11.27 sec
+    2023-05-30 09:54:51,526 Stage-1 map = 100%,  reduce = 23%, Cumulative CPU 12.85 sec 
+    2023-05-30 09:54:52,556 Stage-1 map = 100%,  reduce = 27%, Cumulative CPU 14.82 sec
+    2023-05-30 09:54:55,629 Stage-1 map = 100%,  reduce = 30%, Cumulative CPU 17.57 sec
+    2023-05-30 09:55:06,950 Stage-1 map = 100%,  reduce = 37%, Cumulative CPU 19.6 sec
+    2023-05-30 09:55:14,176 Stage-1 map = 100%,  reduce = 40%, Cumulative CPU 21.52 sec
+    2023-05-30 09:55:14,176 Stage-1 map = 100%,  reduce = 47%, Cumulative CPU 23.56 sec
+    2023-05-30 09:55:18,316 Stage-1 map = 100%,  reduce = 53%, Cumulative CPU 25.91 sec
+    2023-05-30 09:55:26,535 Stage-1 map = 100%,  reduce = 60%, Cumulative CPU 30.76 sec
+    2023-05-30 09:55:27,562 Stage-1 map = 100%,  reduce = 73%, Cumulative CPU 34.44 sec
+    2023-05-30 09:55:32,697 Stage-1 map = 100%,  reduce = 77%, Cumulative CPU 36.15 sec
+    2023-05-30 09:55:35,801 Stage-1 map = 100%,  reduce = 80%, Cumulative CPU 38.96 sec
+    2023-05-30 09:56:13,203 Stage-1 map = 100%,  reduce = 87%, Cumulative CPU 40.6 sec
+    2023-05-30 09:56:14,246 Stage-1 map = 100%,  reduce = 93%, Cumulative CPU 42.17 sec
+    2023-05-30 09:56:24,610 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 46.52 sec
+
+    MapReduce Total cumulative CPU time: 46 seconds 520 msec
+    Ended Job = job_1684866872278_4071
+    Loading data to table surya_training.txn_bucket
+    MapReduce Jobs Launched:
+    Stage-Stage-1: Map: 1  Reduce: 10   Cumulative CPU: 46.52 sec   HDFS Read: 4480604 HDFS Write: 4226867 HDFS EC Read: 0 SUCCESS
+    Total MapReduce CPU Time Spent: 46 seconds 520 msec
+    OK
+    Time taken: 354.446 seconds
+    hive (surya_training)>
+    ```
+
+- When data is loaded into the table, 10 buckets for `state` column will be created in the `txn_bucket` table folder
+- You may open `Hue` tool and visit the hdfs path at `/user/hive/warehouse/surya_training.db/txn_bucket` to open the table folder and see the 10 files for each of the buckets created for each of the bucket for column `state` from previous command
+
+  ![Hue-_user_hive_warehouse_surya_training.db_txn_bucket](../content_BigDataTechnologies/Hue-_user_hive_warehouse_surya_training.db_txn_bucket.png)
+
+- Notice that all the partitions are of varying size, some are smaller while others are huge, this is because records are placed into buckets based on the hash function
+
+### 8. Join Optimization
+
+- First lets see how a common Join query is executed using MapReduce
+  - Mappers do a parallel sort of the tables on the Join keys, which are then passed on to the Reducers
+  - All of the tuples with the same key is given to the same reducer. A reducer may get tuples for more than one key. Key for tuple will also include table id, thus sorted output from two different tables with the same key can be recognized.
+  - Reducers will merge the sorted stream to get join output
+
+#### 1. Mention Bigger table at last in a join
+
+- Remember that while writing the join query, the table which is mentioned last is streamed through the Reducers, rest all are buffered in the memory in the Reducers.
+- So we should always mention the bigger table at the last, which will lessen the memory needed by the Reducer
+
+#### 2. Using `STREAMTABLE` Query Hint
+
+- Alternate to the mentioning bigger table at last in a join is that we can use a Hive query Hint `STREAMTABLE` as indicated in the syntax below that indicates to the Hive Optimizer that the table mentioned with `STREAMTABLE()` query hint to be considered a streaming table, which is useful when that table is continuously changing or is significantly larger compared to other tables
+
+    ```sql
+    SELECT /*+ STREAMTABLE(tableA) */ tableA.val, tableB.val, tableC.val
+    FROM tableA
+    JOIN tableB ON (tableA.key = tableB.key1)
+    JOIN tableC ON (tableC.key = tableB.key1) ;
+    ```
+
+#### 3. Avoiding `WHERE` clause with `JOIN`
+
+- Like in the example below, if a `WHERE` clause is used with a `JOIN`, then the JOIN part is executed first and then the results are filtered using the `WHERE` clause in the next stage
+
+    ```sql
+    SELECT tableA.val, tableB.val
+    FROM tableA
+    LEFT OUTER JOIN tableB ON (tableA.key = tableB.key)
+    WHERE tableA.ds = '2009-07-07' AND tableB.ds = '2009-07-07' ;
+    ```
+
+- This separate filtering of records could have been avoided, instead executed along while joining tables by just mentioning the filtering conditions along with  the `JOIN` condition(s) as below
+
+    ```sql
+    SELECT tableA.val, tableB.val
+    FROM tableA
+    LEFT OUTER JOIN tableB
+        ON (tableA.key = tableB.key
+            AND tableA.ds = '2009-07-07' AND tableB.ds = '2009-07-07' ) ;
+    ```
+
+#### 4. Algorithms on `JOIN` Queries
+
+- These `JOIN` queries include a Shuffle phase in which the outputs of all the Mappers are sorted and shuffled using the `JOIN` key(s), which takes a big cost to execution in terms of processing, I/O and data transfer cost
+- To reduce these costs, a lot of `JOIN` algorithms have been worked on
+  1. Multi-Way Join
+  2. Map Join
+  3. Bucket-Map (BM) Join
+  4. Sort-Merge-Bucket (SMB) Join
+  5. Skew Join
+
+##### 1. Multi-Way `JOIN`
+
+- If multiple joins share the same driving side `JOIN` key, then all of those joins can be done in a single task
+- All the joins can be done in the same Reducer since the Reducer for the first table will already be sorted based on the join key
+- Hence, reducing the number of reducers for each of the multiple tables by doing all the Reduce task in single reducer
+
+```sql
+SELECT tableA.val, tableB.val, tableC.val
+FROM tableA
+JOIN tableB ON (tableA.key = tableB.key1)
+JOIN tableC ON (tableC.key = tableB.key1) ;
+```
+
+##### 2. MapSide `JOIN`
+
+- It is useful for Star schema Joins
+- It keeps all the smaller (dimension) tables in memory in all of the Mappers, and the big (fact) table is streamed over it in the Mapper
+- This avoids shuffling cost that is inherent in Common-Join
+- For each of the smaller (dimension) tables, a hash table would be created using the `JOIN` key as the hash table key, and while merging data in the Mapper, data will be matched with the hash value based on the `JOIN` key
+- The constraint for this is that, at least one of the tables being joined should be small, so that Map Join can be performed
+- Hive can automatically optimize Joins into MapSide Joins if we set the following Hive properties
+
+    ```sql
+    SET hive.auto.convert.join = true; # enable optimization to convert CommonJoin into MapJoin based in input file size
+    SET hive.auto.convert.join.noconditionaltask = true; # enable to convert Joins without conditional tasks
+    SET hive.auto.convert.join.noconditionaltask.size = 10000000; # sets a limit of table size to be eligible for auto conversion without conditional tasks
+    ```
+
+- Alternatively, if you want to convert a Join to a MapSide Join, you can use the `/*+ MAPJOIN(b) */` hint in the query as below
+
+    ```sql
+    SELECT /*+ MAPJOIN(tableB) */ tableA.key, tableA.value
+    FROM tableA
+    JOIN tableB ON tableA.key = tableB.key ;
+    ```
+
+  - But this query hint has a restriction that `FULL OUTER JOIN` and `RIGHT OUTER JOIN` can't be performed for the `tableB`
+
+##### 3. Bucket-Map (BM) Join
+
+- Joins of two buckets from two tables is performed, where Join is based on same key/hash
+- Results into faster Join processing as only buckets are read for Join instead of entire table while joining
+
+![Bucket-Join-annotation](../content_BigDataTechnologies/Bucket-Join-annotation.png)
+
+- If the sizes of the tables are bigger to fit in the memory of the Mapper, we divide the table into buckets that can fit into the memory
+- The tables being joined are bucketed on the Join columns, and if the number of buckets in one table is a multiple of the number of buckets in the other table, then the buckets can be joined with each other by creating a hash table of the buckets in the smaller table in the memory, and then streaming the content of other table into the Mapper
+  - So, effectively the buckets of smaller table are joined while the streaming the data of larger table into the Mapper, provided that number of buckets should be a multiple/factor
+- While Bucket-Join is not the default behavior, To optimize Bucket-Map Join, we need to first enable it by setting `hive.optimize.bucketmapjoin` property
+
+    ```sql
+    SET hive.optimize.bucketmapjoin = true ;
+    ```
+
+- Consider if `tableA` and `tableB` have 4 buckets each, then the Bucket-Map Join can be done on the Mapper only by using the `/*+ MAPJOIN(b) */` query hint as below
+
+    ```sql
+    SELECT /*+ MAPJOIN(tableB) */ tableA.key, tableA.value
+    FROM tableA
+    JOIN tableB ON tableA.key = tableB.key ;
+    ```
+
+  - Instead of fetching `tableB` completely for the Mapper of `tableA`, only the required bucket of `tableB` is fetched
+  - For above query, the Mapper processing the bucket 1 of `tableA` will fetch bucket 1 of `tableB`
+
+##### 4. Sort-Merge-Bucket (SMB) Join
+
+##### 5. Skew Join
 
 ---
 
