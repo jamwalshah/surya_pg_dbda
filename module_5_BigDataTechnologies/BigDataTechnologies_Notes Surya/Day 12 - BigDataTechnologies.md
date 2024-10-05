@@ -699,14 +699,14 @@
     CREATE INDEX index_name
     ON TABLE table_name (column_name)
     AS 'COMPACT'
-    WITH DEFERRED REBUILD;
+    WITH DEFERRED REBUILD ;
     ```
 
 - You may rebuild this index using syntax below
 
     ```sql
     ALTER INDEX index_name
-    ON table_name REBUILD;
+    ON table_name REBUILD ;
     ```
 
 ### 3. Optimizing Execution Engine
@@ -724,7 +724,7 @@
 - For Hive workloads, We can choose Apache Tez to optimize the execution engine by using the command below
 
     ```sql
-    SET hive.execution.engine=tez ;
+    SET hive.execution.engine = tez ;
     ```
 
 - If you need to change execution engine for all Hive queries, you need to override the `hive.execution.engine` property in `hive-site.xml`
@@ -735,7 +735,7 @@
     - A number of Mappers and Reducers will be assigned and it will run in a traditional distributed way
 
         ```sql
-        SET hive.execution.engine=mr;
+        SET hive.execution.engine = mr ;
         ```
 
 2. **Tez Execution Engine**
@@ -750,7 +750,7 @@
     - Tez containers can shut down when finished to save resources
 
         ```sql
-        SET hive.execution.engine=tez;
+        SET hive.execution.engine = tez ;
         ```
 
     - If Low-Latency Analytical Processing (LLAP) is supported for Hive queries, Apache Tez provides the following execution modes:
@@ -764,7 +764,7 @@
     - Spark's containers hog resources even when not processing
 
         ```sql
-        SET hive.execution.engine=spark;
+        SET hive.execution.engine = spark ;
         ```
 
 ### 4. Vectorization/Parallel Execution
@@ -919,7 +919,7 @@ VALUES(col1_Val, col2_Val, ..., ) ;
       - To enable dynamic partition, we need to set `hive.exec.dynamic.partition` property using the command below
 
         ```sql
-        SET hive.exec.dynamic.partition = true;
+        SET hive.exec.dynamic.partition = true ;
         ```
 
       - There are two modes of dynamic partitioning
@@ -1015,11 +1015,11 @@ VALUES(col1_Val, col2_Val, ..., ) ;
 - You've just created partitioned table, now you'll need to set dynamic partitioning mode to `nonstrict` to allow hive to insert data without requiring at least one partition key to be specified & enable dynamic partitioning using commands below, which might not be set by default
 
     ```sql
-    hive (surya_training)> SET hive.exec.dynamic.partition = true; # enable dynamic partitioning
+    hive (surya_training)> SET hive.exec.dynamic.partition = true ; # enable dynamic partitioning
     ```
 
     ```sql
-    hive (surya_training)> SET hive.exec.dynamic.partition.mode = nonstrict; # allow hive to insert data without requiring at least one partition key to be specified
+    hive (surya_training)> SET hive.exec.dynamic.partition.mode = nonstrict ; # allow hive to insert data without requiring at least one partition key to be specified
     ```
 
 ##### Loading data into `txnrecsByCat` table `DISTRIBUTE BY` single column `category`
@@ -1140,7 +1140,7 @@ VALUES(col1_Val, col2_Val, ..., ) ;
     INSERT OVERWRITE TABLE txnrecsByCat3 
     PARTITION(category,spendby) 
     SELECT txn.txnno, txn.txndate,txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.category, txn.spendby 
-    DISTRIBUTE BY category,spendby;
+    DISTRIBUTE BY category,spendby ;
     ```
 
     ```console
@@ -1346,7 +1346,7 @@ hashcode % number of buckets = bucket no
     ```sql
     CREATE TABLE table1(col1, dt1, col2, dt2, ...)
     PARTITIONED BY(partition1col dt, partition2col dt, ...)
-    CLUSTERED BY(clus1col) SORTED BY (sort1col) INTO n BUCKETS;
+    CLUSTERED BY(clus1col) SORTED BY (sort1col) INTO n BUCKETS ;
     ```
 
 > Buckets are created as multiple files, while Partitions are created as multiple folders
@@ -1354,7 +1354,7 @@ hashcode % number of buckets = bucket no
 - Before inserting data into a bucketed table, we need to first enforce bucketing by setting the property `hive.enforce.bucketing`
 
     ```sql
-    SET hive.enforce.bucketing = true;
+    SET hive.enforce.bucketing = true ;
     ```
 
 #### Advantages of Bucketing
@@ -1388,7 +1388,7 @@ hive (surya_training)> CREATE TABLE txnrecsByCat2(txnno INT, txndate STRING, cus
 product STRING, city STRING, state STRING, spendby STRING) 
 PARTITIONED BY (category STRING) 
 CLUSTERED BY (state) INTO 10 buckets 
-ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE ;
 ```
 
 ```console
@@ -1403,14 +1403,14 @@ hive (surya_training)>
   - First, enable dynamic partitioning in nonstrict mode using command below, since this table uses partitioning
 
     ```sql
-    hive (surya_training)> SET hive.exec.dynamic.partition.mode = nonstrict;
-    hive (surya_training)> SET hive.exec.dynamic.partition = true;
+    hive (surya_training)> SET hive.exec.dynamic.partition.mode = nonstrict ;
+    hive (surya_training)> SET hive.exec.dynamic.partition = true ;
     ```
 
   - Second, we need to enforce bucketing using command below, since this table also uses bucketing/clustering
 
     ```sql
-    hive (surya_training)> SET hive.enforce.bucketing = true;
+    hive (surya_training)> SET hive.enforce.bucketing = true ;
     ```
 
 ##### Loading data into `txnrecsByCat2` table `DISTRIBUTE BY` single column `category`
@@ -1423,7 +1423,7 @@ hive (surya_training)>
     PARTITION(category) 
     SELECT txn.txnno, txn.txndate, txn.custno, txn.amount,txn.product,txn.city,txn.state, txn.spendby, txn.category 
     FROM txnrecords txn 
-    DISTRIBUTE BY category;
+    DISTRIBUTE BY category ;
     ```
 
     ```console
@@ -1525,7 +1525,7 @@ hive (surya_training)>
     hive (surya_training)> CREATE TABLE txn_bucket(txnno INT, txndate STRING, custno INT, amount DOUBLE, 
     category STRING, product STRING, city STRING, state STRING, spendby STRING) 
     CLUSTERED BY (state) INTO 10 buckets 
-    ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+    ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE ;
     ```
 
     ```console
@@ -1542,7 +1542,7 @@ hive (surya_training)>
 - Load data into table `txn_bucket` using `INSERT OVERWRITE` to rewrite any existing data, by taking a `SELECT` from `txnrecords` table, use the command below
 
     ```sql
-    hive (surya_training)> INSERT OVERWRITE TABLE txn_bucket SELECT * FROM txnrecords;
+    hive (surya_training)> INSERT OVERWRITE TABLE txn_bucket SELECT * FROM txnrecords ;
     ```
 
     ```console
@@ -1679,9 +1679,9 @@ JOIN tableC ON (tableC.key = tableB.key1) ;
 - Hive can automatically optimize Joins into MapSide Joins if we set the following Hive properties
 
     ```sql
-    SET hive.auto.convert.join = true; # enable optimization to convert CommonJoin into MapJoin based in input file size
-    SET hive.auto.convert.join.noconditionaltask = true; # enable to convert Joins without conditional tasks
-    SET hive.auto.convert.join.noconditionaltask.size = 10000000; # sets a limit of table size to be eligible for auto conversion without conditional tasks
+    SET hive.auto.convert.join = true ; # enable optimization to convert CommonJoin into MapJoin based in input file size
+    SET hive.auto.convert.join.noconditionaltask = true ; # enable to convert Joins without conditional tasks
+    SET hive.auto.convert.join.noconditionaltask.size = 10000000 ; # sets a limit of table size to be eligible for auto conversion without conditional tasks
     ```
 
 - Alternatively, if you want to convert a Join to a MapSide Join, you can use the `/*+ MAPJOIN(b) */` hint in the query as below
@@ -1723,16 +1723,44 @@ JOIN tableC ON (tableC.key = tableB.key1) ;
 
 ##### 4. Sort-Merge-Bucket (SMB) Join
 
+- It is another optimization on Bucket-Map Join
+- If data to be joined is already sorted on joining keys, then hash table creation is instead a Sort-Merge Join algorithm is followed
+- To use Sort-Merge-Bucket Join, we first need to set a few hive properties as below
+  - First change Hive input format to `BucketizedHiveInputFormat`
+
+    ```sql
+    SET hive.input.format = org.apache.hadoop.hive.ql.io.BucketizedHiveInputFormat ;
+    ```
+
+  - Then enable the Bucket-Map Join by using the property `hive.optimize.bucketmapjoin` as below
+
+    ```sql
+    SET hive.optimize.bucketmapjoin = true ;
+    ```
+
+  - Then enable the  Sorted-Merge in Bucket-Map Join using property `hive.optimize.bucketmapjoin.sortedmerge` as below
+
+    ```sql
+    SET hive.optimize.bucketmapjoin.sortedmerge = true ;
+    ```
+
+- Once these Hive properties have been set for Sort-Merge-Bucket (SMB) Join, then the previous command will work for this purpose which will be optimized by Hive optimizer automatically, only difference is that now it'll use Join keys in sorted order instead of created hash table of Join Keys as in Bucket-Map Join, so we can use the same command with `/*+ MAPJOIN(tableB) */` query hint as below
+
+    ```sql
+    SELECT /*+ MAPJOIN(tableB) */ tableA..key, tableA.value
+    FROM tableA
+    JOIN tableB ON tableA.key = tableB.key ;
+    ```
+
 ##### 5. Skew Join
 
----
+- If the distribution of data is skewed for some specific values, then performance may suffer since some of the instances  of Join operators (Reducers in the MapReduce) may get overloaded and others might be underutilized
+- On the User hint, Hive would internally re-write a Join query around the skew value as Union if Joins
+- This would execute one query to implement Join of the skewed key and other for the rest of the Join keys, and then merge the outputs of both queries using `UNION` internally
+- For example `R1 JOIN R2 ON R1.x = R2.a` with most of the data distributed around `x = 1`, then this join may be rewritten as `R1 JOIN R2 ON R1.x = R2.a AND R1.x = 1` `UNION ALL` `R1 JOIN R2 ON R1.x = R2.a AND R1.x <> 1`
+- This Skew Join optimization is performed automatically and internally by hive, but we need to set some Hive properties for this
 
-## For Next Day
-
-## Types of Tables in Hive
-
-### Managed Tables
-
-### External Tables
-
-## UDF (User Defined Functions) in Hive
+    ```sql
+    SET hive.optimize.skewjoin = true ; # enables Skew Join optimization
+    SET hive.skewjoin.key = 500000 ; # sets a threshold for minimum records to be skewed for Skew Join to be performed
+    ```
