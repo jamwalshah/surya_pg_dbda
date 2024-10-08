@@ -281,7 +281,7 @@ SORT BY col1 ;
     - a **new record** is created for each change, usually including effective dates
     - allows for **complete historical tracking**, however it can lead to larger tables and more complex queries
     - Example
-      - asa
+      - Lets say, we added a record of an employee assuming he's going to work till a maximum date at Gurgaon office
         - Source
 
             | ID | Name | Salary | Office | Date Eff. |
@@ -294,12 +294,25 @@ SORT BY col1 ;
             | -- | -- | -- | -- | -- | -- | -- |
             | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 12-Aug-99 | Y |
 
-      - asa
+      - Now after 2 years, salary is increased, location has changed, and work date has also changed as per source
         - Source
 
             | ID | Name | Salary | Office | Date Eff. |
             | -- | -- | -- | -- | -- |
-            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 12-Dec-99 | Y |
+
+      - In the DWH, we introduce a new row for each change, so we update the previous record, and add a new record for latest entry
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
 
         - DWH table
 
@@ -308,18 +321,282 @@ SORT BY col1 ;
             | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 09-Jan-15 | N |
             | 123 | Vivek | 40000 | California | 10-Jan-15 | 12-Dec-99 | Y |
 
+      - Now Lets day, after six months, he moved to Houston as per source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 09-Jan-15 | N |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 | 12-Dec-99 | Y |
+
+      - So we add another row for new changes while changing the Flag
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 09-Jan-15 | N |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 | 24-Jul-15 | N |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 | 12-Dec-99 | Y |
+
 4. **Type 3 (Add history as new column/attribute)**
     - used when it is important to maintain some history but not all changes
     - A **new column** is added to the existing record to store the previous value alongside the current value
     - provides **limited historical context** (usually only one prior value), can lead to complications if multiple changes occur
+    - Example
+      - Lets say, we added a record of an employee at Gurgaon office
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 |
+
+        - DWH table
+
+            | ID | Name | Salary | Prev_Office | Curr_Office | From_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | Gurgaon | 10-Aug-13 |
+
+      - Now after 2 years, he moved to California with an increased salary as per source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Prev_Office | Curr_Office | From_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | Gurgaon | 10-Aug-13 |
+
+      - So we're going to update DWH with new salary, Current office as California with a from date
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Prev_Office | Curr_Office | From_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Gurgaon | California | 10-Jan-15 |
+
+      - Now he starts working in Houston after six months as per source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Prev_Office | Curr_Office | From_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Gurgaon | California | 10-Jan-15 |
+
+      - Now we'll loose the Gurgaon part and update the previous and current office locations with From date
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Prev_Office | Curr_Office | From_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | Houston | 25-Jul-15 |
+
 5. **Type 4 (Historical Table: Add a new Dimension)**
     - used when historical data needs to be maintained separately for performance or simplicity, such as tracking employee roles over time
     - Current Dimension values are kept in the main table, while historical values are stored in a **separate historical table**
     - improves query performance for querying current data, may complicate joins and queries for historical analysis
+    - Example
+      - Lets say, we added a record of an employee at Gurgaon office
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office |
+            | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon |
+
+        - History table
+
+            | ID | Name | Salary | Office | From_date | To_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 12-Dec-99 |
+
+      - Now employee moved to California with increased salary after 2 years as per source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office |
+            | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon |
+
+        - History table
+
+            | ID | Name | Salary | Office | From_date | To_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 12-Dec-99 |
+
+      - So, record will be updated in main table and one record will be added to History table
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office |
+            | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California |
+
+        - History table
+
+            | ID | Name | Salary | Office | From_date | To_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 09-Jan-15 |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 | 12-Dec-99 |
+
+      - Now employee moved to Houston after six months as per source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office |
+            | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California |
+
+        - History table
+
+            | ID | Name | Salary | Office | From_date | To_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 09-Jan-15 |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 | 12-Dec-99 |
+
+      - So, record will be updated in main table and another record will be added to History table for Houston
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Office |
+            | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston |
+
+        - History table
+
+            | ID | Name | Salary | Office | From_date | To_date |
+            | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 | 09-Jan-15 |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 | 24-Jul-15 |
+            | 123 | Vivek | 40000 | Houston | 25-Jul-15 | 12-Dec-99 |
+
 6. **Type 6 (Hybrid)**
     - used when a combination of current, previous and historical tracking is required, such as customer status changes and their effective dates
     - **combines Type2 and Type 3**, typically retains current value, previous values and a full history
     - provides **comprehensive historical tracking** but can be complex to manage and query
+    - Example
+      - Lets say, we added a record of an employee at Gurgaon office
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | 10-Aug-13 |
+
+        - DWH table
+
+            | ID | Name | Salary | Curr_Office | Hist_Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | Gurgaon | 10-Aug-13 | 12-Dec-99 | Y |
+
+      - Now employee moved to California with increased salary after 2 years as per source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Curr_Office | Hist_Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | Gurgaon | 10-Aug-13 | 12-Dec-99 | Y |
+
+      - So additional record will be added updating the current Office and current flag
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | California | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Curr_Office | Hist_Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | Gurgaon | 10-Aug-13 | 09-Jan-15 | N |
+            | 123 | Vivek | 40000 | California | California | 10-Jan-15 | 12-Dec-99 | Y |
+
+      - Now employee moved to Houston after siz months as per Source
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Curr_Office | Hist_Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Gurgaon | Gurgaon | 10-Aug-13 | 09-Jan-15 | N |
+            | 123 | Vivek | 40000 | California | California | 10-Jan-15 | 12-Dec-99 | Y |
+
+      - So a new record will be added with updated Current and previous office locations, dates and current flag
+        - Source
+
+            | ID | Name | Salary | Office | Date Eff. |
+            | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 40000 | Houston | 10-Jan-15 |
+
+        - DWH table
+
+            | ID | Name | Salary | Curr_Office | Hist_Office | From_date | To_date | Curr_Flag |
+            | -- | -- | -- | -- | -- | -- | -- | -- |
+            | 123 | Vivek | 10000 | Houston | Gurgaon | 10-Aug-13 | 09-Jan-15 | N |
+            | 123 | Vivek | 40000 | Houston | California | 10-Jan-15 | 24-Jul-15 | N |
+            | 123 | Vivek | 40000 | Houston | Houston | 25-Jul-15 | 12-Dec-99 | Y |
 
 ## Data Lakes
 
