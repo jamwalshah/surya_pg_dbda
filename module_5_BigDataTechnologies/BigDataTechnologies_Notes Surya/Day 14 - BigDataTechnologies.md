@@ -598,14 +598,133 @@ SORT BY col1 ;
             | 123 | Vivek | 40000 | Houston | California | 10-Jan-15 | 24-Jul-15 | N |
             | 123 | Vivek | 40000 | Houston | Houston | 25-Jul-15 | 12-Dec-99 | Y |
 
+### Challenges of a Data Warehouse
+
+1. **No Support for unstructured data** like images, text, IoT data or messaging frameworks like HL7, JSON and XML.Traditional Data Warehouses are only capable of only storing  clean and highly-structured data
+2. **No Support for AI and Machine Learning :** Data Warehouses are purpose-built and optimized for common DWH workloads including historical reporting, BI & querying, not intended/designed to support Machine Learning workloads
+3. **SQL only :** DWHs typically offer no support for Python or R, the language choice for App Developers, Data Scientists and Machine Learning Engineers
+4. **Duplicated Data :** Many enterprises have Data Warehouses and Data Marts for departments in addition to a Data Lake, resulting into duplicated data, lots of redundant ETL and so single source of truth
+5. **Tough to keep in sync :** Keeping two copies of the data synchronized between the Data Lake and the Data Warehouse adds complexity and fragility, that is tough to manage, Data drift can cause inconsistent reporting & incorrect analysis
+6. **Closed Proprietary formats increase vendor lock-in :** Most enterprise Data Warehouses use their own proprietary data format, rather than formats based on open-source and open-standards, this increases vendor lock-in, makes it difficult or impossible to analyze your data with other tools, and makes it more difficult to migrate your data
+7. **Expensive :** Enterprise Data Warehouses charge you for storing data and also for analyzing it, Storage & Compute costs are tightly coupled together, separation of compute and storage with a Data Lakehouse means you can independently scale either as needed
+
 ## Data Lakes
 
-- Centralized repository/collection of data from different sources
-- No data size limits
-- Can store any type of data
-- Hadoop may be called as Data Lake
+1. Centralized repository/collection of data from different sources
+2. No data size limits
+3. Can store any type of data
+4. Hadoop may be called as Data Lake
+5. Data Lake is a repository  of data, typically stored in file format with variable organization or hierarchy
+6. Built on object storage, Data Lakes allow flexibility to store data of all types, from variety of sources
+7. The data is stored in its original raw, untransformed state, and data is transformed only when provided for analysis based on matching query criteria
+8. e.g. Hadoop is a good example of Data Lake Storage
+![Data-Lakes-annotation](../content_BigDataTechnologies/Data-Lakes-annotation.png)
 
-### Need of Data Lakes
+### Benefits of Data Lake
+
+1. **Flexibility :** Data Scientists can utilize data in its rawest form for feature engineering and machine learning
+2. **Accessibility :** All the data is stored at a centralized location
+3. **Affordability :** It stores data in object storage, which is typically cost-effective
+4. **Compatibility :** It is compatible with most open-source data analytics technologies
+5. **Comprehensive :** It combines data from all of an enterprise's data sources including IoT
+6. **Scalability :** It can be easily scaled to store any amounts of data
+
+![Why-we-create-Data-Lakes](../content_BigDataTechnologies/Why-we-create-Data-Lakes.png)
+
+### Data Lake Architecture
+
+- asa
+
+### Challenges of Data Lakes
+
+1. **Data Reliability**
+    - Without proper tools in place, Data Lakes suffer from reliability issues making it difficult for Data Scientists and Analysts to reason about the data
+    - **Reprocessing Issues**
+      - Data Lakes often face challenges when write job fails, requiring time-consuming reprocessing to fix corrupted data, leading to delays and increased operational overhead
+      - Data Lakehouse/Delta Lake introduces ACID transactions, ensuring operations are atomic, which eliminates the need for tedious reprocessing, allowing Data Scientists to focus on insights
+    - **Quality Assurance**
+      - Without effective data validation, errors can go unnoticed, compromising data quality and leading to poor decision-making, unlike software applications where issues are easily detected, problems with data can remain hidden until critical moments
+      - Schema enforcement and evolution in Data Lakehouse/Delta Lake helps maintain data quality throughout its lifecycle, instilling confidence in data accuracy
+    - **Combining Batch and Streaming Data**
+      - Capturing real-time data alongside historical data is essential, but traditional methods (like Lambda Architecture) can be cumbersome and complex
+      - Data Lakehouse/Delta Lake seamlessly integrate batch and streaming data, ensuring consistent views even during simultaneous modifications
+    - **Bulk Update, Merges and Deletes**
+      - Performing updates and deletions is challenging in traditional Data Lakes, particularly  with regulations like CCPA and GDPR, which mandate customer data deletion
+      - Data Lakehouse/ Delta Lake simplifies these operations, allowing SQL queries to manage updates and deletions efficiently through ACID transactions
+2. **Query Performance**
+    - Query performance is the key driver of user satisfaction for Data Lake analytics tools, and for the users who perform interactive, exploratory data analysis using SQL, it is essential to get quick responses to common queries
+    - **Small Files**
+      - A proliferation of small files can hinder performance due to limited I/O throughput
+      - Data Lakehouse/Delta Lake uses small file compaction to consolidate small files into larger ones that are optimized for read access
+    - **Unnecessary Reads from Disks**
+      - Repeated accessing data from storage can slow down query responses significantly
+      - Data Lakehouse/Delta Lake employs caching to selectively hold important tables in memory for quicker recall, and it uses data skipping techniques to increase read throughput avoiding processing the non-relevant data
+    - **Deleted Files**
+      - On modern Data Lakes using cloud storage, deleted files can actually remain in the Data Lake for up to 30 days, causing unnecessary overhead slowing query performance
+      - Data Lakehouse/Delta Lake offers the `VACUUM` command to permanently delete the files that are no longer needed
+    - **Data Indexing and Partitioning**
+      - Proper indexing and partitioning along the dimensions by which it is most likely to be grouped, are crucial query performance
+      - Data Lakehouse/Delta Lake can create and maintain indices and partitions that are optimized for analytics
+    - **Metadata Management**
+      - Data Lakes can grow to multiple petabytes or more and suffer bottlenecks, not by the data, but by the metadata that accompanies it
+      - Data Lakehouse/Delta Lake leverages Spark for scalable metadata management that distributes its processing just like the data itself
+3. **Governance and Compliance**
+    - **Regulatory Compliance**
+      - Ensuring compliance with laws like GDPR and CCPA is difficult since traditional Data Lakes struggle to delete or update date efficiently if customer requests, which might lead to potential fines for non-compliance
+      - Deleting or updating data in a regular Parquet Data Lake is compute-intensive and sometimes near impossible
+      - Data Lakehouse/Delta Lake enables straightforward data management, facilitating compliance through effective querying and modification capabilities
+    - **Historical Data Management**
+      - Maintaining historical versions of data at a reasonable cost is challenging in Data Lakes, because they require manual snapshots to be put in place and all those snapshots to be stored
+      - Data Lakehouse/Delta Lake allows for easier historical data handling, through ACID transactions and time travel, minimizing costs while ensuring data integrity
+
+### Data Lake vs Data Warehouse
+
+- Both Data Lakes and Data Warehouses are big data repositories, but the primary difference between them is in compute and storage
+- Data Warehouse typically stores data in a pre-determined organization with a schema
+- Data Lake does not always have a pre-determined schema
+
+|  | Data Lake | Data Warehouse |
+| :-- | :-- | :-- |
+| Type | Structured, semi-structured, unstructured | Structured |
+|  | Relational, non-relational | Relational |
+| Schema | Schema on read | Schema on write |
+| Format | raw, unfiltered | Processed, vetted |
+| Sources | Big Data, IoT, Social Media, Streaming Data | Application, Business, Transactional Data, Batch Reporting |
+| Scalability | Easy to scale at low cost | Difficult and expensive to scale |
+| Users | Data Scientists, Data Engineers | Data Warehouse Professionals, Business Analysts |
+| Use Cases | Machine Learning, Predictive Analytics, Real-Time Analytics | Core Reporting, BI |
+
+## Data Lakehouse
+
+- Despite advantages of Traditional Data Lake to accommodate all kinds of data from all kinds of sources, issues related to quality control, data corruption, improper partitioning can occur
+- A poorly managed Data Lake can lead to issues related to data integrity, bottlenecks, slow performance and security risks, which is where Data Lakehouse can perform better
+- A Data Lakehouse is an open-standards based storage solution that is multifaceted in nature
+- It can address the needs of Data Scientists and Data Engineers to conduct deep data analysis & processing, as well as the needs of traditional Data Warehouse professionals who curate & publish data for BI and reporting
+- It can seamlessly operate in each workload on top of Data Lake without duplicating data into another well defined database
+- It overcomes the challenges of a traditional Data Lake by adding a Delta Lake Storage Layer directly on top of cloud Data Lake
+- This Delta Lake Storage provides flexibility in analytic architecture to handle ACID transactions for reliability, streaming integrations and advanced features like data versioning & schema enforcement
+- The necessity of a Data Lakehouse depends on the complexity of needs, its flexibility and range make it an optimal solution for many enterprises
+
+### Data lake vs. Data Lakehouse
+
+|  | Data Lake | Data Lakehouse |
+| :-- | :-- | :-- |
+| Type | Structured, semi-structured, unstructured | Structured, semi-structured, unstructured |
+|  | Relational, non-relational | Relational, non-relational |
+| Schema | Schema on read | Schema on read, schema on write |
+| Format | Raw, unfiltered, processed, curated | Raw, unfiltered, processed, curated, delta format files |
+| Sources | Big Data, IoT, Social Media, Streaming Data | Big Data, IoT, Social Media, Streaming Data, Application, Business, Transactional Data, Batch Reporting |
+| Scalability | Easy to scale at low cost | Easy to scale at low cost |
+| Users | Data Scientists | Business Analysts, Data Engineers, Data Scientists |
+| Use Cases | Machine Learning, Predictive Analytics | Core Reporting, BI, Machine Learning, Predictive Analytics |
+
+### Delta Lake
+
+- Delta Lake is an open-source storage framework that enables building a format agnostic Lakehouse architecture
+- Delta lake is designed to work with a variety of compute engines including Apache Spark, PrestoDB, Apache Flink, Apache Trino, Apache Hive, Snowflake, Google BigQuery, Athena, Redshift, Databricks, Azure Fabric and APIs for Scala, Java, Rust and Python
+- With Delta Universal format (`UniForm`), users can read Delta Tables using clients that support other formats, such as Apache Iceberg and Apache Hudi
+
+![delta-uniform-hero-v4-70d2db84259cea0021bd3a98cc5606c2](../content_BigDataTechnologies/delta-uniform-hero-v4-70d2db84259cea0021bd3a98cc5606c2.png)
 
 ## Dashboard
 
