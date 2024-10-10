@@ -631,9 +631,21 @@ SORT BY col1 ;
 
 ![Why-we-create-Data-Lakes](../content_BigDataTechnologies/Why-we-create-Data-Lakes.png)
 
+![data-lake-use-cases](../content_BigDataTechnologies/data-lake-use-cases.jpg)
+
 ### Data Lake Architecture
 
-- asa
+- Data Lake is a storage repository with no set architecture of its own that allows organizations to manage vast amounts of data in its native format
+- In order to make most of its capabilities, it requires a wide range of tools, technologies, compute engines that help optimize the integration, storage and processing of data and create a layered architecture
+- This architecture not only supports big data processing, but can also integrate with a data lakehouse framework
+- Every organization has its own unique configuration, but most Lakehouse architectures feature the following
+  1. **Resource Management and Orchestration :** Resource Manager enables the Data Lake to consistently execute tasks by allocating the right amount of data, resources and computing power
+  2. **Connectors for Easy Accessibility :** A variety of workflows allow users to easily access and share the data they need, in the required format
+  3. **Reliable Analytics :** A good analytics service should be fast, scalable, and distributed, supporting diverse workload categories across multiple languages
+  4. **Data Classification :** Data profiling, cataloging and archiving help organizations track data content, quality, location and history
+  5. **Extract, Load, Transform (ELT) processes :** Data is extracted from multiple sources and loaded into the Data Lake's raw zone, then cleaned and transformed after extraction for easy access by applications
+  6. **Security and Support :** Data protection tools like masking, auditing, encryption, and access monitoring ensure that your data remains secure and compliant with  regulations
+  7. **Governance and Stewardship :** For effective governance on Data Lake platform, users should be educated on its architectural configuration, as well as best practices for data and operations management
 
 ### Challenges of Data Lakes
 
@@ -723,9 +735,74 @@ SORT BY col1 ;
 - Delta Lake is an open-source storage framework that enables building a format agnostic Lakehouse architecture
 - Delta lake is designed to work with a variety of compute engines including Apache Spark, PrestoDB, Apache Flink, Apache Trino, Apache Hive, Snowflake, Google BigQuery, Athena, Redshift, Databricks, Azure Fabric and APIs for Scala, Java, Rust and Python
 - With Delta Universal format (`UniForm`), users can read Delta Tables using clients that support other formats, such as Apache Iceberg and Apache Hudi
+- Delta lake is open-source software that extends Parquet data file with a file-based  transaction log for ACID transactions and scalable Metadata handling
+- Delta Lake is fully compatible with Apache Spark APIs, and was developed for tight integration with structured streaming, allowing you to easily use a single copy of data for both batch and streaming operations and providing incremental processing at scale
+- Delta Lake protocol was originally developed by Databricks and continues to actively contribute to the open-source project
 
 ![delta-uniform-hero-v4-70d2db84259cea0021bd3a98cc5606c2](../content_BigDataTechnologies/delta-uniform-hero-v4-70d2db84259cea0021bd3a98cc5606c2.png)
 
+#### Features of Delta Lake
+
+1. **ACID Transactions :** ensures operations are completed reliably and consistently, prevents issues like partial writes & data corruption
+2. **Scalable Metadata :** allows to handle petabyte-scale tables with billions of partitions and files with ease
+3. **Time Travel :** allows to access/revert to earlier versions of data for audits, rollbacks or reproduction
+4. **Open-Source :** community driven, open-standards, open protocol, open discussions
+5. **Unified Batch/Streaming :** supports both batch and streaming data processing in a single pipeline, allowing to read & write data in real-time while also performing batch processing
+6. **Schema Evolution/Enforcement :** allows for schema changes to be made easily, enabling you to add or modify columns without disrupting ongoing operations
+7. **Audit History :** provides a audit trail by logging all changes made to the data, crucial for maintaining data integrity and tracking evolution of datasets
+8. **DML Operations :** supports DML operations, making it easier to manage and manipulate datasets
+
 ## Dashboard
 
-## MapReduce vs. Spark
+1. Always create Data Warehouse on top of Data Lake while creating dashboard
+2. Not always real-time
+3. Usually updated daily or weekly, based on frequency of dashboard being checked
+4. A Dashboard is a visual representation of Key-Performance-indicators (KPIs), metrics, and data points that provides a consolidated view of information relevant to a specific objective or business area
+5. Examples :
+    - BI tools : Tableau, Power BI, Looker, Qlik Sense
+    - Data Visualization libraries : D3.js, Chart.js, Plotly
+    - Simple Spreadsheet softwares : Microsoft Excel, Google sheets
+
+### Benefits of Analytical Dashboard
+
+1. **Improved Decision Making**
+    - Dashboard use Visualizations to present complex data in a clear and understandable manner
+    - By displaying data trends and patterns, dashboards assist in recognizing opportunities, threats, and potential areas dor improvement
+    - THe visual nature of dashboards simplifies the sharing of data-driven insights across teams
+2. **Enhanced Data Accessibility**
+    - Analytical dashboards centralize data from various sources, providing a unified and easily accessible view, which eliminates the need to manually gather and analyze data, saving time and ensuring accuracy
+3. **Real-time Insights**
+    - The best tools can access live data, providing real-time monitoring and analysis of Key Performance metrics, which enables quick reactions to changing situations and helps in staying ahead of trends
+4. **Increased Collaboration**
+    - Dashboards promote teamwork and collaboration by offering a shared platform for viewing and discussing data
+    - Teams can work towards common goals, aligning efforts based on the insights provided by the dashboard
+
+## Hadoop MapReduce vs. Apache Spark
+
+1. MapReduce is very slow while processing
+2. Spark is very fast while processing data, so industries are using Hive Tables to store data, but instead of using MapReduce queries, to process data, they're using Spark queries to process data
+
+![MapReduce-Spark-Comparison-annotation](../content_BigDataTechnologies/MapReduce-Spark-Comparison-annotation.png)
+
+```text
+create database raw_data;
+
+use raw_data;
+
+create t1
+t2
+
+100s tables
+
+
+create database dwh
+
+use dwh
+
+create table fact
+create table dim1
+..
+..
+```
+
+![Table-creation-in-MapReduce-Spark-dwh](../content_BigDataTechnologies/Table-creation-in-MapReduce-Spark-dwh.png)
