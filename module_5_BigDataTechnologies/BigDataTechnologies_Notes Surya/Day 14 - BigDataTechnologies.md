@@ -806,3 +806,26 @@ create table dim1
 ```
 
 ![Table-creation-in-MapReduce-Spark-dwh](../content_BigDataTechnologies/Table-creation-in-MapReduce-Spark-dwh.png)
+
+1. **Hadoop MapReduce**
+    - is a framework using which we can write functions to process massive quantities of data in parallel, on giant clusters of commodity hardware in a dependable manner
+    - is a processing method and an application model for distributed computing primarily based on Java
+    - it incorporates two necessary tasks
+      1. Map : takes a set of records and converts it into another set of data where individual factors are broken down into tuples that are present in key-value pair
+      2. Reduce : helps in minimizing task, takes the output from the Map task, and combines those statistic tuples into smaller set of tuples
+2. **Apache Spark**
+    - is a data processing framework that can rapidly operate on massive datasets, and can additionally distribute information processing throughout a couple of computers, either on its own or utilizing additional alloted compute power
+    - Rapid processing and distributed processing are two key requirements for the world of massive information and Machine Learning
+    - Spark additionally takes some of the programming burdens off the shoulders of the developers with an easy to use API that abstracts away distributed computing and big data processing
+
+|  | MapReduce | Spark |
+| :-- | :-- | :-- |
+| 1. | open-source framework used for storing & processing data in HDFS | open-source framework used for faster in-memory data processing |
+| 2. | Hadoop is slower due to batch processing, reading from external storages | Spark is fast by design, due to its support for in-memory processing and real-time processing support |
+| 3. | is unable to handle real-time processing | can deal with real-time processing |
+| 4. | difficult to program as you're required to code for each process | easy to program as it provides abstraction in the form of APIs |
+| 5. | unable to cache in memory | supports caching for faster processing |
+| 6. | Hadoop is affordable due to use of HDDs for storage and processing | Spark is comparatively expensive due to use of RAM for processing |
+| 7. | Hadoop is easily scalable by adding more nodes | Spark is comparatively more challenging to scale |
+| 8. | cannot process data in real-time, supports only batch processing | supports real-time as well as batch processing |
+| 9. | Hadoop has strong security features, storage encryption, and access control | Spark has basic security, relies on setting up a secure environment for Spark deployment |
