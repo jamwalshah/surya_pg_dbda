@@ -46,9 +46,9 @@
 
 - Apache Spark has following components
 
-### 1. Resource Manager
+### 1. Cluster Manager
 
-- Spark can operate with following kinds of Resource Managers (RM) to manage its cluster(s)
+- Spark can operate with following kinds of Cluster Manager to manage its cluster(s)
 
 1. **Spark Standalone**
     - A simple cluster manager included with Spark to run Spark apps on cluster of machines
@@ -56,6 +56,9 @@
     - It has Masters and number of workers with configured amount of memory and CPU cores
     - In Cluster mode, Spark allocates resources based on the cores, by default, an app will grab all the cores in the cluster
     - To check the application, each Spark app has a Web UI providing information on executors, storage usage, tasks, etc.
+    - For High Availability, *ZooKeeper Quorum* helps in automatic recovery of Master node; Cluster tolerates the worker failure despite Master recovery is enabled or not
+    - For Security, Spark supports authentication via a Shared-Secret with all the cluster Managers, and Standalone Manager requires user to configure each of the nodes with the Shared-Secret, data transfer can be can be encrypted using *Secure Sockets Layer (SSL)* for communication protocols, and *Simple Authentication and Security Layer (SASL)* for block transfers, access to Spark UI is restricted using *Access Control List (ACL)*
+    - For monitoring, it has a Web UI to view cluster and job statistics, log outputs for each job, Applications' UI is created using Spark UI to show event logs (if any) for that application
 2. **Apache Mesos**
     - Apache Mesos support is deprecated as of Apache Spark 3.2.0
     - A distributed systems kernel that abstracts across a cluster
@@ -69,30 +72,65 @@
       2. **Mesos Slave :** a Mesos instance that offers resources to the cluster, Mesos master assigns tasks to the Mesos slave
       3. **Mesos Framework :** allows applications to request resources from the cluster
     - Some other frameworks that use Mesos are Chronos, marathon, Aurora, Hadoop, Spark, Jenkins, etc.
+    - For High Availability, it uses *Apache ZooKeeper* for automatic recovery of Master Node, incase of failover, task execution is not stopped
+    - For security, Mesos provides security to any entity interacting with Cluster, each of those entities can be enabled to use authentication, Custom modules can be used to replace Mesos default authentication module Cyrus SASL, By Default communication between modules in unencrypted while SSL/TLS can be enabled to encrypt communication, Mesos uses *Access Control List (ACL)* to provide access to services
+    - For monitoring, Mesos supports per container network monitoring and isolation, providing many metrics including allocated CPU, memory usage, etc. for Master Node and Slave Nodes accessible with URL
 3. **Hadoop YARN**
     - YARN stands for Yet another Resource Negotiator, which is a sub-project of Hadoop
     - It bifurcates the functionality of Resource Manger and Job Scheduling into different daemons, providing a global Resource Manager (RM) and a per-application Application Master (AM), an application is either a DAG or an individual job
+    - It is a combination of Resource Manger and Node Manager
+      - **YARN Resource Manager** manages resources among all the applications, it has a Job Scheduler and Application Manager (AM)
+        - **Job Scheduler** allocates resources to applications, and monitors the application status
+        - **Application Manager (AM)** manages applications across all the nodes
+      - **YARN Node Manager**  contains Application Master and Container
+        - **Container** is a place where actual processing takes place in an isolated manner, Each task of MapReduce runs in one container, an application requires one or more containers
+        - **Application Master** is a per-application framework aimed to negotiate resources from Resource Manager, works with Node Manager(s) to monitor tasks for resource needs
+    - YARN allows to share and configure the same resource pool between all the framework that runs on YARN, likely pre-installed on Hadoop
+    - For High Availability, it supports manual recovery of Master Node, and can use *ZooKeeper* based *ActiveStandBy* embedded in the Resource Manager for automatic recovery, doesn't require a separate ZooKeeper failover controller
+    - For Security, it has security for authentication using *Access Control List (ACL)* for Hadoop services and Web UIs, Service Level Authorization to provide authority to client, SSL for encryption of communication between clients and services
+    - For monitoring, YARN has a Web UI for Resource Manager and Node Manager, Resource Manager UI provides metrics for clusters, and Node Manager UI provides information for each node, applications and containers running on that Node
 4. **Kubernetes**
+    - A container orchestration platform to manage containerized applications
+    - suitable for cloud-native applications and environments using containers
+    - Allows Spark to run as containers, scaling applications easily based on resource needs
+    - Kubernetes API creates a driver pod that manages the application and launches executor pods for processing tasks
+    - When an application completes, the executor pods terminate and are cleaned up, but driver pod persists logs and remains in completed state in Kubernetes API until it's eventually garbage collected or manually cleaned up
+    - Kubernetes handles the lifecycle for both driver and executor pods ensuring job scheduling
+    - It can scale the number of executor pods based on workload, runs multiple instances of Spark driver in different pods to enhance availability
+    - For High Availability, It monitors health of nodes in a cluster, If a pod crashes, either driver or Executor, it automatically restarts that pod, providing automatic recovery
+    - For Security, it supports *Role-Based Access Control (RBAC)* based on external authentication mechanisms like LDAP, etc., allows to define network policies, manages secrets using Kubernetes API
 
-### 2. Spark Core API
+### 2. Spark Workloads
+
+- The Spark framework includes following workloads
+  1. Spark Core as the foundation for the platform
+  2. Spark SQL for interactive queries
+  3. Spark Streaming for real-time analytics
+  4. Spark MLib for machine learning
+  5. Spark GraphX for graph processing
+
+  ![what-is-apache-spark.b3a3099296936df595d9a7d3610f1a77ff0749df](../content_BigDataTechnologies/what-is-apache-spark.b3a3099296936df595d9a7d3610f1a77ff0749df.png)
+
+#### 1. Spark Core
 
 - All the functionalities in Apache Spark are built on top of Spark Core
-- It delivers speed by providing in-memory computation, so it is a foundation for parallel and distributed computing in Spark
-- Spark Core is the home to the API that consist of `Resilient Distributed Dataset (RDD)`
+- It is responsible for memory management, fault recovery, scheduling, distributing & monitoring jobs, and interacting with storage systems
+- It is exposed through an API built for Java, Scala, Python and R, to hide the complexity of distributed computing behind simple high-level operators
+- Spark Core is the home to the API that consist of `Resilient Distributed Dataset (RDD)` and provides APIs for building and Manipulating RDDs
 
-### 3. SparkSQL
+#### 2. Spark SQL
 
 - Used for tabular or structured schema to create DataFrames
 
-### 4. Spark Streaming
+#### 3. Spark Streaming
 
 - For Real-time processing
 
-### 5. MLib
+#### 4. Spark MLib
 
 - For Machine Learning
 
-### 6. GraphX
+#### 5. Spark GraphX
 
 - For Entity Relationships
 
