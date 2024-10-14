@@ -116,15 +116,37 @@
 - All the functionalities in Apache Spark are built on top of Spark Core
 - It is responsible for memory management, fault recovery, scheduling, distributing & monitoring jobs, and interacting with storage systems
 - It is exposed through an API built for Java, Scala, Python and R, to hide the complexity of distributed computing behind simple high-level operators
-- Spark Core is the home to the API that consist of `Resilient Distributed Dataset (RDD)` and provides APIs for building and Manipulating RDDs
+- Spark Core is the home to the API that consist of `Resilient Distributed Dataset (RDD)` and provides APIs for building and Manipulating RDDs, Spark RDD handles partitioning data across all the nodes in a cluster, holds the memory pool of the cluster as a single unit
+  - Two operations are performed on RDDs
+    1. **Transformation :** produces new RDD from existing RDD, executed in a lazy evaluation fashion
+    2. **Action :** allows to work on actual dataset to produce results, triggers execution of transformations
 
 #### 2. Spark SQL
 
-- Used for tabular or structured schema to create DataFrames
+- Spark SQL is a framework for structured big data processing on a distributed query engine
+- It provides low-latency interactive queries up to 100x faster than MapReduce
+- It allows Spark to access Metadata about data and computation for extra optimizations
+- It includes Cost-Based Optimizer (CBO), columnar storage, code generation for faster queries, etc., while scaling to thousands of nodes
+- It allows Business Analysts to  use standard SQL or Hive Query Language (HQL) for querying data
+- It allows developers to use APIs available in Scala, Java, Python and R
+- It supports various data-sources out-of-the-box including JDBC, ODBC, JSON, HDFS, Hive, ORC and Parquet
+- It supports popular data stores like Amazon Redshift, Amazon S3, Couchbase, MongoDB, Salesforce, ElasticSearch,  and others all of which can be found at [Spark Packages](https://spark-packages.org/?q=tags%3A%22Data%20Sources%22)
+- It provides `DataFrame` API to work with different structured data sources such as Hive, Avro, Parquet, ORC, JSON, JDBC
+- It uses Cost-Based Optimizer (CBO) to optimize query execution plans
+- It Used for tabular or structured schema to create DataFrames
 
 #### 3. Spark Streaming
 
-- For Real-time processing
+- Spark Streaming provides scalable, high-throughout fault tolerant stream processing of streaming data
+- It is a real-time analytics solution that leverages Spark Core's fast scheduling capability to perform streaming analytics
+- It ingests data in micro-batches to enable analytics on that data with the same application code written for batch analytics, providing fault tolerance
+- It improves developer productivity, since same code for batch processing can be abstracted to use for streaming applications
+- Once data from live stream is captured, it can be sent to file system, databases or live dashboards
+- Spark Streaming supports data from twitter, Kafka, Flume, HDFS, Amazon Kinesis, TCP sockets, and many more all of which can be found at [Spark Packages](https://spark-packages.org/?q=tags%3A%22Streaming%22) ecosystem
+- It works in three stages
+  1. Gathering
+  2. Processing
+  3. Data Storage
 
 #### 4. Spark MLib
 
