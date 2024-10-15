@@ -106,7 +106,7 @@
   1. Spark Core as the foundation for the platform
   2. Spark SQL for interactive queries
   3. Spark Streaming for real-time analytics
-  4. Spark MLib for machine learning
+  4. Spark MLlib for machine learning
   5. Spark GraphX for graph processing
 
   ![what-is-apache-spark.b3a3099296936df595d9a7d3610f1a77ff0749df](../content_BigDataTechnologies/what-is-apache-spark.b3a3099296936df595d9a7d3610f1a77ff0749df.png)
@@ -142,18 +142,39 @@
 - It ingests data in micro-batches to enable analytics on that data with the same application code written for batch analytics, providing fault tolerance
 - It improves developer productivity, since same code for batch processing can be abstracted to use for streaming applications
 - Once data from live stream is captured, it can be sent to file system, databases or live dashboards
-- Spark Streaming supports data from twitter, Kafka, Flume, HDFS, Amazon Kinesis, TCP sockets, and many more all of which can be found at [Spark Packages](https://spark-packages.org/?q=tags%3A%22Streaming%22) ecosystem
+- Spark Streaming supports data from twitter, Apache Kafka, Apache Flume, HDFS, Amazon Kinesis, TCP sockets, and many more all of which can be found at [Spark Packages](https://spark-packages.org/?q=tags%3A%22Streaming%22) ecosystem
 - It works in three stages
-  1. Gathering
-  2. Processing
-  3. Data Storage
+  1. **Gathering**
+      - It provides two types of built-in streaming sources
+        1. **Basic Sources :** includes sources available in `StreamingContext` API such as File systems and socket connections
+        2. **Advanced Sources :** includes sources like Apache Kafka, Apache Flume, Amazon Kinesis, etc. available through extra utility classes
+  2. **Processing**
+      - The gathered data is processed using complex algorithms with a high-level function, such as MapReduce, Join and window
+  3. **Data Storage**
+      - The processed data is then pushed to file systems, databases and live-dashboards
+      - Spark Streaming also provides high-level abstraction, also known as `Discretized Stream` or `DStream`
+      - `DStream` in Spark signifies continuous stream of data, which can be formed either using sources such as Apache Kafka, Apache Flume, and Amazon Kinesis or by high-level operations on other DStreams
+      - DStream is internally a sequence of RDDs
 
-#### 4. Spark MLib
+#### 4. Spark MLlib
 
+- It is a library to perform Machine Learning on data at scale
+- It is aimed to make Machine Learning scalable and easy
+- Machine Learning models can be trained by Data Scientists with R and Python on any Hadoop data source, saved using MLlib, and imported into a Java or Scala-based pipelines to build complex workflows
+- Spark was designed for fast, interactive computation that runs in-memory, enabling Machine Learning to run quickly
+- It provides tools for  feature extraction, transformation and model evaluation
+- The algorithms in MLlib have the ability to perform classification, regression, clustering, collaborative filtering and pattern mining, and some lower-level Machine Learning primitives such as Gradient Descent are also present in it
+- In Spark v2.0, the `RDD` based API in `spark.mllib` package was put in maintenance, making the `DataFrame` based API as the primary Machine Learning API for Spark, MLlib will not add any new features in RDD based API instead it is only maintained
+- The reason to switch to DataFrame based API in MLlib is that it is more user-friendly than RDD based API
+- DataFrame based API for MLlib includes Spark Data Sources, SQL DataFrame queries, `Tungsten` and `Catalyst` Optimizations and uniform API across languages
+- MLlib also uses linear algebra package `Breeze`, which is a collection of  libraries for numerical computing and Machine Learning
 - For Machine Learning
 
 #### 5. Spark GraphX
 
+- Spark GraphX is a distributed graph processing framework built on top of Spark
+- It provides ETL, EDA, and iterative graph computation to enable users to interactively build and transform a graph data structure at scale
+- It comes with a highly flexible API, and a selection of distributed Graph algorithms
 - For Entity Relationships
 
 ## Data Flow in Spark
