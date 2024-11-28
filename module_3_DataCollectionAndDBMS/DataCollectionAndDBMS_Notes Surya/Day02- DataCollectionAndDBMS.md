@@ -321,3 +321,18 @@ There are three types of users
 3. **End-User**
 
     1. These are the users who interact with database to retrieve data or get a view of a database
+
+## Practical
+
+```sql
+-- ###################
+-- Database- Day02
+-- ###################
+
+-- create new user
+CREATE USER user12apr@localhost IDENTIFIED BY 'mysql';
+-- create multiple new users
+CREATE USER seconduser@localhost IDENTIFIED BY 'mysql', thirduser@localhost IDENTIFIED BY 'mysql';
+-- list users
+SELECT USER FROM mysql.user;
+```
