@@ -246,7 +246,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 ##### Adding `hduser` to sudoers
 
-- If it showed error `hduser is not in sudoes file`, then you need to first add user `hduser` into sudoers, then try to move with `sudo` prefix
+- If it showed error `hduser is not in sudoers file`, then you need to first add user `hduser` into sudoers, then try to move with `sudo` prefix
 - First switch to previous user using which you've first logged into system (say `sdevsinx`) using command below
 
     ```bash
@@ -263,7 +263,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
     ![sudo-adduser-hduser-sudo](../content_BigDataTechnologies/sudo-adduser-hduser-sudo.png)
 
-- Now the `hduser` has root priviledge, we can move the hadoop installation to `/usr/local/hadoop` without any problem
+- Now the `hduser` has root privilege, we can move the hadoop installation to `/usr/local/hadoop` without any problem
 - Now, switch back to user `hduser`
 
     ```bash
@@ -615,7 +615,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
     23/05/26 23:52:43 INFO util.GSet: VM type       = 64-bit
     23/05/26 23:52:43 INFO util.GSet: 1.0% max memory 889 MB = 8.9 MB
     23/05/26 23:52:43 INFO util.GSet: capacity      = 2^20 = 1048576 entries
-    23/05/26 23:52:43 INFO namenode.NameNode: Caching file names occuring more than 10 times
+    23/05/26 23:52:43 INFO namenode.NameNode: Caching file names occurring more than 10 times
     23/05/26 23:52:43 INFO util.GSet: Computing capacity for map cachedBlocks
     23/05/26 23:52:43 INFO util.GSet: VM type       = 64-bit
     23/05/26 23:52:43 INFO util.GSet: 0.25% max memory 889 MB = 2.2 MB
@@ -684,12 +684,12 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
     ```
 
     ```console
-    18113 Jps
-    17242 DataNode
-    17468 SecondaryNameNode
-    17613 ResourceManager
-    17103 NameNode
-    17727 NodeManager
+    18113  Jps
+    17242  DataNode
+    17468  SecondaryNameNode
+    17613  ResourceManager
+    125000 NameNode
+    17727  NodeManager
     ```
 
 - THe output above means that we now have a functional instance of Hadoop running on our VPS (Virtual Private Server)
@@ -721,6 +721,8 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
     tcp6       0      0 :::8032                 :::*                    LISTEN      1001       2086048    125202/java
     tcp6       0      0 :::8088                 :::*                    LISTEN      1001       2086052    125202/java
     ```
+
+> **Note:** If it shows error that netstat is not installed, then install it using command `sudo apt install net-tools`, and then re-run the command `netstat -plten | grep java`
 
 - In output, you can identify the processes with the `hostname:port` on which process is listening
 
@@ -815,7 +817,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 ### Hadoop Web Interface
 
-- To access Haoop web interface, we'll need Hadoop running again
+- To access Hadoop web interface, we'll need Hadoop running again
 - Once all processes of Hadoop is up and running, you may visit [http://localhost:50070/](http://localhost:50070/) to access the Web UI of the NameNode daemon
 
     ![Hadoop-web-UI](../content_BigDataTechnologies/Hadoop-web-UI.png)
@@ -857,8 +859,8 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 ### Hive Advantages
 
 1. **Scalability :** designed to handle huge volumes of data
-2. **Familiar SQL-like interface :** uses SQL-like language called HiveQL, recducing disruptions/retraining
-3. **Integration with Hadoop ecosystem :** integrates well with Hdoop ecosystem, enabling users to process data with Hadoop tools such as Pig, MapReduce & Spark
+2. **Familiar SQL-like interface :** uses SQL-like language called HiveQL, reducing disruptions/retraining
+3. **Integration with Hadoop ecosystem :** integrates well with Hadoop ecosystem, enabling users to process data with Hadoop tools such as Pig, MapReduce & Spark
 4. **Supports partitioning & bucketing :** can improve query partitioning by limiting the data to be read, by implementing partitioning & bucketing
 5. **User-Defined Functions :** users can define UDFs which can be used in HiveQL
 
@@ -868,7 +870,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 2. **Slow Performance :** can become slower than traditional databases since it is built on top of Hadoop, which makes it optimized for batch processing rather than interactive querying
 3. **Steep learning curve :** while it is a SQL-like language, it still requires users to have knowledge of Hadoop & distributed computing, thus difficult for beginners
 4. **lack of support for transactions :** does not supports transactions, so difficulty to maintain consistency
-5. **Limited Flexibility :** not as flexible as other data-warehousing tools, since its designed specifically to work with Hadoop, which limits its usability in other environemnts
+5. **Limited Flexibility :** not as flexible as other data-warehousing tools, since its designed specifically to work with Hadoop, which limits its usability in other environments
 6. **Indexing :** although indexing makes queries faster, but hive has a limited indexing capability
 
 ### Hive Architecture
@@ -893,7 +895,15 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 - The key components of the Apache Hive architecture are `Hive Server 2`, `Hive Query Language (HiveQL/HQL)`, external `Apache Metastore` and `Hive Beeline shell`
 
-1. **Hive Server 2 :** accepts incoming requests from users & creates an execution plan, auto-generates a YARN job to process SQL queries. It also supports the Hive optimizer and Hive compiler to streamline data extraction and processing.
+1. **Hive Server 2 :**
+    - HiveServer2 accepts incoming requests from users & creates an execution plan, auto-generates a YARN job to process SQL queries. It also supports the Hive optimizer and Hive compiler to streamline data extraction and processing.
+    - HiveServer2 a.k.a. HS2 is a second-generation Hive server that allows
+        - Remote clients to execute queries against the Hive server
+        - Multi-client concurrency and authentication
+        - Better support for API client like JDBC and ODBC
+    - `hiveserver2` is located at `$HIVE_HOME/bin/hiveserver2`, which may be used to launch HiveServer2, and it runs on port 10000 by default
+    - Hive is written in java, you can use `jps` command  or `netstat -anp | grep 1000` to check if HiveServer2 is running
+    - HiveServer2 also starts a jetty Http Server on port `10002`, This Web UI at `localhost:10002` provides configuration logging, metrics, and active session information
 
 2. **Hive Query Language :**  By enabling the implementation of SQL-reminiscent code, Hive negates the need for long-winded JavaScript codes to sort through unstructured data & allows users to make queries using built-in HQL statements (HQL). These statements can be used to navigate large datasets, refine results, and share data in a code-effective and time-efficient manner.
 
@@ -910,8 +920,8 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
     1. it served as a thick client for SQL Hadoop
     2. it served as a command-line tool for Hive Server (the original Hive Server, now often referred as `HiveServer`)
 - `HiveServer` has been deprecated and removed from the code base as of Hive v1.0.0 and replaced with `HiveServer2`, so the second use case no longer applies
-- For the First usecase, `Beeline` provides or is supposed to provide equal functionality, yet is implemented differently from Hive CLI
-- Ideally, `Hive CLI` should have been deprecated as Hive community haslong recommended using the `Beeline` plus `HiveServer2`configuration, however, because of the wide use of Hive CLI, we instead are replacing the `Hive CLI`'s implementation with a new `Hive CLI` on top of `Beeline` plus embedded `HiveServer2`, so that the Hive community needs to maintain a single code path. In this way, the new `Hive CLI` is just an alias to `Beeline` at both the shell-script level and the high-code level. The goal is that no or minimal changes are required from existing user scripts using `Hive CLI`
+- For the First use case, `Beeline` provides or is supposed to provide equal functionality, yet is implemented differently from Hive CLI
+- Ideally, `Hive CLI` should have been deprecated as Hive community has long recommended using the `Beeline` plus `HiveServer2`configuration, however, because of the wide use of Hive CLI, we instead are replacing the `Hive CLI`'s implementation with a new `Hive CLI` on top of `Beeline` plus embedded `HiveServer2`, so that the Hive community needs to maintain a single code path. In this way, the new `Hive CLI` is just an alias to `Beeline` at both the shell-script level and the high-code level. The goal is that no or minimal changes are required from existing user scripts using `Hive CLI`
 
 #### Beeline
 
@@ -976,9 +986,163 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
     ![Start-hive-cli](../content_BigDataTechnologies/Start-hive-cli.png)
 
+#### Starting Beeline
+
+1. First you need to run `hiveserver2` if not running, using command below
+
+    ```bash
+    [bigdatalab456422@ip-10-1-1-204 ~]$ hiveserver2
+    ```
+
+    ```console
+    SLF4J: Class path contains multiple SLF4J bindings.
+    SLF4J: Found binding in [jar:file:/usr/local/hive-4.0.1-bin/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: Found binding in [jar:file:/usr/local/hadoop-3.4.1/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+    SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+    SLF4J: Class path contains multiple SLF4J bindings.
+    SLF4J: Found binding in [jar:file:/usr/local/hive-4.0.1-bin/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: Found binding in [jar:file:/usr/local/hadoop-3.4.1/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+    SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+    2024-12-11 17:55:16: Starting HiveServer2
+    SLF4J: Class path contains multiple SLF4J bindings.
+    SLF4J: Found binding in [jar:file:/usr/local/hive-4.0.1-bin/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: Found binding in [jar:file:/usr/local/hadoop-3.4.1/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+    SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+    Hive Session ID = d22332f6-250f-4ec2-88ac-b8519d333704
+    WARNING: An illegal reflective access operation has occurred
+    WARNING: Illegal reflective access by org.apache.hadoop.hive.common.StringInternUtils (file:/usr/local/hive-4.0.1-bin/lib/hive-common-4.0.1.jar) to field java.net.URI.string
+    WARNING: Please consider reporting this to the maintainers of org.apache.hadoop.hive.common.StringInternUtils
+    WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+    WARNING: All illegal access operations will be denied in a future release
+    Hive Session ID = 1a42fbc8-d85d-49be-a341-ee7db6eda461
+    ```
+
+2. If you're using beeline for the first time after installing it, you need to initialize the metastore using `schematool` utility before launching beeline (hive uses `derby` as its default metastore)
+
+    ```bash
+    [bigdatalab456422@ip-10-1-1-204 ~]$ schematool -initSchema -dbType derby # initializes the derby metastore
+    ```
+
+    ```console
+    SLF4J: Class path contains multiple SLF4J bindings.
+    SLF4J: Found binding in [jar:file:/usr/local/hive-4.0.1-bin/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: Found binding in [jar:file:/usr/local/hadoop-3.4.1/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+    SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+    Initializing the schema to: 4.0.0
+    Metastore connection URL:        jdbc:derby:;databaseName=/usr/local/hive-4.0.1-bin/metastore_db;create=true
+    Metastore connection Driver :    org.apache.derby.jdbc.EmbeddedDriver
+    Metastore connection User:       APP
+    Starting metastore schema initialization to 4.0.0
+    Initialization script hive-schema-4.0.0.derby.sql
+    Initialization script completed
+    ```
+
+3. If schema initialization fails and there is already a metastore, then you need to first create a backup of existing metastore, then try to initialize the metastore again
+
+    ```bash
+    [bigdatalab456422@ip-10-1-1-204 ~]$ mv /usr/local/hive-4.0.1-bin/metastore_db /usr/local/hive-4.0.1-bin/metastore_db.old # run if metastore_db already exists, to create new metastore
+    [bigdatalab456422@ip-10-1-1-204 ~]$ schematool -initSchema -dbType derby # initializes the derby metastore
+    ```
+
+4. Now, open a new terminal and launch Beeline using command below (or if you use command `hive` in new versions of hive, it'll launch beeline since hive-cli is deprecated)
+
+    ```bash
+    [bigdatalab456422@ip-10-1-1-204 ~]$ beeline
+    ```
+
+    ```console
+    SLF4J: Class path contains multiple SLF4J bindings.
+    SLF4J: Found binding in [jar:file:/usr/local/hive-4.0.1-bin/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: Found binding in [jar:file:/usr/local/hadoop-3.4.1/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+    SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+    SLF4J: Class path contains multiple SLF4J bindings.
+    SLF4J: Found binding in [jar:file:/usr/local/hive-4.0.1-bin/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: Found binding in [jar:file:/usr/local/hadoop-3.4.1/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+    SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+    SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+    Beeline version 4.0.1 by Apache Hive
+    beeline>
+    ```
+
+5. Now you need to connect to a hive database using jdbc connection string in the command below to connect to the database on localhost, (hive has default `user:password` `scott:tiger`)
+
+    ```beeline
+    beeline> !connect jdbc:hive2://
+    ```
+
+    ```console
+    Connecting to jdbc:hive2://
+    Enter username for jdbc:hive2://: scott
+    Enter password for jdbc:hive2://: *****
+    24/12/11 18:21:48 [main]: WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+    Hive Session ID = 3d646379-f6d3-4713-9386-f7cbaaed3562
+    WARNING: An illegal reflective access operation has occurred
+    WARNING: Illegal reflective access by org.apache.hadoop.hive.common.StringInternUtils (file:/usr/local/hive-4.0.1-bin/lib/hive-common-4.0.1.jar) to field java.net.URI.string
+    WARNING: Please consider reporting this to the maintainers of org.apache.hadoop.hive.common.StringInternUtils
+    WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+    WARNING: All illegal access operations will be denied in a future release
+    24/12/11 18:21:49 [main]: WARN hikari.HikariConfig: objectstore - leakDetectionThreshold is less than 2000ms or more than maxLifetime, disabling it.
+    24/12/11 18:21:49 [main]: WARN hikari.HikariConfig: objectstore-secondary - leakDetectionThreshold is less than 2000ms or more than maxLifetime, disabling it.
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:50 [main]: WARN DataNucleus.MetaData: Metadata has jdbc-type of null yet this is not valid. Ignored
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.cpc.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.hll.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.IntersectSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.EstimateSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.ExcludeSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.tuple.ArrayOfDoublesSketchToValuesUDTF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+    24/12/11 18:21:51 [main]: WARN session.SessionState: Configuration hive.reloadable.aux.jars.path not specified
+    Connected to: Apache Hive (version 4.0.1)
+    Driver: Hive JDBC (version 4.0.1)
+    Transaction isolation: TRANSACTION_REPEATABLE_READ
+    0: jdbc:hive2://>
+    ```
+
+    - You may also connect to hive database on remote hive cluster using this below format (`hiveserver2` uses port 10000 by default)
+
+        ```beeline
+        beeline>!connect jdbc:hive2://localhost:10000 scott tiger
+        ```
+
+        ```beeline
+        beeline>!connect jdbc:hive2://localhost:10000 -n scott -p tiger
+        ````
+
+6. Once connected to hive database, you may run HiveQL queries as used in earlier hive version
+
+    ```beeline
+    0: jdbc:hive2://> SHOW DATABASES;
+    ```
+
+    ```console
+    +----------------+
+    | database_name  |
+    +----------------+
+    | default        |
+    +----------------+
+    1 row selected (0.952 seconds)
+    0: jdbc:hive2://>
+    ```
+
 #### Setup Hive CLI to print current db
 
-- Run command below to set `hive.cli.print.current.db` to `true` which sets the control to print the current database in use, it won't print any errror message even if you made a mistake in typing the property
+- Run command below to set `hive.cli.print.current.db` to `true` which sets the control to print the current database in use, it won't print any error message even if you made a mistake in typing the property
 
     ```hive
     hive> set hive.cli.print.current.db = true ;
@@ -1103,7 +1267,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 #### DESC describe `nyse` table
 
-- To descibe/get schema information of a table, run `DESC` command for table `nyse` as below
+- To describe/get schema information of a table, run `DESC` command for table `nyse` as below
 
     ```hive
     hive (surya_training)> DESC nyse ;
@@ -1126,7 +1290,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 #### DESC FORMATTED `nyse` table
 
-- To describe/get schema information along with deailed table information and Storage information, use `DESC FORMATTED` command on `nyse` table
+- To describe/get schema information along with detailed table information and Storage information, use `DESC FORMATTED` command on `nyse` table
 
     ```hive
     hive (surya_training)> DESC FORMATTED nyse ;
@@ -1170,11 +1334,11 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 ### Run Analytical Hive Queries
 
-- Now, your data is loaded into the table, you may do further analytical processing by just launching SQL like Hive queries, it'll convert SQL query into `jar` file internally, and launch that `jar` file on ResourceManager to perfrom the processing
+- Now, your data is loaded into the table, you may do further analytical processing by just launching SQL like Hive queries, it'll convert SQL query into `jar` file internally, and launch that `jar` file on ResourceManager to perform the processing
 
 #### Find the Total Volume for each Stock
 
-- Now you jsut need to run a SQL like Hive Query and Hive will do all the processing using Hadoop/mapReduce in the background
+- Now you just need to run a SQL like Hive Query and Hive will do all the processing using Hadoop/mapReduce in the background
 
     ```hive
     hive (surya_training)> SELECT stock_id, sum (volume) FROM nyse GROUP BY stock_id ;
@@ -1216,7 +1380,7 @@ Hadoop uses SSH (to access its modes) which would normally require the user to e
 
 ### Save Hive Query output to a file
 
-#### Save Total Volume for each Stock in row format file with fields demilited by `,`
+#### Save Total Volume for each Stock in row format file with fields delimited by `,`
 
 - To save output to a file, we need to use `INSERT OVERWRITE DIRECTORY <dirPath>` clause
 - Run the command below to save data into file `hive/result1` which will be created in user directory, file will be row formatted & fields sill be delimited by `,`
