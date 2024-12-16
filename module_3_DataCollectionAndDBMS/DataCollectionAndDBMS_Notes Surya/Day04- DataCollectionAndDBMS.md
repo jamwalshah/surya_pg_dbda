@@ -1155,10 +1155,10 @@ SELECT substring_index(STREET_ADDRESS, ' ', -1) AS street FROM locations;
 SELECT substring_index(STREET_ADDRESS, ' ', -1) AS street, STREET_ADDRESS FROM locations;
 
 -- intcap
-SELECT intcap(FIRST_NAME) 
+SELECT initcap(FIRST_NAME) -- works in PostgreSQL or OracleSQL
 FROM employees;
 
-SELECT concat(upper(substr(FIRST_NAME, 1, 1)), lower(substr(FIRST_NAME, 2))) AS intcap, FIRST_NAME 
+SELECT concat(upper(substr(FIRST_NAME, 1, 1)), lower(substr(FIRST_NAME, 2))) AS initcap, FIRST_NAME -- works in PostgreSQL or OracleSQL
 FROM employees; -- turns it into capital case
 
 -- replace
