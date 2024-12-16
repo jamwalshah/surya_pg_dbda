@@ -923,9 +923,72 @@ These four types serve different purposes, but share a common ability to perform
             FROM employees;
             ```
 
-###### Analytics Window Functions
+###### `LEAD`, `LAG` Window Functions
 
-1. Allow you to compute values based on a specified window, providing more flexibility for row-wise calculations
+1. These locate a row relative to the current row
+2. Both `LEAD` and `LAG` take three arguments:
+    1. `Expression` : the name of column from which the value is retrieved
+    2. `Offset` : the number of rows to skip, defaults to 1
+    3. `Default_value` : the value to be returned if the value retrieved is `NULL`, defaults to `NULL`
+3. Both `LEAD` and `LAG` require `ORDER BY` clause, but `PARTITION BY` clause is optional in `OVER()` clause
+4. `LEAD(expr[, offset[, default_value]])`
+    1. Accesses the value stored in a row after the current row
+    2. Example:
+
+        ```sql
+        SELECT FIRST_NAME, DEPARTMENT_ID, SALARY, 
+            LEAD(SALARY, 2, "Not Available") OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) as 2_skip_salary
+        FROM employees;
+        ```
+
+5. `LAG(expr[, offset[, default_value]])`
+    1. Accesses the value stored in a row before the current row
+    2. Example:
+
+        ```sql
+        SELECT FIRST_NAME, DEPARTMENT_ID, SALARY, 
+            LEAD(SALARY, 2, "Not Available") OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) as 2_nxt_salary, 
+            LAG(SALARY, 2, "Not Available") OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) as 2_prev_salary
+        FROM employees;
+        ```
+
+###### Value Window Functions
+
+1. Allow you to retrieve specific values based on a **window created till the current row**, providing more flexibility for row-wise calculations
+2. Helpful to calculate the first or last or some nth value in a window
+3. `FIRST_VALUE(expr)`
+    1. Returns the first value in an ordered partition of a result set
+    2. Example:
+
+        ```sql
+        SELECT FIRST_NAME, DEPARTMENT_ID, SALARY, 
+            FIRST_VALUE(SALARY) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS fst_sal
+        FROM employees;
+        ```
+
+4. `LAST_VALUE(expr)`
+    1. Returns the last value in an ordered partition of a result set
+    2. Example:
+
+        ```sql
+        SELECT FIRST_NAME, DEPARTMENT_ID, SALARY, 
+            FIRST_VALUE(SALARY) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS fst_sal, 
+            LAST_VALUE(SALARY) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS lst_sal
+        FROM employees;
+        ```
+
+5. `NTH_VALUE(expr, n)`
+    1. Returns the nth value in an ordered partition of a result set
+    2. `n` : the position of the value (e.g. 1 for first value, 2 for second value, and so on)
+    3. Example:
+
+        ```sql
+        SELECT FIRST_NAME, DEPARTMENT_ID, SALARY, 
+            FIRST_VALUE(SALARY) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS fst_sal, 
+            LAST_VALUE(SALARY) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS lst_sal, 
+            NTH_VALUE(SALARY, 3) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS nth_sal
+        FROM employees;
+        ```
 
 ## Practical
 
