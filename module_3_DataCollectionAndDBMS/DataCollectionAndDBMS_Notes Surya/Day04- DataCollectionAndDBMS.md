@@ -14,6 +14,8 @@
 5. This condition can include one or more expression that compares column values to literal value or other column
 6. We can use operators like relational operators, logical operators in WHERE condition
 
+    > **Tip:** If you don't use `WHERE` clause, all the rows will be affected for that operation
+
 ## Operators in SQL
 
 It has following operators in precedence order of high to low
