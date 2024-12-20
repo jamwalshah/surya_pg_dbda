@@ -347,8 +347,259 @@
 
 ### 1. `INSERT` statement
 
+1. It adds a new row of data into a table
+2. It is possible to use `INSERT` statement in two ways
+    1. Insert new records/rows into a table
+    2. Copy data from one table/view to another table
+
+#### 1. Insert new records/rows into a table
+
+1. Specify both the column names and values to be inserted in the order of columns you've specified
+2. If you're adding values for all columns of the table, you may skip specifying column names. However, ensure the order of the values matches with the order of columns in the schema of the table
+3. Syntax:
+
+    ```sql
+    INSERT INTO table_name [(column1, column2, ...)]
+        VALUES
+            (row1value1, row2value2, ...),
+            [(row2value1, row2value3, ...), ...] ;
+    ```
+
+4. Example:
+
+    ```sql
+    INSERT INTO regions (REGION_ID, REGION_NAME)
+        VALUES 
+            (5, “Australia”);
+    ```
+
+    ```sql
+    INSERT INTO regions -- can skip columns if all values are added for all columns
+        VALUES 
+            (5, “Australia”);
+    ```
+
+#### 2. Copy data from one table/view to another table
+
+1. You can `SELECT` data from one table/view and copy it into another existing table using `INSERT`
+2. Destination table should be already existing to perform data copy
+3. Table structure/schema of source and destination tables should match, otherwise data won't be inserted
+4. If you're copying data across databases, you need to use the fully qualified names e.g. `database.table` in MySQL or `database.schema.table` in MS SQL Server or other catalog based DBs
+5. Syntax:
+
+    ```sql
+    INSERT INTO <dest_existing_table> 
+        SELECT * FROM [<src_existing_table>][<src_existing_view>];
+    ```
+
+6. Example:
+
+    ```sql
+    INSERT INTO employeescpy
+        SELECT * FROM employeescopy;
+    ```
+
 ### 2. `UPDATE` statement
+
+1. It is used to modify existing rows/records in a table
+2. You need to specify some filtering criteria using `WHERE` clause to identify which record(s) need to be updated, otherwise it'll update all the records
+3. Syntax:
+
+    ```sql
+    UPDATE <table_name>
+        SET <column1> = <value1>[, <column2> = <value2>[, ...]]
+        [WHERE <condition>] ;
+    ```
+
+4. Example:
+
+    ```sql
+    SET SQL_SAFE_UPDATES = 0;   -- to disable safe updates
+    UPDATE employeescopy 
+        SET SALARY = 100000 
+        WHERE EMPLOYEE_ID = 110 ;
+    ```
+
+    ```sql
+    UPDATE employeescopy 
+        SET SALARY = 110000, LAST_NAME = 'Cena' -- Updating multiple columns
+        WHERE EMPLOYEE_ID = 110 ;
+    ```
+
+#### `UPDATE` vs. `ALTER` - Interview Problem/Challenge
+
+| `UPDATE` | `ALTER` |
+| :-- | :-- |
+| It is used to modify the specific column | It is used to modify the structure of database object such as table_name, column_name |
+| It uses `SET` keyword to specify new value for one or more columns and uses `WHERE` clause to specify the condition | Keywords like `ADD`, `DROP`, `MODIFY` are used to make the changes in the structure |
+| This command can be undone using `ROLLBACK` | This command cannot be undone |
 
 ### 3. `DELETE` statement
 
+1. It is used to remove the rows/records from a table
+2. Syntax:
+
+    ```sql
+    DELETE FROM <table_name>
+        WHERE <condition>;
+    ```
+
+3. Example:
+
+    ```sql
+    DELETE FROM employeescopy
+        WHERE EMPLOYEE_ID = 110;
+    ```
+
 ### 4. `MERGE` statement
+
+1. Also known as Upsert operation
+2. Combines `INSERT` and `UPDATE` operations in a single statement
+3. It is used to either insert new data or update existing data based on a specified condition
+4. It is commonly used in scenarios while maintaining Slowly Changing Dimensions (SCDs) in data warehouses
+5. MySQL does not support `MERGE` statement, but supported in other databases like PostgreSQL, Oracle SQL, MS SQL Server, IBM DB2
+6. Syntax:
+
+    ```sql
+    MERGE INTO <dest_table> 
+        USING <src_table>
+        ON <condition>
+    WHEN MATCHED THEN 
+        UPDATE SET <column1> = <value1>, <column2> = <value2>, ...
+    WHEN NOT MATCHED THEN
+        INSERT (<column1>, <column2>, ...)
+            VALUES
+                (<value1>, <value2>, ...) ;
+    ```
+
+## `GROUP BY` clause
+
+1. Under aggregate functions, we saw `avg()`, `sum()`, `count()`, `min()`, `max()`
+
+    ```sql
+    SELECT SALARY FROM employees WHERE SALARY >avg(SALARY);
+    ```
+
+    In above query, We cannot use aggregate functions in `WHERE` clause
+2. `GROUP BY` clause is used to group two rows to have same value in one or more columns
+3. It typically works with aggregate functions viz. `avg()`, `sum()`, `count()`, `min()`, `max()`
+4. `GROUP BY` clause should be written after `WHERE` clause to specify which column should be grouped together
+5. When you write `SELECT` statement, the column which you’ve grouped, should be present in `SELECT` statement
+6. Example:
+
+    ```sql
+    SELECT DEPARTMENT_ID, count(*) num_of_employees
+    FROM employees 
+    WHERE DEPARTMENT_ID=50 
+    GROUP BY DEPARTMENT_ID ;
+    ```
+
+### Rules for `GROUP BY` clause
+
+1. Besides group function or aggregate function, whichever column is present in `SELECT` clause, that column name has to be present in `GROUP BY` clause
+2. But, Whichever column is present in `GROUP BY` clause, it may or may not be present in `SELECT` statement
+3. Example:
+
+    ```sql
+    SELECT max(SALARY) 
+    FROM employees 
+    GROUP BY DEPARTMENT_ID;
+    ```
+
+    In this case, `DEPARTMENT_ID` will also be bought to server RAM, sorting will be performed department wise, sorting in salary will also be performed but `DEPARTMENT_ID` will not be displayed
+4. There is no upper limit in `GROUP BY` clause, if you have large number of columns in `GROUP BY` clause, but it’ll be slow in execution because sorting will take time
+
+    ```sql
+    SELECT JOB_ID, DEPARTMENT_ID, sum(SALARY) 
+    FROM employees 
+    GROUP BY JOB_ID, DEPARTMENT_ID;
+    
+    SELECT DEPARTMENT_ID, JOB_ID, sum(SALARY) 
+    FROM employees 
+    GROUP BY JOB_ID, DEPARTMENT_ID;
+    ```
+
+5. The position of column in `SELECT` clause and the position of column in `GROUP BY` clause need not to be same
+6. The position of the column in the `SELECT` clause will determine the position of the column in the output
+7. The position of column in `GROUP BY` clause will determine sorting order, grouping order
+8. **Spatial query** or **n-dimensional queries**
+    1. If you have 1 column in `GROUP BY` clause, this means 2D query
+    2. If you have 2 columns in `GROUP BY` columns, this means 3D query
+    3. If you have 3 columns in `GROUP BY` columns, this means 4D query
+    4. If you have multiple columns in `GROUP BY` columns, this means **spatial query**
+
+### `HAVING` clause
+
+1. It is used to filter the results based on aggregate functions, using a condition
+2. It is used in combination with `GROUP BY` clause, which groups the row based on one or more columns
+3. `HAVING` clause is applied to the grouped row and filters out any group that does not satisfy the condition
+4. It is similar to `WHERE` clause, but while `WHERE` clause filters rows/records before aggregation, the `HAVING` clause filters after the aggregation
+5. Syntax:
+
+    ```sql
+    SELECT <column1>, <column2>, <aggregate_function(column3)> 
+    FROM <table_name> 
+    WHERE <condition> 
+    GROUP BY <column1>, <column2> HAVING <condition>;
+    ```
+
+6. `WHERE` clause is used to restrict the row
+7. `HAVING` clause works after all searching, sorting and conditioning performed on any SQL statement
+8. It is recommended that only group function should be used in `HAVING` clause
+9. A statement like
+
+    ```sql
+    SELECT DEPARTMENT_ID, sum(sal) 
+    FROM employee 
+    GROUP BY DEPARTMENT_ID HAVING sal>17000 ;
+    ```
+
+    This will give you error, as `sal` is not a group function
+10. This below statement will work but it is not an efficient way of using `HAVING` clause
+
+    ```sql
+    SELECT DEPARTMENT_ID, sum(sal) 
+    FROM employee 
+    GROUP BY DEPARTMENT_ID HAVING DEPARTMENT_ID=110 ;
+    ```
+
+11. It is recommended that only group functions should be used in `HAVING` clause
+
+### `WHERE` vs. `HAVING` - Interview Problem/Challenge
+
+| `WHERE` | `HAVING` |
+| :-- | :-- |
+| It filters the row depending on the condition | It filters on the group condition |
+| It is applicable without `GROUP BY` clause | It does not work without `GROUP BY` clause |
+| It gives you row restriction/row function | It gives you column restriction/column function |
+| It is used before `GROUP BY` clause | It is used after `GROUP BY` clause |
+| It is single-row operation | It is multiple-row operation as it uses aggregate function |
+
+## `JOIN` statement
+
+1. `JOIN` statement is used to combine rows from two or more tables based on related/common field between them
+2. `JOIN` is used to retrieve data from two or more tables in a single query, which is useful when the data you need is spread across different tables
+3. `JOIN` works from left to Right
+
+### Types of Joins
+
+1. `INNER JOIN` or `JOIN` or *Equi-Join* or *Natural Join*
+2. `LEFT JOIN` or `LEFT OUTER JOIN`
+3. `RIGHT JOIN` or `RIGHT OUTER JOIN`
+4. `FULL JOIN` or `FULL OUTER JOIN`
+5. Cartesian Join or `CROSS JOIN`
+6. `SELF JOIN`
+
+#### 1. `INNER JOIN` or `JOIN` or *Equi-Join* or *Natural Join*
+
+##### Inequi-Join
+
+#### 2. `LEFT JOIN` or `LEFT OUTER JOIN`
+
+#### 3. `RIGHT JOIN` or `RIGHT OUTER JOIN`
+
+#### 4. `FULL JOIN` or `FULL OUTER JOIN`
+
+#### 5. Cartesian Join or `CROSS JOIN`
+
+#### 6. `SELF JOIN`
