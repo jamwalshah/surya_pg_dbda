@@ -56,7 +56,7 @@
         ```
 
 4. To `CREATE TABLE` using another table / **Create Table As Select (`CTAS`)**
-    1. The structure of new table is created on basis of  the `SELECT` statement
+    1. The structure of new table is created on basis of the `SELECT` statement
     2. When `SELECT` is executed, the output of the `SELECT` statement will be inserted into the new table
     3. If you don't use `WHERE` clause, all the records will be copied into the new table
     4. Syntax:
@@ -550,8 +550,8 @@
 
     ```sql
     SELECT DEPARTMENT_ID, sum(sal) 
-    FROM employee 
-    GROUP BY DEPARTMENT_ID HAVING sal>17000 ;
+    FROM employees 
+    GROUP BY DEPARTMENT_ID HAVING sal > 17000 ;
     ```
 
     This will give you error, as `sal` is not a group function
@@ -559,8 +559,8 @@
 
     ```sql
     SELECT DEPARTMENT_ID, sum(sal) 
-    FROM employee 
-    GROUP BY DEPARTMENT_ID HAVING DEPARTMENT_ID=110 ;
+    FROM employees 
+    GROUP BY DEPARTMENT_ID HAVING DEPARTMENT_ID = 110 ;
     ```
 
 11. It is recommended that only group functions should be used in `HAVING` clause
@@ -592,14 +592,397 @@
 
 #### 1. `INNER JOIN` or `JOIN` or *Equi-Join* or *Natural Join*
 
-##### Inequi-Join
+1. `INNER JOIN`returns only the rows that have matching values based in both the tables
+2. If there is no match, those rows are excluded from the result
+3. This join is based on equality conditions, so matching rows of both the tables
+4. Both tables should have common column(s) / attribute(s)
+5. It fetches matching data from the common column as specified in `JOIN` condition
+
+    ![Inner-Join](../content/Inner-Join.png)
+
+6. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1
+    [INNER] JOIN table2 t2 ON [<join_condition>][table1.column1 = table2.column2] ;
+    ```
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1, table2 t2
+    WHERE t1.column1 = t2.column2 ;
+    ```
+
+7. Example:
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e
+    INNER JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ; -- using INNER JOIN keyword
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e
+    JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ;   -- using only JOIN keyword
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e, departments d
+    WHERE e.DEPARTMENT_ID = d.DEPARTMENT_ID;    -- using WHERE keyword
+    ```
+
+##### Non-equi-Join
+
+1. This is also a type `INNER JOIN`, but based on conditions other than equality such as `<`, `>`, `>=`, `<=`, `BETWEEN`, etc.
+2. It’ll show non-matching rows of both the tables
+3. Performs joins using comparison operators other than equals(`=`) sign such as `<`, `>`, `>=`, `<=`, `BETWEEN`, etc. in condition(s)
+4. It is used in exception reports
+5. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1, table2 t2
+    WHERE t1.column1 [> | < | >= | <= ] t2.column2 ;
+    ```
+
+6. Example:
+
+    ```sql
+    SELECT e.name, e.salary, s.department_category
+    FROM employees e
+    JOIN salary_ranges s ON e.salary BETWEEN s.min_salary AND s.max_salary;
+    ```
+
+    ```sql
+    SELECT e.name, e.salary, s.department_category
+    FROM employees e
+    JOIN salary_ranges s ON e.salary < s.max_salary;
+    ```
 
 #### 2. `LEFT JOIN` or `LEFT OUTER JOIN`
 
+1. It returns all the rows from the left table and the matched rows from the right table
+2. If there is no match in the right table, the result will contain `NULL` value in the right table column(s)
+3. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1
+    LEFT [OUTER] JOIN table2 t2 ON [<join_condition>][table1.column1 = table2.column2] ;
+    ```
+
+    ![Left-Join](../content/Left-Join.png)
+
+4. Example:
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e
+    LEFT JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ;
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e
+    LEFT OUTER JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ;
+    ```
+
 #### 3. `RIGHT JOIN` or `RIGHT OUTER JOIN`
+
+1. It returns all the rows from the right table, and the matching rows from the left table
+2. If there is no matching row in the table, the result will contain `NULL` value in the left table column(s)
+
+    ![Right-Join](../content/Right-Join.png)
+
+3. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1
+    RIGHT [OUTER] JOIN table2 t2 ON [<join_condition>][table1.column1 = table2.column2] ;
+    ```
+
+4. Example:
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e
+    RIGHT JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ;
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME 
+    FROM employees e
+    RIGHT OUTER JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ;
+    ```
 
 #### 4. `FULL JOIN` or `FULL OUTER JOIN`
 
+1. MySQL does not support the `FULL JOIN` or `FULL OUTER JOIN`. However, you can achieve the same result by using a combination of `LEFT JOIN` and `RIGHT JOIN`along with a `UNION`
+2. A `FULL JOIN` returns all the rows when there is a match in either the left table or the right table, and it returns NULL values for missing columns
+
+    ![Full-Join](../content/Full-Join.png)
+
+3. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1
+    FULL [OUTER] JOIN table2 t2 ON [<join_condition>][table1.column1 = table2.column2] ;    -- FULL OUTER JOIN available in PostgreSQL, MS SQL Server, Oracle SQL
+    ```
+
+    ```sql
+    SELECT t1.column1, t2.column1, ...
+    FROM table1 t1
+    LEFT [OUTER] JOIN table2 t2 ON [<join_condition>][table1.column1 = table2.column2] 
+        UNION   -- simulate FULL JOIN in MySQL using UNION of LEFT JOIN and RIGHT JOIN
+    SELECT t1.column1, t2.column1, ...
+    FROM table1 t1
+    RIGHT [OUTER] JOIN table2 t2 ON [<join_condition>][table1.column1 = table2.column2] ;
+    ```
+
+4. Example:
+
+    ```sql
+    SELECT s.COURSE_ID, c.COURSE_ID
+    FROM student s 
+    FULL OUTER JOIN course_detail c ON s.COURSE_ID = c.COURSE_ID;   -- FULL OUTER JOIN available in PostgreSQL, MS SQL Server, Oracle SQL
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME
+    FROM employees e
+    LEFT OUTER JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID
+        UNION   -- simulate FULL JOIN in MySQL using UNION of LEFT JOIN and RIGHT JOIN
+    SELECT e1.employee_ID, e1.DEPARTMENT_ID, d1.DEPARTMENT_ID, d1.DEPARTMENT_NAME
+    FROM employees e1
+    RIGHT OUTER JOIN departments d1 ON e1.DEPARTMENT_ID = d1.DEPARTMENT_ID ;
+    ```
+
 #### 5. Cartesian Join or `CROSS JOIN`
 
-#### 6. `SELF JOIN`
+1. The `CROSS JOIN` returns the cartesian product of two tables, meaning every row from the first table is combined with every row from the second table
+2. You can use it when you want to generate all possible combinations of rows from both tables
+3. It can result into a large result set especially if both the tables are large
+4. This is a `JOIN` without a condition, and by default it will resolve on the cartesian product of records/rows from the tables
+5. But, if you specify a condition to `CROSS JOIN` using `ON` keyword or `WHERE` clause, it becomes an `INNER JOIN`
+
+6. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table1 t1
+    CROSS JOIN table2 t2;
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME
+    FROM employees e, departments d;    -- without CROSS JOIN keyword
+    ```
+
+7. Example:
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME
+    FROM employees e
+    CROSS JOIN departments d;
+    ```
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, e.DEPARTMENT_ID, d.DEPARTMENT_ID, d.DEPARTMENT_NAME
+    FROM employees e, departments d;    -- without CROSS JOIN keyword
+    ```
+
+#### 6. SELF JOIN
+
+1. A Self Join is a join where a table is joined with itself
+2. This is useful for hierarchical data or recursive data, like employees reporting to other employees
+3. You should use it when you have to compare rows within the same table
+4. Two copies fo the same table are used in this join, but they both are treated as separate tables with different aliases, so creating aliases for tables is essential to implement Self Join
+5. Syntax:
+
+    ```sql
+    SELECT t1.column1, t1.column2, ..., t2.column1, t2.column2, ...
+    FROM table t1  -- table is joined with itself
+    JOIN table t2 ON [<join_condition>][t1.column1 = t2.column2] ;
+    ```
+
+6. Example:
+
+    ```sql
+    SELECT e.EMPLOYEE_ID, CONCAT(e.FIRST_NAME, ' ', e.LAST_NAME) AS employee, e1.EMPLOYEE_ID AS mgr_EMP_ID, CONCAT(e1.FIRST_NAME, ' ', e1.LAST_NAME) AS manager
+    FROM employees e
+    JOIN employees e1 ON e.MANAGER_ID = e1.EMPLOYEE_ID ;
+    ```
+
+## Practical
+
+```sql
+-- ###################
+-- Database- Day05
+-- ###################
+use hr;
+SELECT * FROM employees;
+SELECT count(EMPLOYEE_ID) count_emp FROM employees ORDER BY EMPLOYEE_ID;
+SELECT FIRST_NAME, SALARY+1000 increment FROM employees ORDER BY increment;
+
+SELECT SALARY, EMPLOYEE_ID FROM employees ORDER BY SALARY ASC, EMPLOYEE_ID DESC;
+-- RENAME table_name TO new_table_name
+-- ALTER TABLE old_table RENAME new_table
+-- ALTER table_name ADD  column_name data_type;
+-- UPDATE table_name SET column = VALUE WHERE condition
+
+SELECT * FROM employees WHERE EMPLOYEE_ID=110;
+UPDATE employees SET SALARY = 100000 WHERE EMPLOYEE_ID=110;
+SELECT * FROM employees WHERE EMPLOYEE_ID=110;
+
+ALTER TABLE employees ADD age int(60);
+DESC employees;
+SHOW TABLES;
+SELECT * FROM regions;
+SELECT * FROM employees;
+
+-- ALTER TABLE table_name MODIFY column_name new_data_type;
+ALTER TABLE employees MODIFY age int(70);
+DESC employees;
+
+-- 
+CREATE DATABASE check1;
+USE check1;
+--
+-- Table structure for table `regions`
+CREATE TABLE IF NOT EXISTS `regions` (
+  `REGION_ID` decimal(5,0) NOT NULL,
+  `REGION_NAME` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`REGION_ID`),
+  UNIQUE KEY `sss` (`REGION_NAME`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `regions`
+INSERT INTO `regions` (`REGION_ID`, `REGION_NAME`) VALUES
+('1', 'Europe\r'),
+('2', 'Americas\r'),
+('3', 'Asia\r'),
+('4', 'Middle East and Africa\r');
+
+SELECT * FROM regions;
+-- delete
+DELETE FROM regions WHERE REGION_ID=4;--  deletes specific record as per condition in WHERE
+SELECT * FROM regions;
+-- truncate
+TRUNCATE TABLE regions; --  leaves empty table
+SELECT * FROM regions;
+-- drop
+DROP TABLE regions; --  removes entire table object
+SELECT * FROM regions;
+
+USE hr;
+-- SELECT SALARY FROM employees WHERE SALARY >avg(SALARY); --  throws error as aggregate functions not allowed with grouping
+
+SELECT count(*) FROM employees WHERE DEPARTMENT_ID=80;
+SELECT DEPARTMENT_ID, count(*) num_of_employees
+FROM employees GROUP BY DEPARTMENT_ID;
+SELECT DEPARTMENT_ID, count(*) num_of_employees
+FROM employees WHERE DEPARTMENT_ID=50 GROUP BY DEPARTMENT_ID;
+
+-- problem / challenge find the number of employees hired in each year
+SELECT * FROM employees;
+SELECT YEAR(HIRE_DATE) FROM employees;
+SELECT YEAR(HIRE_DATE), count(*) emp_count FROM employees GROUP BY year(HIRE_DATE);
+
+-- write a query to find total salary paid to each department
+-- and order the result in descending order of total salary paid
+SELECT * FROM employees;
+SELECT SALARY , DEPARTMENT_ID FROM employees WHERE DEPARTMENT_ID=30;
+SELECT DEPARTMENT_ID, sum(SALARY) total_sal_to_dept
+FROM employees GROUP BY DEPARTMENT_ID ORDER BY total_sal_to_dept DESC;
+
+-- find the department with highest total salary being paid
+SELECT max(SALARY) max_total_sal_to_dept
+FROM employees GROUP BY DEPARTMENT_ID ORDER BY max_total_sal_to_dept DESC;
+
+-- HAVING
+SELECT DEPARTMENT_ID, sum(SALARY) total_sal_to_dept 
+FROM employees GROUP BY DEPARTMENT_ID HAVING sum(SALARY)<6000;
+
+-- write a query to get average salary to all the departments who have employees more than 10
+SELECT DEPARTMENT_ID, avg(SALARY) avg_salary, count(*) emp_count
+FROM employees GROUP BY DEPARTMENT_ID HAVING count(DEPARTMENT_ID)>10;
+
+SELECT JOB_ID, sum(SALARY) FROM employee GROUP BY JOB_ID, DEPARTMENT_ID;
+
+-- JOIN
+SELECT * FROM employees;
+SELECT * FROM departments;
+
+-- Equi Join
+SELECT EMPLOYEE_ID, e.DEPARTMENT_ID, DEPARTMENT_NAME
+FROM employees e, departments d --  using alias for table
+WHERE e.DEPARTMENT_ID=d.DEPARTMENT_ID;
+
+SELECT EMPLOYEE_ID, employees.DEPARTMENT_ID, DEPARTMENT_NAME
+FROM employees , departments    -- using actual table names
+WHERE employees.DEPARTMENT_ID=departments.DEPARTMENT_ID;
+
+-- Inequi Join
+SELECT * FROM employees;
+SELECT * FROM departments;
+-- using JOIN & ON keyword, with table alias
+SELECT FIRST_NAME, LAST_NAME, EMPLOYEE_ID, e.DEPARTMENT_ID
+FROM employees e JOIN departments d
+ON e.EMPLOYEE_ID=d.DEPARTMENT_ID AND d.DEPARTMENT_NAME!='hr';
+-- using JOIN & ON keyword, without table alias
+SELECT FIRST_NAME, LAST_NAME, EMPLOYEE_ID, employees.DEPARTMENT_ID
+FROM employees JOIN departments 
+ON employees.EMPLOYEE_ID=departments.DEPARTMENT_ID AND departments.DEPARTMENT_NAME!='hr';
+use hr;
+
+SELECT FIRST_NAME, LAST_NAME, e.DEPARTMENT_ID, DEPARTMENT_NAME
+FROM employees e, departments d -- using WHERE & AND keyword
+WHERE e.DEPARTMENT_ID=d.DEPARTMENT_ID AND d.DEPARTMENT_NAME!='IT';
+
+SELECT FIRST_NAME, LAST_NAME, EMPLOYEE_ID, e.DEPARTMENT_ID, DEPARTMENT_NAME
+FROM employees e, departments d -- using alias for table
+WHERE e.DEPARTMENT_ID!=d.DEPARTMENT_ID;
+
+SELECT FIRST_NAME, LAST_NAME, EMPLOYEE_ID, employees.DEPARTMENT_ID, DEPARTMENT_NAME
+FROM employees , departments    -- using actual table names
+WHERE employees.DEPARTMENT_ID=departments.DEPARTMENT_ID;
+
+
+-- waq to find who has scored higher than 80 marks
+
+-- Cartesian Join
+SELECT EMPLOYEE_ID, FIRST_NAME, DEPARTMENT_NAME
+FROM employees, departments;
+
+-- LEFT JOIN
+SELECT e.DEPARTMENT_ID, DEPARTMENT_NAME -- cannot show proper left join due to schema of tables employees, departments
+FROM employees e LEFT JOIN departments d
+ON e.DEPARTMENT_ID=d.DEPARTMENT_ID;
+
+SELECT s.NAME, c.COURSE_ID
+FROM student s LEFT JOIN course c
+ON c.ROLL_NO=s.ROLL_NO;
+
+-- RIGHT JOIN
+SELECT e.DEPARTMENT_ID, DEPARTMENT_NAME
+FROM employees e RIGHT JOIN departments d
+ON e.DEPARTMENT_ID=d.DEPARTMENT_ID;
+
+SELECT s.NAME, c.COURSE_ID
+FROM student s RIGHT JOIN course c
+ON c.ROLL_NO=s.ROLL_NO;
+
+
+-- WAQ to find the addresses(location_id, street_address, city, state_province, country_name) of all the departments
+SELECT * FROM countries;
+SELECT * FROM locations;
+SELECT * FROM departments;
+SELECT DEPARTMENT_ID, DEPARTMENT_NAME 
+FROM departments;
+```
