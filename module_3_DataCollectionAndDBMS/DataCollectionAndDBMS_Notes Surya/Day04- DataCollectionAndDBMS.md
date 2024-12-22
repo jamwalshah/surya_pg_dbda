@@ -30,6 +30,7 @@ It has following operators in precedence order of high to low
 | `<=` | less than or equal to |
 | `!=` or `<>` | is not equal to |
 | `=` | is equal to (don't use `==` in SQL) |
+| `<=>` | NULL-safe equal to operator |
 
 ### 2. Logical Operators
 
