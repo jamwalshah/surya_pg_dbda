@@ -204,7 +204,7 @@
     GROUP BY tmp_tbl.DEPARTMENT_ID ;
     ```
 
-### Rules to write Subqueries
+### Rules to write Sub-queries
 
 1. A subquery must be enclosed in parenthesis `( )`
 2. A subquery cannot return more than one column, but you may return them as a `ROW`
@@ -212,6 +212,181 @@
 4. A subquery can be used in various clauses like `SELECT`, `FROM`, `WHERE`, `HAVING`, `DELETE`
 5. Syntax of subquery will vary depending on the clause we have used
 6. A subquery can be nested to multiple levels, but this can make the query more complex and harder to understand
-7. A subquery slows down the query execution time. In order to have better performance, we need to optimize subqueries by rewriting them in an efficient manner possible
+7. A subquery slows down the query execution time. In order to have better performance, we need to optimize sub-queries by rewriting them in an efficient manner possible
 
 ## Views
+
+1. View are virtual tables that are based on the result of a query
+2. They allow you to encapsulate complex queries and reuse them in different parts of your database applications
+3. A view does not store data itself, rather it stores the SQL `SELECT` query that defines how the data should be retrieved
+4. When you query a view, it runs the underlying query to generate the result dynamically
+5. You cannot include DML statements like `INSERT`, `UPDATE` `DELETE` or `MERGE` within the view's definition, but views are not designed for data modification
+6. Views are generally Read-Only, meaning you cannot directly perform `INSERT`, `UPDATE` or `DELETE` operations on data through a view unless it satisfies certain conditions
+    1. The view must map directly into a single table (no joins or aggregations)
+    2. The columns in the view must directly correspond to the columns in the underlying table
+    3. The view should not contain any aggregate functions (e.g. `SUM`, `COUNT`, etc.)
+    4. The view should not have a `GROUP BY` or `HAVING` clause
+    5. The view should not have complex expressions or transformations on the data
+
+7. A view is a logical entity, while a table is a physical entity, so you can create a view from another view/table, but if parent table is dropped then view becomes inaccessible
+
+    ![table-view-hierarchy](../content/table-view-hierarchy.png)
+
+8. Views are generally Read-Only, meaning you cannot directly Insert, Update or Delete data through a view unless it satisfies certain conditions
+9. Example:
+
+    ```sql
+    CREATE VIEW employee_view AS
+        SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, DEPARTMENT_ID
+        FROM employees
+        WHERE DEPARTMENT_ID <> 0 ;
+    ```
+
+### Uses of Views
+
+1. **Simplify complex queries:** Use a view to encapsulate complicated joins or sub-queries that you need to use often
+2. **Security:** Restrict access to sensitive data by exposing only a subset of columns or rows via views
+3. **Data abstraction:** Create a level of abstraction, making it easier to maintain changes to the database schema without affecting application code that uses views
+
+### Performance Considerations
+
+1. **Performance Overhead:** Views are generally efficient, but since views do not store data, each time a view is queried, MySQL must execute the underlying `SELECT` query. This can add performance overhead, especially for complex queries with large data sets
+2. **Indexing:** You cannot create indexes directly on a view in MySQL, as views do no store data. If performance is a concern, you might need to optimize the underlying tables or materialize the views manually by creating a table to store the query result
+3. **Materialized Views:** MySQL does not support **materialized views** (views that store data), but you can manually create a table and populate it with the result of a query (which is a workaround for a materialized view)
+
+### Advantages of Views in MySQL
+
+1. **Data Abstraction:** Views provide a level of abstraction by hiding the complexity of queries
+2. **Code Reusability:** You can reuse complex query logic across multiple applications or queries by querying the view
+3. **Security:** Views can restrict the access to sensitive data by exposing only specific columns or rows
+4. **Data Consistency:** Views ensure that the same query is used across different parts of the application, ensuring consistency
+
+### Limitations of Views in MySQL
+
+1. **Performance:** Views can add overhead if the underlying queries are complex or involve large datasets
+2. **No Indexing on Views:** You cannot create indexes on views, so optimizing performance may require indexing the underlying tables
+3. **Not always updatable:** Some views, especially those involving joins or aggregates, are not updatable, limiting their usefulness for modifying data
+
+### `CREATE VIEW`
+
+1. To create a view, you use the `CREATE VIEW` statement followed by the view's name and SQL query that defines it
+2. Syntax:
+
+    ```sql
+    CREATE VIEW <view_name> AS 
+        SELECT <column1>, <column2>, ... 
+        FROM <table_name> 
+        WHERE <condition> ;
+    ```
+
+3. Example:
+
+    ```sql
+    CREATE VIEW sal_emp_view AS -- basic VIEW
+        SELECT FIRST_NAME, SALARY, DEPARTMENT_ID 
+        FROM employees 
+        WHERE SALARY > 10000 ;
+    ```
+
+    ```sql
+    CREATE VIEW emp_count_by_dept_view1 AS  -- GROUP BY VIEW
+        SELECT DEPARTMENT_ID, count(*) 
+        FROM employees 
+        GROUP BY DEPARTMENT_ID ;
+    ```
+
+    ```sql
+    CREATE VIEW join_view1 AS   -- JOIN VIEW
+        SELECT e.FIRST_NAME, d.DEPARTMENT_NAME, e.SALARY 
+        FROM employees e 
+        JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID ;
+    ```
+
+    ```sql
+    CREATE VIEW subquery_view1 AS   -- Sub-query VIEW
+        SELECT max(SALARY) 
+        FROM employees 
+        WHERE SALARY < (SELECT max(SALARY) 
+            FROM employees) ;
+    ```
+
+### Querying a View
+
+1. Once a view is created, you can query it like a regular table
+2. Syntax:
+
+    ```sql
+    SELECT <column1_name>, <column2_name> 
+    FROM <view_name>;
+    ```
+
+3. Example:
+
+    ```sql
+    SELECT * 
+    FROM sal_emp_view ;
+    ```
+
+### DML operations on data through View
+
+1. Generally DML operation on data is not possible using views unless it satisfies some criteria
+2. The common conditions that a `VIEW` should satisfy are
+    1. 
+
+#### `INSERT` data through View
+
+1. In general, you cannot `INSERT` data into a view unless it satisfies specific criteria.
+2. Views are primarily read-only, and inserting into a view is allowed only if
+    1. The view is based on a single table
+    2. The view doesn't involve aggregations, joins or GROUP BY clauses
+    3. All non-nullable columns in the underlying table are covered by the view, i.e., the view must expose all the columns that require a value when inserting
+3. Example:
+
+    ```sql
+    ```
+
+#### `UPDATE` data through View
+
+1. Like `INSERT`, you can only update data through a view if the view meets specific conditions
+    1. The view must map to a single table
+
+#### `DELETE` data through View
+
+1. You can also `DELETE` data through a view under similar conditions as `INSERT` and `UPDATE`
+2. The view should satisfy the common conditions as well as some conditions specific to `DELETE` operation on data using `VIEW`
+
+### Alter View
+
+1. In MySQL, you **cannot directly alter a view** once it is created. However, you can modify a view using the `CREATE OR REPLACE VIEW` statement, which replaces the existing view with a new definition
+2. Syntax:
+
+    ```sql
+    CREATE OR REPLACE VIEW <view_name> AS 
+        SELECT <column1>, <column2>, ... 
+        FROM <table_name> 
+        WHERE <condition> ;
+    ```
+
+3. Example:
+
+    ```sql
+    CREATE OR REPLACE VIEW sal_emp_view AS
+        SELECT EMPLOYEE_ID, FIRST_NAME, SALARY, DEPARTMENT_ID
+        FROM employees
+        WHERE SALARY > 10000 ;
+    ```
+
+### `DROP VIEW`
+
+1. To remove a view from the database, use the `DROP VIEW` statement
+2. Syntax:
+
+    ```sql
+    DROP VIEW <view_name> ;
+    ```
+
+3. Example:
+
+    ```sql
+    DROP VIEW sal_emp_view ;
+    ```
