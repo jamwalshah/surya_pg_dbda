@@ -137,7 +137,7 @@
 
 ### Sub-query in `SELECT` clause
 
-1. A subquery can be used to return a value in the result set for each row
+1. A sub-query can be used to return a value in the result set for each row
 2. Syntax:
 
     ```sql
@@ -206,13 +206,13 @@
 
 ### Rules to write Sub-queries
 
-1. A subquery must be enclosed in parenthesis `( )`
-2. A subquery cannot return more than one column, but you may return them as a `ROW`
-3. A subquery can return only one row in most cases, however we can use some clauses like `IN`, `ANY`, which will allow sub-query to return multiple rows
-4. A subquery can be used in various clauses like `SELECT`, `FROM`, `WHERE`, `HAVING`, `DELETE`
-5. Syntax of subquery will vary depending on the clause we have used
-6. A subquery can be nested to multiple levels, but this can make the query more complex and harder to understand
-7. A subquery slows down the query execution time. In order to have better performance, we need to optimize sub-queries by rewriting them in an efficient manner possible
+1. A sub-query must be enclosed in parenthesis `( )`
+2. A sub-query cannot return more than one column, but you may return them as a `ROW`
+3. A sub-query can return only one row in most cases, however we can use some clauses like `IN`, `ANY`, which will allow sub-query to return multiple rows
+4. A sub-query can be used in various clauses like `SELECT`, `FROM`, `WHERE`, `HAVING`, `DELETE`
+5. Syntax of sub-query will vary depending on the clause we have used
+6. A sub-query can be nested to multiple levels, but this can make the query more complex and harder to understand
+7. A sub-query slows down the query execution time. In order to have better performance, we need to optimize sub-queries by rewriting them in an efficient manner possible
 
 ## Views
 
@@ -409,6 +409,15 @@
     ```sql
     DROP VIEW sal_emp_view ;
     ```
+
+## Random Tips
+
+1. The `SELECT` column is used to select required data from database
+2. The `FROM` clause is used to specify the source from where the data has to be fetched
+3. The `WHERE` condition is used to filter the records, the row will be filtered according to comparison between result of sub-query
+4. The `GROUP BY` clause is used to group rows having similar values
+5. The `HAVING` clause is used to filter based on specified condition, filtering the group on basis of result of sub-query
+6. `IN` operator is faster than `ANY` operator, but `ANY` is is more powerful than `IN` operator
 
 ## Practical
 
