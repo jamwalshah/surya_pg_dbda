@@ -329,31 +329,50 @@
 
 ### DML operations on data through View
 
-1. Generally DML operation on data is not possible using views unless it satisfies some criteria
-2. The common conditions that a `VIEW` should satisfy are
-    1. 
+1. Generally, Views are read-only, and DML operations on data are not possible using views unless it satisfies some criteria
+2. The common conditions across all DML operations on data that a `VIEW` should satisfy are
+    1. **Single Table:** The view must be based on a single table. If the View is based on multiple tables (e.g. using `JOIN`), MySQL will not allow data manipulation (insert, update, delete) on it
+    2. **No Aggregates:** The View should not contain aggregate functions such as `SUM()`, `COUNT()`, `AVG()`, etc. Views that include aggregation are non-updatable
+    3. **No `GROUP BY`:** The View should not use the `GROUP BY` or `HAVING` clauses. Grouping alters the underlying data in ways that prevent direct modification
+    4. **No `DISTINCT`:** Using `DISTINCT` in the view's `SELECT` query can also make the view non-updatable because it changes the result set in ways that don't map directly to a single row in the underlying table
+    5. **No calculated or Derived Columns:** The View should not include calculated or derived columns that do not exist in the base table (e.g. expressions or concatenated columns), as this can interfere with updating or deleting individual rows in the underlying table
+    6. **All Non-Nullable columns must be included:** If the underlying table has non-nullable columns, columns must be included in the View's `SELECT` statement. This ensures that when you insert or update data, the necessary values are provided
 
 #### `INSERT` data through View
 
-1. In general, you cannot `INSERT` data into a view unless it satisfies specific criteria.
-2. Views are primarily read-only, and inserting into a view is allowed only if
-    1. The view is based on a single table
-    2. The view doesn't involve aggregations, joins or GROUP BY clauses
-    3. All non-nullable columns in the underlying table are covered by the view, i.e., the view must expose all the columns that require a value when inserting
-3. Example:
+1. For an `INSERT` operation to work on a View, the View must meet the following additional conditions:
+    1. **Direct Column Mappings:**
+        - The View must expose all the necessary columns in the underlying table for the `INSERT` to work. This means the columns of the view must directly correspond to the columns in the underlying table that do not have default values or are not nullable
+        - For non-nullable columns or columns without a default value in the underlying table, you must provide a value for those columns through the view during the `INSERT`
+2. Example:
 
     ```sql
+    INSERT INTO country_view (COUNTRY_ID, COUNTRY_NAME, REGION_ID)
+    VALUES ('SL', 'ShriLanka', 3) ;
     ```
 
 #### `UPDATE` data through View
 
-1. Like `INSERT`, you can only update data through a view if the view meets specific conditions
-    1. The view must map to a single table
+1. For an `UPDATE` operation to work on a View, the View must meet the following additional conditions:
+    1. **Direct Column Mappings:** The columns to be updated in the view must match the underlying table's columns without any transformations. If the view presents data in a way that transforms or combines columns (e.g. using `CONCAT` or `IF` statements), MySQL will not allow the update
+    2. **Primary Key or Unique Key:** The view must include a Primary Key or a Unique Key from the underlying table that uniquely identifies the rows being updated. Without a unique key, MySQL cannot determine which rows to update when using the views.
+2. Example:
+
+    ```sql
+    SET COUNTRY_NAME = 'Sri Lanka'
+    WHERE COUNTRY_ID = 'SL' ;
+    ```
 
 #### `DELETE` data through View
 
-1. You can also `DELETE` data through a view under similar conditions as `INSERT` and `UPDATE`
-2. The view should satisfy the common conditions as well as some conditions specific to `DELETE` operation on data using `VIEW`
+1. For a `DELETE` operation to work on a View, the View must meet the following additional conditions:
+    1. **Primary Key or Unique Key:** The view should provide a mechanism (such as Primary Key or Unique Key) to uniquely identify the rows to delete. If the view does not include a unique key, MySQL won't know which specific row to delete from the underlying table
+2. Example:
+
+    ```sql
+    DELETE FROM country_view
+    WHERE country_ID = 'SL' ;
+    ```
 
 ### Alter View
 
@@ -390,3 +409,213 @@
     ```sql
     DROP VIEW sal_emp_view ;
     ```
+
+## Practical
+
+```sql
+-- ###################
+-- Database- Day06
+-- ###################
+
+use week2;
+SELECT * FROM student;
+SELECT * FROM course_detail;
+
+-- cartesian Join
+SELECT s.STUDENT_ID,  c.COURSE_ID
+FROM student s, course_detail c;
+
+-- INNER JOIN / EQUI JOIN / NATURAL JOIN
+    -- using JOIN keyword
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s 
+JOIN course_detail c ON s.STUDENT_ID = c.STUDENT_ID; 
+    -- using INNER JOIN keyword
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s 
+INNER JOIN course_detail c ON s.STUDENT_ID = c.STUDENT_ID;
+    -- using WHERE keyword
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s, course_detail c
+WHERE s.STUDENT_ID = c.STUDENT_ID;
+
+-- LEFT JOIN
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s 
+LEFT JOIN course_detail c ON s.student_ID = c.STUDENT_ID;
+
+-- RIGHT JOIN
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s 
+RIGHT JOIN course_detail c ON s.student_ID = c.STUDENT_ID;
+
+-- SELF JOIN
+SELECT s1.STUDENT_ID, s2.COURSE_ID
+FROM student s1 
+JOIN student s2 ON s1.COURSE_ID = s2.COURSE_ID;
+
+-- OUTER JOIN
+-- cannot implement FULL JOIN in MySQL
+-- SELECT s.COURSE_ID, c.COURSE_ID
+-- FROM student s FULL JOIN course_detail c
+-- ON s.COURSE_ID=c.COURSE_ID;
+-- FULL JOIN implemented in MySQL using UNION of LEFT JOIN & RIGHT JOIN
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s 
+LEFT JOIN course_detail c ON s.student_ID = c.STUDENT_ID
+    UNION
+SELECT s.STUDENT_ID, c.COURSE_ID
+FROM student s 
+RIGHT JOIN course_detail c ON s.student_ID = c.STUDENT_ID;
+
+SELECT * FROM student;
+SELECT * FROM course_detail;
+
+
+USE hr;
+SELECT * FROM departments;
+SELECT * FROM employees;
+-- find number of employees in each department
+SELECT count(EMPLOYEE_ID), DEPARTMENT_ID 
+FROM employees
+WHERE DEPARTMENT_ID IN (SELECT DEPARTMENT_ID 
+    FROM departments) 
+GROUP  BY DEPARTMENT_ID ;
+
+SELECT DEPARTMENT_ID 
+FROM departments;
+
+-- find the average salary of employees in IT dept
+SELECT avg(SALARY) avg_sal_of_IT 
+FROM employees 
+WHERE DEPARTMENT_ID = (SELECT DEPARTMENT_ID 
+    FROM departments 
+    WHERE DEPARTMENT_NAME = 'IT');
+
+SELECT DEPARTMENT_ID 
+FROM departments 
+WHERE DEPARTMENT_NAME = 'IT';
+
+-- find the total no of employees working in finance dept
+SELECT count(EMPLOYEE_ID) 
+FROM employees 
+WHERE DEPARTMENT_ID = (SELECT DEPARTMENT_ID 
+    FROM departments 
+    WHERE DEPARTMENT_NAME = 'Finance');
+
+SELECT DEPARTMENT_ID 
+FROM departments 
+WHERE DEPARTMENT_NAME = 'Finance';
+
+-- find the names of employees, who work in same dept of Steven king
+SELECT FIRST_NAME, LAST_NAME, DEPARTMENT_ID
+FROM employees 
+WHERE DEPARTMENT_ID = (SELECT DEPARTMENT_ID 
+    FROM employees 
+    WHERE FIRST_NAME = 'Steven' AND LAST_NAME = 'King');
+
+SELECT DEPARTMENT_ID 
+FROM employees 
+WHERE FIRST_NAME = 'Steven' AND LAST_NAME = 'King';
+
+-- find the dept where no employees earn more than 4000
+SELECT DEPARTMENT_NAME, DEPARTMENT_ID
+FROM departments
+WHERE DEPARTMENT_ID IN (SELECT DEPARTMENT_ID
+    FROM employees
+    WHERE SALARY < 4000);
+
+SELECT SALARY, DEPARTMENT_ID 
+FROM employees 
+WHERE SALARY < 4000;
+
+-- interview challenge/problem
+--  find out the employee with second highest salary
+SELECT * 
+FROM employees 
+WHERE SALARY = (SELECT SALARY 
+    FROM employees 
+    ORDER BY SALARY DESC 
+    LIMIT 1 OFFSET 1);
+
+SELECT SALARY 
+FROM employees 
+ORDER BY SALARY DESC 
+LIMIT 1 OFFSET 1;
+
+--  find out the employee with third highest salary
+SELECT * 
+FROM employees 
+WHERE SALARY = (SELECT SALARY 
+    FROM employees 
+    ORDER BY SALARY DESC 
+    LIMIT 1 OFFSET 2);
+
+SELECT SALARY 
+FROM employees 
+ORDER BY SALARY DESC 
+LIMIT 1 OFFSET 1;
+
+
+-- Views
+-- create view
+CREATE VIEW sal_emp AS 
+    SELECT FIRST_NAME, SALARY, DEPARTMENT_ID 
+    FROM employees 
+    WHERE SALARY > 10000;
+-- select view
+SELECT * 
+FROM sal_emp;
+
+CREATE VIEW no_emp_dept AS
+    SELECT DEPARTMENT_ID, count(*) 
+    FROM employees 
+    GROUP BY DEPARTMENT_ID;
+
+SELECT * 
+FROM no_emp_dept;
+
+CREATE VIEW join_view1 AS
+    SELECT e.FIRST_NAME, d.DEPARTMENT_NAME, e.SALARY
+    FROM employees e 
+    JOIN departments d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID;
+
+SELECT * 
+FROM join_view1;
+
+CREATE VIEW sub_examp AS
+    SELECT max(SALARY) 
+    FROM employees
+    WHERE SALARY < (SELECT max(SALARY) 
+        FROM employees);
+
+SELECT * 
+FROM sub_examp;
+
+SELECT * 
+FROM sal_emp; 
+
+UPDATE sal_emp 
+SET FIRST_NAME = "John" 
+WHERE SALARY = 24000 AND DEPARTMENT_ID = 90 AND FIRST_NAME = "Steven"; -- updates name of Steven to John
+
+SELECT * 
+FROM employees; -- shows updated name as John
+
+SELECT * 
+FROM employees; -- show record of John in table employees
+
+DELETE FROM sal_emp 
+WHERE SALARY = 24000 AND DEPARTMENT_ID = 90 AND FIRST_NAME = 'John'; -- deletes record of John with salary 24000, dept id 90
+
+SELECT * 
+FROM employees; -- does not show record of John
+
+SELECT * 
+FROM sal_emp; --  shows view sal_emp
+
+DROP VIEW sal_emp; -- drops view sal_emp
+
+SELECT * 
+FROM sal_emp; -- throws error as sal_emp does not exist anymore
+```
