@@ -179,15 +179,78 @@
 
 ## Data Flow in Spark
 
+- This essentially refers to the end-to-end lifecycle of data in Apache Spark, or the inbound-processing-outbound data flow in Spark's architecture
+- It is critical to understand the performance, scalability, and system integration
+- Below steps broadly outline the life cycle of data in Spark architecture
+  1. Data Ingestion
+  2. Planning
+  3. Execution
+  4. Shuffle
+  5. Output
+
+1. **Data Ingestion**
+    - Data can enter Spark from a variety of source, either structured, semi-structured, or unstructured
+    - Spark uses connectors and APIs for reading data
+    - Following are the common sources from which Spark can read data
+
+        | Source Type | Examples |
+        | :-- | :-- |
+        | File-based | CSV, JSON, Parquet, ORC, Avro, Text |
+        | Cloud | AWS S3, Azure Blob, GCS |
+        | Databases | MySQL, Postgres, Oracle, SQL Server (via JDBC) |
+        | Data Lakes | Delta Lake, Iceberg, Hudi |
+        | Streams | Kafka, Kinesis, Flume, Socket, Files |
+        | External APIs | REST API, Elasticsearch |
+
+    - The Data Ingestion mechanism involves reading data using Spark APIs
+
+      ```python
+      sdf = spark.read.format('csv').option('header', True).load('path/to/file.csv')
+      ```
+
+    - Spark doesn
+
+2. Planning
+3. Execution
+4. Shuffle
+5. Output
+
 ## Apache Spark APIs
 
+- TBD
+
 ### PySpark
+
+- TBD
 
 ### SparkR
 
 ## Apache Spark Architecture
 
+## Data Abstractions in Spark
+
+Apache Spark has a well-defined architecture that is designed on two main abstractions
+
+1. Resilient Distributed Dataset (RDD)
+2. DataFrame
+
+    And there is a third abstraction too which is less used
+
+3. Dataset
+
+| Abstraction | Description |
+| :-- | :-- |
+| `Resilient Distributed Dataset (RDD)` | Low-level, immutable, fault-tolerant collection of Java objects distributed across nodes |
+| `DataFrame` | Structured but untyped, Distributed table with schema built on top of RDDs and optimized via Catalyst Engine |
+| `Dataset` | Structured Typed version of DataFrame (mainly on Scala/Java, not PySpark) |
+
 ### Resilient Distributed Dataset (RDD)
+
+#### Lazy Evaluation
+
+### DataFrame
+
+### Dataset
 
 ### Directed Acyclic Graph (DAG)
 
@@ -199,13 +262,6 @@
 
 #### Cluster Execution Mode
 
-### DataFrame
-
-### Dataset
-
-### RDD
-
-#### Lazy Evaluation
 
 ### Actions and Transformations
 
