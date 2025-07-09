@@ -188,32 +188,93 @@
   4. Shuffle
   5. Output
 
-1. **Data Ingestion**
-    - Data can enter Spark from a variety of source, either structured, semi-structured, or unstructured
-    - Spark uses connectors and APIs for reading data
-    - Following are the common sources from which Spark can read data
+### 1. **Data Ingestion**
 
-        | Source Type | Examples |
-        | :-- | :-- |
-        | File-based | CSV, JSON, Parquet, ORC, Avro, Text |
-        | Cloud | AWS S3, Azure Blob, GCS |
-        | Databases | MySQL, Postgres, Oracle, SQL Server (via JDBC) |
-        | Data Lakes | Delta Lake, Iceberg, Hudi |
-        | Streams | Kafka, Kinesis, Flume, Socket, Files |
-        | External APIs | REST API, Elasticsearch |
+- Data can enter Spark from a variety of source, either structured, semi-structured, or unstructured
+- Spark uses connectors and APIs for reading data
+- Following are the common sources from which Spark can read data
 
-    - The Data Ingestion mechanism involves reading data using Spark APIs
+    | Source Type | Examples |
+    | :-- | :-- |
+    | File-based | CSV, JSON, Parquet, ORC, Avro, Text |
+    | Cloud | AWS S3, Azure Blob, GCS |
+    | Databases | MySQL, Postgres, Oracle, SQL Server (via JDBC) |
+    | Data Lakes | Delta Lake, Iceberg, Hudi |
+    | Streams | Kafka, Kinesis, Flume, Socket, Files |
+    | External APIs | REST API, Elasticsearch |
 
-      ```python
-      sdf = spark.read.format('csv').option('header', True).load('path/to/file.csv')
-      ```
+- The Data Ingestion mechanism involves reading data using Spark APIs
 
-    - Spark doesn
+  ```python
+  sdf = spark.read.format('csv').option('header', True).load('path/to/file.csv')
+  ```
 
-2. Planning
-3. Execution
-4. Shuffle
-5. Output
+- Spark does not read all the data immediately, as it uses lazy evaluation
+- It build a logical plan describing how to access and transform data
+- Actual data is read only when some action command such as `.count()`, `.show()` is triggered
+
+### 2. **Planning**
+
+- Apache Spark creates a comprehensive plan on how to read data and do transformations
+- This plan which can be viewed as two kinds of plans
+  1. Logical Execution Plan to Optimized Plan
+  2. Physical Execution Plan and Directed Acyclic Graph (DAG)
+
+#### **1. Logical Plan to Optimized Plan**
+
+- Once you define your transformation such as `.filter()`, etc. shown as below, Spark builds a logical plan
+
+```python
+df_filtered = df.filter('age > 30').select('name', 'age')
+```
+
+- This plan is then optimized by the Catalyst Optimizer using techniques such as
+  - Predicate pushdown
+  - Constant folding
+  - Column pruning
+  - Reordering joins, etc.
+- This stage is also metadata only, and data still has not been actually read or moved
+
+#### **2. Physical Execution Plan and Directed Acyclic Graph (DAG)**
+
+- When you trigger an action command such as `.show()`, only then spark converts the logical execution plan into a physical execution plan, because it uses lazy evaluation
+- The Physical Execution Plan includes the *Directed Acyclic Graph (DAG)* representing  *job(s)*, split into multiple *stages* having multiple *tasks*
+- It then schedules the tasks on the executors which are distributed across cluster nodes
+- The data is now actually read and transformed in partitions based on the number of executors available in the cluster for this job
+
+```text
+Spark Application
+    └──> Action triggers a -> JOB
+                └──> Job split into -> STAGES (at shuffle boundaries)
+                            └──> Each consists of -> TASKS (1 per partition)
+```
+
+##### Directed Acyclic Graph (DAG)
+
+- A Directed Acyclic Graph (DAG) in Spark is a graph of computation that represents all the operations (including transformations) in your Spark application, without any cycles
+  - Each *Node* in DAG represents an RDD/DataFrame transformation
+  - Each *Edge* represents a dependency between operations
+  - *Acyclic* means there are no loops, data flows in one direction only without any cycles
+- A DAG is built before execution, allowing Spark to analyze the entire workflow, so it can optimize and plan the execution efficiently
+- Spark uses DAG to break-down your program into Jobs, stages and tasks
+- When you run your Spark Application, spark builds a DAG of transformations like read, filter, group, count, etc. in a lazy fashion, so nothing gets executed at the moment
+
+##### Job
+
+- A Job is a highest-level execution unit in Spark
+- It represents the entire computation triggered by an action such as `.collect()`, `.show()`, `.write()`, `.count()`, etc.
+- It is used by Spark to know when to start the execution of DAG
+- Each Job contains one or more Stages, depending on whether there are shuffles
+
+##### Stage
+
+##### Task
+
+### **3. Execution**
+
+### **4. Shuffle**
+
+### **5. Output**
 
 ## Apache Spark APIs
 
@@ -252,8 +313,6 @@ Apache Spark has a well-defined architecture that is designed on two main abstra
 
 ### Dataset
 
-### Directed Acyclic Graph (DAG)
-
 ### Spark Execution Modes
 
 #### Local Execution Mode
@@ -261,7 +320,6 @@ Apache Spark has a well-defined architecture that is designed on two main abstra
 #### Client Execution Mode
 
 #### Cluster Execution Mode
-
 
 ### Actions and Transformations
 
