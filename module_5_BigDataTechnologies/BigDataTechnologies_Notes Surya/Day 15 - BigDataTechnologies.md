@@ -180,7 +180,7 @@
 ## Data Flow in Spark
 
 - This essentially refers to the end-to-end lifecycle of data in Apache Spark, or the inbound-processing-outbound data flow in Spark's architecture
-- It is critical to understand the performance, scalability, and system integration
+- Understanding this data flow is critical to improving Spark application's  performance, scalability, and integration with external systems
 - Below steps broadly outline the life cycle of data in Spark architecture
   1. Data Ingestion
   2. Planning
@@ -190,7 +190,7 @@
 
 ### 1. **Data Ingestion**
 
-- Data can enter Spark from a variety of source, either structured, semi-structured, or unstructured
+- Data can enter Spark from a variety of sources, either structured, semi-structured, or unstructured
 - Spark uses connectors and APIs for reading data
 - Following are the common sources from which Spark can read data
 
@@ -210,8 +210,10 @@
   ```
 
 - Spark does not read all the data immediately, as it uses lazy evaluation
-- It build a logical plan describing how to access and transform data
+- It builds a logical plan describing how to access and transform data
 - Actual data is read only when some action command such as `.count()`, `.show()` is triggered
+
+  > Spark builds the plan before reading data, but metadata about the source such as schema, may still be accessible during reading, especially for structured formats like parquet
 
 ### 2. **Planning**
 
@@ -224,9 +226,9 @@
 
 - Once you define your transformation such as `.filter()`, etc. shown as below, Spark builds a logical plan
 
-```python
-df_filtered = df.filter('age > 30').select('name', 'age')
-```
+  ```python
+  df_filtered = df.filter('age > 30').select('name', 'age')
+  ```
 
 - This plan is then optimized by the Catalyst Optimizer using techniques such as
   - Predicate pushdown
@@ -242,12 +244,12 @@ df_filtered = df.filter('age > 30').select('name', 'age')
 - It then schedules the tasks on the executors which are distributed across cluster nodes
 - The data is now actually read and transformed in partitions based on the number of executors available in the cluster for this job
 
-```text
-Spark Application
-    └──> Action triggers a -> JOB
-                └──> Job split into -> STAGES (at shuffle boundaries)
-                            └──> Each consists of -> TASKS (1 per partition)
-```
+  ```text
+  Spark Application
+      └──> Action triggers a -> JOB
+                  └──> Job split into -> STAGES (at shuffle boundaries)
+                              └──> Each consists of -> TASKS (1 per partition)
+  ```
 
 ##### Directed Acyclic Graph (DAG)
 
@@ -255,14 +257,13 @@ Spark Application
   - Each *Node* in DAG represents an RDD/DataFrame transformation
   - Each *Edge* represents a dependency between operations
   - *Acyclic* means there are no loops, data flows in one direction only without any cycles
-- A DAG is built before execution, allowing Spark to analyze the entire workflow, so it can optimize and plan the execution efficiently
-- Spark uses DAG to break-down your program into Jobs, stages and tasks
+- Spark first builds a logical plan of transformations, then optimizes it.
+- Once an action is triggered, Spark generates a physical execution plan and converts it into a DAG of stages and tasks
 - When you run your Spark Application, spark builds a DAG of transformations like read, filter, group, count, etc. in a lazy fashion, so nothing gets executed at the moment
 
 ##### Job
 
-- A Job is a highest-level execution unit in Spark
-- It represents the entire computation triggered by an action such as `.collect()`, `.show()`, `.write()`, `.count()`, etc.
+- A Job is a top-level execution unit in Spark,triggered by an action such as `.collect()`, `.show()`, `.write()`, `.count()`, etc.
 - It is used by Spark to know when to start the execution of DAG
 - Each Job contains one or more Stages, depending on whether there are shuffles
 
@@ -271,6 +272,9 @@ Spark Application
 - A Stage is a subset of a job consisting of a sequence of transformations that can be executed without a shuffle
 - A job is divided into stages at shuffle boundaries
 - Spark groups operations with narrow dependencies into a single stage
+
+###### Types of Stages
+
 - There are two types of stages
   1. `ShuffleMapStage` : Produces intermediate data that needs to be shuffled
   2. `ResultStage` : Final stage that returns the result to the driver
@@ -294,11 +298,139 @@ Spark Application
 
 ##### Task
 
+- A task is the smallest unit of execution in Spark
+- One task represents one unit of work on a single partition
+- Each stage is made up of multiple tasks, one task per partition
+- For example, if a stage processes 200 partitions, Spark will launch 200 tasks for that stage
+- Tasks are at the level at which parallelism is achieved
+- Spark can run tasks in parallel across many executor cores
+
 ### **3. Execution**
+
+- Execution starts when the driver schedules tasks across executors
+- These executors read the data from sources (such as CSV, parquet, database, etc.) in parallel, process it based on task assignments, and store intermediate data in memory or disk
+- It continues following the steps from the Physical Execution plan to run Jobs, Stages and Tasks in a Directed Acyclic Graph (DAG)
+- The data is loaded as partitions into multiple executors, and then data is transformed at each executor for its respective partition
+- It involves below key components from Spark architecture:
+
+  | Component | Role |
+  | :-- | :-- |
+  | Driver | Runs your PySpark code and orchestrates job execution |
+  | Cluster Manager | YARN / Kubernetes / Standalone, allocates resources (executors) |
+  | Executors | Worker nodes that run tasks and hold data in memory or disk |
+  | Tasks | Individual units of work for a data partition |
 
 ### **4. Shuffle**
 
+- Shuffling is not always required, occurs for wide transformations such as `.groupBy()`, `.join()`, `.distinct()`, `.reduceByKey()`
+- Exchange Operators in physical plans such as `Exchange`, `SHuffledHashJoin` are indicators of shuffle points
+- In this step, data is repartitioned and transferred across executors
+- This step incurs network and disk I/O, in order to transfer data across worker nodes
+- You can use `.cache()` or `.persist()` to store intermediate results in memory (or disk), which avoids re-computation of upstream transformation in subsequent stages
+
+  ```python
+  df.cache()
+  ```
+
+#### Caching methods
+
+##### 1. `.cache()`
+
+- Caching in Apache spark refers to storing intermediate results in memory (RAM), so that it can be reused in future actions without re-computation
+- By default, Spark uses lazy evaluation, so transformation such as `.filter()`, `.map()`, `.join()` are not executed until an action such as `.collect()`, `.count()` is triggered
+- If you perform multiple actions on the same DataFrame/RDD without caching, Spark re-computes the entire lineage (the whole chain of transformations) every time, right from the start of DAG
+- Example
+  - Without caching
+
+    ```python
+    df = spark.read.csv('big/file.csv')
+    df_filtered = df.filter('age > 30')            # no caching
+    df_filtered.count()    # triggers computation, reads from source, applies filter
+    df_filtered.show()     # triggers same computation again, again reads from source, again applies filter
+    ```
+
+  - With caching
+
+    ```python
+    df = spark.read.csv('big/file.csv')
+    df_filtered = df.filter('age > 30').cache()    # indicates Spark to store intermediate result into memory
+    df_filtered.count()    # triggers computation, reads from source, applies filter and stores result in memory
+    df_filtered.show()     # triggers computation, but it resumes from intermediate result stored in memory, instead of starting over
+    ```
+
+- When you perform caching using `.cache()`, it triggers the same functionality as `.persist(StorageLevel.MEMORY_AND_DISK)`, to store into RAM, spill to disk if needed
+- In case of spill to disk, Spark will recompute partially
+- Caching is good for iterative algorithms, multiple actions, and machine learning pipelines
+
+##### 2. `.persist()`
+
+- Also, you may use `.persist()` to unlock the full potential of persistence in Spark, utilizing other storage levels too.
+- `.persist()` allows you to store a DataFrame or RDD in memory and/or disk across operations, so Spark doesn't recompute it every time
+- It is similar to `.cache()`, but with more control over how and where data is stored
+- You may use `.persist()` when
+  - You want to optimize memory/disk usage
+  - You know your dataset won't fit in RAM
+  - You want fine-tuned control (e.g. off-heap, serialization)
+
+| Storage Level | Memory | Disk | Serialized | Description | Usage scenario |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| `.persist(StorageLevel.MEMORY_ONLY)` | ✅ | ❌ | ❌ | Fastest, but fails if memory (RAM) is insufficient | Data fits in memory easily |
+| `.persist(StorageLevel.MEMORY_AND_DISK)` | ✅ | ✅ | ❌ | Default for `.cache()`, spills to disk if needed | Data is large and spills |
+| `.persist(StorageLevel.MEMORY_ONLY_SER)` | ✅ | ❌ | ✅ | Serialized, uses less memory (RAM) by storing serialized objects | Want to save memory (RAM) |
+| `.persist(StorageLevel.MEMORY_AND DISK_SER)` | ✅ | ✅ | ✅ | Serialized, spills to disk | Low-latency analytics |
+| `.persist(StorageLevel.DISK_ONLY)` | ❌ | ✅ | ✅ | No RAM usage, slowest but safest | Disk space is cheap, budget is tight |
+| `.persist(StorageLevel.OFF_HEAP)` (advanced) | ✅ | ❌ | ✅ | Uses Off-Heap memory (with Tungsten Engine), must enable manually | Large data, High-performance, advanced tuning |
+
+- Example
+
+  ```python
+  from pyspark import StorageLevel
+
+  df = spark.read.parquet('path/to/data')
+  df_clean = df.filter('score >50').persist(StorageLevel.MEMORY_ONLY_SER)  # persist with MEMORY_ONLY_SER storage level
+  df_clean.count()
+  df_clean.groupBy('category').avg('score').show()
+  ```
+
+  > When you persist data, spark executes lineage to compute the dataset for the first time, and stores the intermediate result according to Storage Level, then all future actions on that dataset will reuse the stored data, instead of computing the lineage again
+
+- Once you're done with a cached/persisted dataset, always unpersist it to free up resources using `.unpersist()` method
+
+  ```python
+  df_filtered.unpersist()
+  df_clean.unpersist()
+  ```
+
 ### **5. Output**
+
+- Finally, Spark outputs results using actions like `.write()`, `.collect()` or `.show()`
+- Output/result can be written to external sinks or returned to driver
+- Following are the common targets to which Spark can write data
+
+  | Target Type | Examples |Parallel | Notes |
+  | :-- | :-- | :-- | :-- |
+  | File Output | `.write.parquet()`, `write.csv()`, `.write.format('delta')` | Yes | Executors write partitioned output files in parallel |
+  | Databases | `.write.jdbc()` | Partial| not always parallel, by default single connection, but can be parallelized with options and table being partitioned |
+  | Data Lakes | `write.format('delta')`, `.write.format('iceberg')` | Yes | Built on distributed file systems, supports partitioned and parallel writes |
+  | Streams | `writeStream.format('kafka')`, `.writeStream.format('console')` | Yes | Micro-batches or continuous writes handled in parallel by executors |
+  | Return to Driver | `.collect()`, `.toPandas()` (only for small data) | No | Data is moved to driver node, serialized and written in driver process |
+
+- Example
+
+  ```python
+  df_filtered.write.format('parquet').save('/output/path')
+  ```
+
+- Spark executes output tasks in parallel on the executors, each of which writes its own partition of data directly to the storage layer (e.g. HDFS, S3, etc.)
+- Output can be in parallel, optimized for throughput, if data is directly written back to an external sink (not firstly to driver)
+- These writes happen in parallel across executors, Spark will write as many output files as there are partitions in the final DataFrame/RDD (unless you do `.coalesce()` or `.repartition()`first)
+- Executors own their partitions, so they write them without shuffling them back to driver
+
+  > That's why people use `.coalesce(1)` or `.repartition(n)` before writing if they want fewer/more output files
+
+- But, writes are not parallel if data is collected back at driver first
+- If you write the result, using functions such as `.collect()`, `.toPandas()`, etc., the driver writes it, and not in a parallel manner
+- This writing by driver can be dangerous for large datasets, and can cause memory issues or even crashes
 
 ## Apache Spark APIs
 
