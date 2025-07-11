@@ -268,6 +268,30 @@ Spark Application
 
 ##### Stage
 
+- A Stage is a subset of a job consisting of a sequence of transformations that can be executed without a shuffle
+- A job is divided into stages at shuffle boundaries
+- Spark groups operations with narrow dependencies into a single stage
+- There are two types of stages
+  1. `ShuffleMapStage` : Produces intermediate data that needs to be shuffled
+  2. `ResultStage` : Final stage that returns the result to the driver
+
+- Example:
+
+  ```python
+  df = spark.read.csv('data.csv')
+  df_filtered = df.filter('age > 30')
+  df_grouped = df_filtered.groupBy('dept').count()
+  df_grouped.show()
+  ```
+
+- In this above example, it has two stages
+  1. *Stage 1* : Read + Filter (no shuffle)
+  2. *Stage 2* : GroupBy + Count (needs shuffle)
+
+- Breaking down a job into stages allows Spark to
+  - Execute parts of the Job in parallel
+  - Handle fault tolerance (only failed stages are recomputed)
+
 ##### Task
 
 ### **3. Execution**
