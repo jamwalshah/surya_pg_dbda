@@ -432,17 +432,36 @@
 - If you write the result, using functions such as `.collect()`, `.toPandas()`, etc., the driver writes it, and not in a parallel manner
 - This writing by driver can be dangerous for large datasets, and can cause memory issues or even crashes
 
+## Apache Spark Architecture
+
+- TBD
+
 ## Apache Spark APIs
 
+- The Apache Spark API refers to the interfaces that developers use to interact with the Spark engine to write distributed data processing applications.
+- Apache Spark offers multiple APIs in different programming languages, and Spark Core abstractions for working with data
+
+### 01. Spark Programming Language APIs
+
+- These are language bindings, which allow developers to write Spark code in their language of choice
+
+#### 01. Scala API
+
+- It is the original and most feature-rich API, native to Spark
+
+#### 02. Java API
+
 - TBD
 
-### PySpark
+#### 03. Python API (PySpark)
 
 - TBD
 
-### SparkR
+#### 04. R API (SparkR)
 
-## Apache Spark Architecture
+- TBD
+
+### 02. Spark Core Abstractions (Data APIs)
 
 ## Data Abstractions in Spark
 
