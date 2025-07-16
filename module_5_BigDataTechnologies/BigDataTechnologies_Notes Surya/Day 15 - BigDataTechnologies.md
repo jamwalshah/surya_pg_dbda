@@ -438,30 +438,50 @@
 
 ## Apache Spark APIs
 
-- The Apache Spark API refers to the interfaces that developers use to interact with the Spark engine to write distributed data processing applications.
-- Apache Spark offers multiple APIs in different programming languages, and Spark Core abstractions for working with data
+- Apache Spark is a unified analytics engine designed for distributed data processing, which provides high-level APIs in multiple programming language and several core abstractions that simplify the handling of large-scale data
+- These APIs enable developers to efficiently process, transform and analyze data in parallel across clusters of machines
 
 ### 01. Spark Programming Language APIs
 
-- These are language bindings, which allow developers to write Spark code in their language of choice
+- The Spark API is available in several programming languages, enabling developers to work with Spark using their language of choice
+- The primary APIs are:
 
-#### 01. Scala API
+#### 01. Scala API (Native API)
 
 - It is the original and most feature-rich API, native to Spark
+- Spark is primarily written in Scala, making the Scala's API the most feature-complete and performant
+- The Scala API can make full use of Spark's optimizations, such as the Catalyst optimizer and the Tungsten execution engine
 
 #### 02. Java API
 
-- TBD
+- Spark also provides an API for Java, allowing developers to use all of Spark's features in Java
+- THe Java API tends to be more verbose compared to the Scala API, which may require more boilerplate code to accomplish the same tasks
+- Ideal for Java developers or existing Java-based ecosystems
 
 #### 03. Python API (PySpark)
 
-- TBD
+- PySpark is the Python binding for Spark and is highly popular, especially in data science, machine learning, and analytics field
+- PySpark is typically used in interactive notebooks like Jupyter or Zeppelin, making it ideal for rapid prototyping and exploration
+- Data scientists, machine learning practitioners, and Python developers commonly use PySpark
 
 #### 04. R API (SparkR)
 
-- TBD
+- Spark R provides and interface to use Spark with the R programming language
+- Spark R supports data processing via DataFrames, but it lacks some of the advanced features available in the Scala/Java APIs
+- It is intended for R users who wish to scale their data analysis to large datasets across clusters
 
 ### 02. Spark Core Abstractions (Data APIs)
+
+- Spark provides several abstractions for working with distributed data, which allow users to perform data transformations and computations in a fault-tolerant and parallelized manner
+- The primary data abstractions are:
+
+#### 01. Resilient Distributed Dataset (RDD)
+
+##### Lazy Evaluation
+
+#### 02. DataFrame
+
+#### 03. Dataset
 
 ## Data Abstractions in Spark
 
@@ -479,14 +499,6 @@ Apache Spark has a well-defined architecture that is designed on two main abstra
 | `Resilient Distributed Dataset (RDD)` | Low-level, immutable, fault-tolerant collection of Java objects distributed across nodes |
 | `DataFrame` | Structured but untyped, Distributed table with schema built on top of RDDs and optimized via Catalyst Engine |
 | `Dataset` | Structured Typed version of DataFrame (mainly on Scala/Java, not PySpark) |
-
-### Resilient Distributed Dataset (RDD)
-
-#### Lazy Evaluation
-
-### DataFrame
-
-### Dataset
 
 ### Spark Execution Modes
 
