@@ -485,6 +485,33 @@
 
 ##### Lazy Evaluation
 
+###### Transformations
+
+- Transformations in Spark are operations applied to DataFrames or RDDs to manipulate or transform data, resulting in a new DataFrame or RDD from an existing one
+- The result of each transformation forms another dataset, allowing for a sequence of operations
+- Common transformations include `filter`, `groupBy`, `join`, `distinct`, `withColumn`, `withColumnRenamed`, `select`, `dropDuplicates`
+- Example
+
+  ```python
+  # DataFrame transformations using spark
+  from pyspark.sql import SparkSession
+  from pyspark.sql.functions import col
+
+  # Create a Spark Session (Spark session is readily available in cloud environments like Azure Synapse, Databricks, IBM CP4D, etc., and creating this can be skipped accordingly)
+  spark = SparkSession.builder.appName('SampleSparkSession').getOrCreate()
+
+  # Read the orders dataset, create a dataframe df1, and then define the transformations to be performed
+  df1 = spark.read.format('csv').option('header', True).load('/path/to/dataset')
+  df2 = df1.filter(col('ORDER_STATUS') == 'DELIVERED')
+  df3 = df2.groupBy('CUST_ID').count('ORDER_STATUS').alias('number_of_completed_orders')
+  df4 = df3.orderBy('CUSTOMER_ID')
+  ```
+
+  - When Spark executes transformations, it doesn't immediately compute them. Instead, Spark records the transformations and creates a logical plan represented by Directed Acyclic Graph (DAG) of stages
+  - This creates a lineage, a series of transformations linked in sequence, and are executed only when an action is applied to the DataFrame
+
+###### Actions
+
 - TBD
 
 #### 02. DataFrame
